@@ -1,5 +1,4 @@
 ﻿using MenuChooser.Data;
-using System.Runtime.CompilerServices;
 
 namespace MenuChooser.Extensions
 {
@@ -8,10 +7,7 @@ namespace MenuChooser.Extensions
         public static IServiceCollection AddApplicationService(this IServiceCollection services,
             IConfiguration configuration)
         {
-            //services.AddDbContext<DataContext>(options =>
-            //{
-            //    options.
-            //});
+            services.Configure<MenuChooserDatabaseSettings>(configuration.GetSection("ConnectionStrings"));
 
             return services;
         }
