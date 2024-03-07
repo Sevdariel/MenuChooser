@@ -1,12 +1,20 @@
+using MenuChooser.Data;
 using MenuChooser.Extensions;
+using MenuChooser.Repository;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+
+builder.Services.Configure<MenuChooserDatabaseSettings>(builder.Configuration.GetSection("UserStoreDatabase"));
+builder.Services.AddSingleton<UserService>();
+
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+//builder.Services.AddApplicationService(builder.Configuration);
+
 var app = builder.Build();
-
-builder.Services.AddApplicationService(builder.Configuration);
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -20,6 +28,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.Run();
