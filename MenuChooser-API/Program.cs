@@ -1,18 +1,11 @@
-using MenuChooser.Data;
 using MenuChooser.Extensions;
-using MenuChooser.Repository;
-using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-
-builder.Services.Configure<MenuChooserDatabaseSettings>(builder.Configuration.GetSection("UserStoreDatabase"));
-builder.Services.AddSingleton<UserService>();
-
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
-//builder.Services.AddApplicationService(builder.Configuration);
+builder.Services.AddApplicationService(builder.Configuration);
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
