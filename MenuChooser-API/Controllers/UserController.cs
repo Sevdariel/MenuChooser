@@ -16,7 +16,7 @@ namespace MenuChooser.Controllers
         public async Task<List<User>> Get() => await _userService.GetAsync();
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(int id)
+        public async Task<ActionResult<User>> Get(string id)
         {
             var user = await _userService.GetAsync(id);
 
@@ -35,7 +35,7 @@ namespace MenuChooser.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, User updatedUser)
+        public async Task<IActionResult> Update(string id, User updatedUser)
         {
             var user = await _userService.GetAsync(id);
 
@@ -50,7 +50,7 @@ namespace MenuChooser.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
             var user = await _userService.GetAsync(id);
 

@@ -8,11 +8,10 @@ namespace MenuChooser.Entities
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public int Id { get; set; }
-        [BsonElement("Name")]
-        [JsonPropertyName("Name")]
-        public string Username { get; set; } = null!;
-        public byte[] PasswordHash { get; set; } = null!;
-        public byte[] PasswordSalt { get; set; } = null!;
+        public string? Id { get; set; }
+
+        [BsonElement("username")]
+        [JsonPropertyName("username")]
+        public string UserName { get; set; } = null!;
     }
 }
