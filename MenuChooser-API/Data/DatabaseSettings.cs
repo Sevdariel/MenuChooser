@@ -1,9 +1,9 @@
 ﻿namespace MenuChooser.Data
 {
-    public class MenuChooserDatabaseSettings
+    public class DatabaseSettings
     {
         public string ConnectionString { get; set; } = null!;
         public string DatabaseName { get; set; } = null!;
-        public string MenuCollectionName { get; set; } = null!;
+        public string[] CollectionsNames { get; set; } = null!;
     }
 }

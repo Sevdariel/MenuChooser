@@ -7,6 +7,8 @@ builder.Services.AddApplicationService(builder.Configuration);
 
 var app = builder.Build();
 
+app.Services.AppInitializer();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
