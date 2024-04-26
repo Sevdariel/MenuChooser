@@ -8,7 +8,7 @@ namespace MenuChooser.Extensions
             this IServiceProvider services
             )
         {
-            services.GetRequiredService<DatabaseInitializer>().CreateDatabaseConnection();
+            services.GetRequiredService<DatabaseContext>().DatabaseInitialization();
 
             return services;
         }

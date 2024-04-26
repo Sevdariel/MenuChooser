@@ -3,14 +3,14 @@ using MongoDB.Driver;
 
 namespace MenuChooser.Data
 {
-    public class DatabaseInitializer
+    public class DatabaseContext
     {
-        public DatabaseInitializer(IOptions<DatabaseSettings> databaseSettings)
+        public DatabaseContext(IOptions<DatabaseSettings> databaseSettings)
         {
             _databaseSettings = databaseSettings;
         }
 
-        public void CreateDatabaseConnection()
+        public void DatabaseInitialization()
         {
             _mongoClient = new MongoClient(_databaseSettings.Value.ConnectionString);
            

@@ -3,6 +3,8 @@ using MenuChooser.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+
+builder.Services.AddAuthenticationService(builder.Configuration);
 builder.Services.AddApplicationService(builder.Configuration);
 
 var app = builder.Build();
@@ -16,11 +18,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
-app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
-//app.UseAuthorization();
 
 app.Run();

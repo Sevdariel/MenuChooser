@@ -12,6 +12,10 @@ namespace MenuChooser.Entities
 
         [BsonElement("username")]
         [JsonPropertyName("username")]
-        public string UserName { get; set; } = null!;
+        public string Username { get; set; } = null!;
+        [BsonElement("passwordHash")]
+        public byte[] PasswordHash { get; set; } = null!;
+        [BsonElement("passwordSalt")]
+        public byte[] PasswordSalt { get; set; } = null!;
     }
 }

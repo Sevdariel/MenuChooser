@@ -1,4 +1,5 @@
-﻿using MenuChooser.Data;
+﻿using MenuChooser.Accounts.Services;
+using MenuChooser.Data;
 using MenuChooser.Repository;
 
 namespace MenuChooser.Extensions
@@ -11,8 +12,12 @@ namespace MenuChooser.Extensions
             )
         {
             services.Configure<DatabaseSettings>(configuration.GetSection("UserStoreDatabase"));
-            services.AddSingleton<DatabaseInitializer>();
+            services.AddSingleton<DatabaseContext>();
             services.AddSingleton<UserService>();
+            services.AddSingleton<AccountService>();
+
+            services.AddCors();
+            services.AddScoped<ITokenService, TokenService>();
 
             return services;
         }

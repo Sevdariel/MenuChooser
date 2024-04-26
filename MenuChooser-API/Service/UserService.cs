@@ -8,7 +8,7 @@ namespace MenuChooser.Repository
     {
         private readonly IMongoCollection<User> _userCollection;
 
-        public UserService(DatabaseInitializer databaseInitializer)
+        public UserService(DatabaseContext databaseInitializer)
         {
             _userCollection = databaseInitializer.GetMongoDatabase().GetCollection<User>(DatabaseExtensions.CollectionName(GetType().Name));
         }
