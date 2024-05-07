@@ -25,17 +25,18 @@
                 <div class="hidden sm:ml-6 sm:block">
                     <div class="flex space-x-4">
                         <a href="#"
-                            class="bg-light-orange-500 rounded-md px-3 py-2 text-sm font-medium hover:bg-light-orange-700">Przepisy</a>
+                            class="bg-light-orange-500 rounded-md px-3 py-2 text-sm font-medium hover:bg-light-orange-700">Recipes</a>
                         <a href="#"
-                            class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Produkty</a>
-                        <a href="#" class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">O nas</a>
+                            class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Products</a>
+                        <a href="#" class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">About</a>
                         <a href="#"
-                            class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Kontakt</a>
+                            class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Contact</a>
                         <a href="#" class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">FAQ</a>
                     </div>
                 </div>
             </div>
             <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                @if (accountService.currentUser$ | async) {
                 <button type="button"
                     class="relative rounded-full bg-light-orange-100 p-1 focus:outline-none hover:text-light-orange-600 focus:ring-2 focus:ring-light-orange-600 focus:ring-offset-2 focus:ring-offset-light-orange-600">
                     <span class="absolute -inset-1.5"></span>
@@ -46,7 +47,11 @@
                             d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                     </svg>
                 </button>
-                <mc-dropdown-menu [dropdownSettings]="dropdownSettings" [dropdownList]="dropdownList"></mc-dropdown-menu>
+                <mc-dropdown-menu [dropdownSettings]="dropdownSettings"
+                    [dropdownList]="dropdownList"></mc-dropdown-menu>
+                } @else {
+                <mc-login></mc-login>
+                }
             </div>
         </div>
     </div>
