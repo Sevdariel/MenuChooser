@@ -14,24 +14,8 @@ import { DropdownToggleDirective } from './dropdown-directive/dropdown-toggle.di
 export class DropdownMenuComponent {
 
   @Input()
-  public dropdownSettings: IDropdownSettings | undefined = {
-    iconSrc: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    mainText: 'kappa'
-  }
+  public dropdownSettings!: IDropdownSettings;
 
   @Input()
-  public dropdownList: Array<IDropdownItem> | undefined = [
-    {
-      linkDestination: '#',
-      name: 'Your Profile 1'
-    },
-    {
-      linkDestination: '#',
-      name: 'Settings 1'
-    },
-    {
-      linkDestination: '#',
-      name: 'Sign out 1'
-    }
-  ];
+  public dropdownList!: Array<IDropdownItem>;
 }

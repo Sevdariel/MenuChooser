@@ -7,36 +7,24 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 export class DropdownToggleDirective {
 
   @Input()
-  public connectedElement: string | undefined;
+  public connectedElementId!: string;
 
   constructor(
     private toggleElement: ElementRef,
-  ) {
-    console.log(this.toggleElement.nativeElement.focus())
+  ) { }
+
+  @HostListener('click')
+  public onMouserClick() {
     this.toggleElement.nativeElement.focus();
-   }
-   
-   @Input()
-   set focus(focus: boolean) {
-    if (focus) {
-      this.toggleElement.nativeElement.focus();
-    }
-   }
+  }
 
   @HostListener('focus')
   public onElementFocus() {
-    this.highlight('black')
-    console.log('focus');
+    document.getElementById(this.connectedElementId)?.classList.replace('invisible', 'visible');
   }
 
   @HostListener('blur')
   public onElementBlur() {
-    this.highlight('');
-    console.log('blur');
+    document.getElementById(this.connectedElementId)?.classList.replace('visible', 'invisible')
   }
-
-  private highlight(color: string) {
-    this.toggleElement.nativeElement.style.backgroundColor = color;
-  }
-
 }

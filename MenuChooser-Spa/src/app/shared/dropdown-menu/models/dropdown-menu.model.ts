@@ -6,4 +6,5 @@ export interface IDropdownItem {
 export interface IDropdownSettings {
     iconSrc?: string;
     mainText?: string;
+    id: string;
 }
