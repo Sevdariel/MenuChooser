@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { AccountService } from '../account/account.service';
 import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu.component';
 import { IDropdownItem, IDropdownSettings } from '../dropdown-menu/models/dropdown-menu.model';
-import { LoginComponent } from '../login/login.component';
+import { NavbarLoginComponent } from '../nav-bar-login/nav-bar-login.component';
 
 @Component({
   selector: 'mc-nav-bar',
@@ -11,7 +11,7 @@ import { LoginComponent } from '../login/login.component';
   imports: [
     CommonModule,
     DropdownMenuComponent,
-    LoginComponent,
+    NavbarLoginComponent,
   ],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'

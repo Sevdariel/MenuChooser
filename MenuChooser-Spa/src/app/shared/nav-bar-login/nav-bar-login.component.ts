@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { AccountService } from '../account/account.service';
 
 @Component({
-  selector: 'mc-login',
+  selector: 'mc-nav-bar-login',
   standalone: true,
   imports: [],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  templateUrl: './nav-bar-login.component.html',
+  styleUrl: './nav-bar-login.component.scss'
 })
-export class LoginComponent {
+export class NavbarLoginComponent {
 
   constructor(private accountService: AccountService) { }
 
