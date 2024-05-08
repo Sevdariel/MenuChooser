@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavbarLoginComponent } from './nav-bar-login.component';
 
-describe('LoginComponent', () => {
+describe('NavbarLoginComponent', () => {
   let component: NavbarLoginComponent;
   let fixture: ComponentFixture<NavbarLoginComponent>;
 
