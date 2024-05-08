@@ -18,20 +18,26 @@
                     </svg>
                 </button>
             </div>
-            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                <div class="flex flex-shrink-0 items-center">
+            <div class="flex flex-1 justify-center items-center">
+                <div class="flex items-center justify-center">
                     <img class="h-8 w-auto" src="./../../../assets/icons/pasta-bowl.svg" alt="MenuChooser">
                 </div>
-                <div class="hidden sm:ml-6 sm:block">
-                    <div class="flex space-x-4">
-                        <a href="#"
-                            class="bg-light-orange-500 rounded-md px-3 py-2 text-sm font-medium hover:bg-light-orange-700">Recipes</a>
-                        <a href="#"
-                            class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Products</a>
-                        <a href="#" class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">About</a>
-                        <a href="#"
-                            class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Contact</a>
-                        <a href="#" class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">FAQ</a>
+                <div class="flex sm:items-center sm:justify-center">
+                    <div class="hidden sm:ml-6 sm:block">
+                        <div class="flex space-x-4">
+                            @if (accountService.currentUser$ | async){
+                            <a href="#"
+                                class="bg-light-orange-500 rounded-md px-3 py-2 text-sm font-medium hover:bg-light-orange-700">Recipes</a>
+                            <a href="#"
+                                class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Products</a>
+                            }
+                            <a href="#"
+                                class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">About</a>
+                            <a href="#"
+                                class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">Contact</a>
+                            <a href="#"
+                                class="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium">FAQ</a>
+                        </div>
                     </div>
                 </div>
             </div>
