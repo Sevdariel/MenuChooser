@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ValidationService } from '../../core/validation/service/validation.service';
 import { AccountService } from '../../shared/account/account.service';
 import { ILoginForm } from './models/login.model';
 
@@ -13,6 +14,7 @@ export class LoginComponent implements OnInit {
   public formGroup!: FormGroup;
 
   constructor(
+    public validationService: ValidationService,
     private formBuilder: FormBuilder,
     private accountService: AccountService,
   ) { }
@@ -27,5 +29,6 @@ export class LoginComponent implements OnInit {
   }
 
   public login() {
+    this.validationService.validateFormGroup(this.formGroup);
   }
 }
