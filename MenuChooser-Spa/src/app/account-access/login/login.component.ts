@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import { AccountService } from '../../shared/account/account.service';
@@ -25,10 +25,9 @@ export class LoginComponent implements OnInit {
       password: new FormControl('', { validators: Validators.required }),
       rememberMe: new FormControl(false),
     });
-
   }
 
   public login() {
-    this.validationService.validateFormGroup(this.formGroup);
+    this.formGroup.markAllAsTouched();
   }
 }

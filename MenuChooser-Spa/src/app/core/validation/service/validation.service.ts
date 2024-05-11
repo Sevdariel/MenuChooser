@@ -1,20 +1,21 @@
 import { Injectable } from '@angular/core';
-import { Form, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl } from '@angular/forms';
+import { errorMessages } from './error-messages';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ValidationService {
 
-  constructor() { }
+  public getErrorMessage(abstractControl: AbstractControl): string | null{
+    if (!!abstractControl.errors) {
+      return Object.keys(abstractControl.errors).map(error => errorMessages[error])[0];
+    }
 
-  public validateFormGroup(formGroup: FormGroup) {
-    console.log('kappa')
-    console.log('formGroup', formGroup)
-    Object.keys(formGroup.controls).forEach(control => this.setControlErrorMessage(formGroup.controls[control] as FormControl))
+    return null;
   }
 
-  private setControlErrorMessage(formControl: FormControl) {
-    console.log('setControlErrorMessage formControl', formControl)
+  public showError(formControl: AbstractControl): boolean {
+    return formControl.invalid && !!formControl.errors && formControl.touched;
   }
 }
