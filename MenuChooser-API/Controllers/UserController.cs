@@ -13,12 +13,12 @@ namespace MenuChooser.Controllers
         public UserController(UserService userService) => _userService = userService;
 
         [HttpGet]
-        public async Task<List<User>> Get() => await _userService.GetAsync();
+        public async Task<List<User>> Get() => await _userService.GetUsersAsync();
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(string id)
         {
-            var user = await _userService.GetAsync(id);
+            var user = await _userService.GetUserByEmailAsync(id);
 
             if (user is null)
                 return NotFound();
@@ -29,22 +29,22 @@ namespace MenuChooser.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(User newUser)
         {
-            await _userService.CreateAsync(newUser);
+            await _userService.CreateUserAsync(newUser);
 
-            return CreatedAtAction(nameof(Get), new {id = newUser.Id}, newUser);
+            return CreatedAtAction(nameof(Get), new {id = newUser.Email}, newUser);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, User updatedUser)
         {
-            var user = await _userService.GetAsync(id);
+            var user = await _userService.GetUserByEmailAsync(id);
 
             if (user is null)
                 return NotFound();
 
-            updatedUser.Id = user.Id;
+            updatedUser.Email = user.Email;
 
-            await _userService.UpdateAsync(id, updatedUser);
+            await _userService.UpdateUserAsync(id, updatedUser);
 
             return NoContent();
         }
@@ -52,14 +52,14 @@ namespace MenuChooser.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var user = await _userService.GetAsync(id);
+            var user = await _userService.GetUserByEmailAsync(id);
 
             if (user is null)
             {
                 return NotFound();
             }
 
-            await _userService.RemoveAsync(id);
+            await _userService.RemoveUserAsync(id);
 
             return NoContent();
         }

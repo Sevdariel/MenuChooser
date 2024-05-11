@@ -10,9 +10,9 @@ namespace MenuChooser.Entities
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
-        [BsonElement("username")]
-        [JsonPropertyName("username")]
-        public string Username { get; set; } = null!;
+        [BsonElement("email")]
+        [JsonPropertyName("email")]
+        public string Email { get; set; } = null!;
         [BsonElement("passwordHash")]
         public byte[] PasswordHash { get; set; } = null!;
         [BsonElement("passwordSalt")]

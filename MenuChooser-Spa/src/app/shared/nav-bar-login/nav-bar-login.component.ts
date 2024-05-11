@@ -13,6 +13,6 @@ export class NavbarLoginComponent {
   constructor(private accountService: AccountService) { }
 
   public login() {
-    this.accountService.login();
+    // this.accountService.login();
   }
 }

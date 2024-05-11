@@ -1,22 +1,22 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { IUser } from './account-dto.model';
+import { IUser, IUserLoginDto } from './account-dto.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
 
+  private baseUrl = `api/account/`
   private currentUserSource = new BehaviorSubject<IUser | null>(null);
   public currentUser$ = this.currentUserSource.asObservable();
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
-  public login() {
-    this.setCurrentUser({
-      token: 'token',
-      username: 'username',
-    });
+  public login(userDto: IUserLoginDto) {
+    console.log('kappa')
+    return this.httpClient.post<IUserLoginDto>(`${this.baseUrl}/login`, userDto);
   }
 
   private setCurrentUser(user: IUser) {
