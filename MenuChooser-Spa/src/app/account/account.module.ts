@@ -4,10 +4,12 @@ import { AccountRoutingModule } from './account-routing.module';
 import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorDirective } from '../core/validation/error-directive/error.directive';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 @NgModule({
   declarations: [
     LoginComponent,
+    SignUpComponent,
   ],
   imports: [
     ErrorDirective,
