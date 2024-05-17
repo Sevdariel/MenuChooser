@@ -17,6 +17,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

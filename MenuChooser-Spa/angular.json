@@ -60,6 +60,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "src/proxy.conf.json",
+            "ssl": true,
+            "sslCert": "./ssl/localhost.pem",
+            "sslKey": "./ssl/localhost-key.pem"
+          },
           "configurations": {
             "production": {
               "buildTarget": "MenuChooser-Spa:build:production"
