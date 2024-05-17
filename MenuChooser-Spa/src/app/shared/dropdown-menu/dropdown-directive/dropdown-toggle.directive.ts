@@ -14,7 +14,7 @@ export class DropdownToggleDirective {
   ) { }
 
   @HostListener('click')
-  public onMouserClick() {
+  public onMouseClick() {
     this.toggleElement.nativeElement.focus();
   }
 
@@ -25,6 +25,6 @@ export class DropdownToggleDirective {
 
   @HostListener('blur')
   public onElementBlur() {
-    document.getElementById(this.connectedElementId)?.classList.replace('visible', 'invisible')
+    setTimeout(() => document.getElementById(this.connectedElementId)?.classList.replace('visible', 'invisible'), 100);
   }
 }

@@ -27,16 +27,19 @@ export class NavBarComponent {
 
   public dropdownList: Array<IDropdownItem> = [
     {
-      linkDestination: '#',
-      name: 'Your Profile 1'
+      linkDestination: '',
+      name: 'Your Profile 1',
+      action: () => { },
     },
     {
-      linkDestination: '#',
-      name: 'Settings 1'
+      linkDestination: '',
+      name: 'Settings 1',
+      action: () => { }
     },
     {
-      linkDestination: '#',
-      name: 'Sign out 1'
+      linkDestination: '',
+      name: 'Sign out',
+      action: () => this.accountService.logout(),
     }
   ];
 }

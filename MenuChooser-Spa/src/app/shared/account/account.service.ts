@@ -12,7 +12,13 @@ export class AccountService {
   private currentUser = signal<IUser | undefined>(undefined);
   public loggedUser = this.currentUser.asReadonly();
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {
+    if (!!localStorage.getItem('user')) {
+      this.currentUser.set(JSON.parse(localStorage.getItem('user')!))
+    } else if (!!sessionStorage.getItem('user')) {
+      this.currentUser.set(JSON.parse(sessionStorage.getItem('user')!))
+    }
+  }
 
   public login(userDto: IUserLoginDto) {
     return this.httpClient.post<IUser>(`${this.baseUrl}/login`, userDto)
@@ -20,7 +26,16 @@ export class AccountService {
         filter(loggedUser => !!loggedUser),
         tap(loggedUser => this.setCurrentUser(loggedUser)),
         tap(loggedUser => this.setStorageUser(loggedUser, userDto.rememberMe)));
+  }
 
+  public logout() {
+    if (!!localStorage.getItem('user')) {
+      localStorage.removeItem('user');
+    } else if (!!sessionStorage.getItem('user')) {
+      sessionStorage.removeItem('user');
+    }
+
+    this.currentUser.set(undefined);
   }
 
   private setStorageUser(user: IUser, rememberMe: boolean) {

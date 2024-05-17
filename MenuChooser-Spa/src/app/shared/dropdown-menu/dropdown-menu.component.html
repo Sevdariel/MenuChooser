@@ -18,8 +18,8 @@
         class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 invisible"
         role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
         @for (item of dropdownList; track item.name) {
-        <a href="{{item.linkDestination}}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-light-orange-100"
-            role="menuitem" tabindex="-1" id="user-menu-item-{{$index}}">{{item.name}}</a>
+        <a href="{{item.linkDestination}}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-light-orange-100" role="menuitem"
+            tabindex="-1" id="user-menu-item-{{$index}}" (click)="item.action()">{{item.name}}</a>
         }
     </div>
 </div>
