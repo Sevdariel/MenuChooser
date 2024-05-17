@@ -13,7 +13,7 @@ namespace MenuChooser.Accounts.Services
             _userCollection = databaseContext.GetMongoDatabase().GetCollection<User>("User");
         }
 
-        public bool IsUserExists(string username) => _userCollection.Find(user => user.Username == username).Any();
+        public bool IsUserExists(string email) => _userCollection.Find(user => user.Email == email).Any();
 
         public async Task RegisterUser(User user) => await _userCollection.InsertOneAsync(user);
     }

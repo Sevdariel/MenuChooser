@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AccountAccessRoutingModule } from './account-access-routing.module';
+import { AccountRoutingModule } from './account-routing.module';
 import { LoginComponent } from './login/login.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorDirective } from '../core/validation/error-directive/error.directive';
@@ -12,8 +12,8 @@ import { ErrorDirective } from '../core/validation/error-directive/error.directi
   imports: [
     ErrorDirective,
     CommonModule,
-    AccountAccessRoutingModule,
+    AccountRoutingModule,
     ReactiveFormsModule,
   ]
 })
-export class AccountAccessModule { }
+export class AccountModule { }

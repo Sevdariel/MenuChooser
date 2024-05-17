@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../account/account.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'mc-nav-bar-login',
@@ -10,9 +11,9 @@ import { AccountService } from '../account/account.service';
 })
 export class NavbarLoginComponent {
 
-  constructor(private accountService: AccountService) { }
+  constructor(private router: Router) { }
 
   public login() {
-    this.accountService.login();
+    this.router.navigate(['/account/login']);
   }
 }

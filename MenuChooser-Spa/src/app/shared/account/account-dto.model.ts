@@ -1,4 +1,10 @@
 export interface IUser {
-    username: string;
+    email: string;
     token: string;
+}
+
+export interface IUserLoginDto {
+    email: string;
+    password: string;
+    rememberMe: boolean;
 }

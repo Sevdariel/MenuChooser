@@ -1,25 +1,37 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { IUser } from './account-dto.model';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, signal } from '@angular/core';
+import { filter, tap } from 'rxjs';
+import { IUser, IUserLoginDto } from './account-dto.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
 
-  private currentUserSource = new BehaviorSubject<IUser | null>(null);
-  public currentUser$ = this.currentUserSource.asObservable();
+  private baseUrl = `api/account`
+  private currentUser = signal<IUser | undefined>(undefined);
+  public loggedUser = this.currentUser.asReadonly();
 
-  constructor() { }
+  constructor(private httpClient: HttpClient) { }
 
-  public login() {
-    this.setCurrentUser({
-      token: 'token',
-      username: 'username',
-    });
+  public login(userDto: IUserLoginDto) {
+    return this.httpClient.post<IUser>(`${this.baseUrl}/login`, userDto)
+      .pipe(
+        filter(loggedUser => !!loggedUser),
+        tap(loggedUser => this.setCurrentUser(loggedUser)),
+        tap(loggedUser => this.setStorageUser(loggedUser, userDto.rememberMe)));
+
+  }
+
+  private setStorageUser(user: IUser, rememberMe: boolean) {
+    if (rememberMe) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      sessionStorage.setItem('user', JSON.stringify(user));
+    }
   }
 
   private setCurrentUser(user: IUser) {
-    this.currentUserSource.next(user);
+    this.currentUser.set(user);
   }
 }
