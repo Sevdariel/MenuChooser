@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { filter, map } from 'rxjs';
 import { IUser, IUserLoginDto } from './account-dto.model';
 
 @Injectable({
@@ -9,17 +9,19 @@ import { IUser, IUserLoginDto } from './account-dto.model';
 export class AccountService {
 
   private baseUrl = `api/account/`
-  private currentUserSource = new BehaviorSubject<IUser | null>(null);
-  public currentUser$ = this.currentUserSource.asObservable();
+  private currentUser = signal({});
+  public loggedUser = this.currentUser.asReadonly();
 
   constructor(private httpClient: HttpClient) { }
 
   public login(userDto: IUserLoginDto) {
-    console.log('kappa')
-    return this.httpClient.post<IUserLoginDto>(`${this.baseUrl}/login`, userDto);
+    return this.httpClient.post<IUser>(`${this.baseUrl}/login`, userDto)
+      .pipe(
+        filter(logedUser => !!logedUser),
+        map(logedUser => this.setCurrentUser(logedUser)));
   }
 
   private setCurrentUser(user: IUser) {
-    this.currentUserSource.next(user);
+    this.currentUser.set(user);
   }
 }
