@@ -35,12 +35,38 @@
                 <div>
                     <label for="repeatPassword" class="block mb-2 text-base font-medium text-gray-900">Repeat
                         password</label>
-                    <input id="repeatPassword" formControlName="repeatPassword" type="password" placeholder="•••••••" required
+                    <input id="repeatPassword" formControlName="repeatPassword" type="password" placeholder="•••••••"
+                        required
                         [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['repeatPassword'].touched}"
                         class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
                     @if (validationService.showError(formGroup.controls['repeatPassword'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['repeatPassword'], 'password')}}</mc-error>
+                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['repeatPassword'],
+                        'password')}}</mc-error>
                     }
+                </div>
+                <div class="space-y-3 md:space-y-4">
+                    <div class="flex items-center">
+                        <input id="termsOfUse" type="checkbox" required formControlName="termsOfUse"
+                            [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['termsOfUse'].touched}"
+                            class="w-4 h-4 text-orange-500 rounded focus:ring-transparent">
+                        <label for="termsOfUse" class="ms-2 text-base"
+                            [ngClass]="{'text-red-600': formGroup.controls['termsOfUse'].touched && formGroup.controls['termsOfUse'].errors}">I
+                            agree to the Terms of Use</label>
+                    </div>
+                    @if (validationService.showError(formGroup.controls['termsOfUse'])) {
+                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['termsOfUse'])}}</mc-error>
+                    }
+                    <div class="flex items-center">
+                        <input id="privacyPolicy" type="checkbox" formControlName="privacyPolicy"
+                            class="w-4 h-4 text-orange-500 rounded focus:ring-transparent">
+                        <label for="privacyPolicy" class="ms-2 text-base">I agree to the Privacy Policy</label>
+                    </div>
+                </div>
+                <div class="items-center justify-center flex">
+                    <button type="submit"
+                        class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600"
+                        (click)="signUp()">Sign
+                        up</button>
                 </div>
             </form>
         </div>

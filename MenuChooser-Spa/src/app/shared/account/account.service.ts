@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { filter, tap } from 'rxjs';
-import { IUser, IUserLoginDto } from './account-dto.model';
+import { IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,12 +20,21 @@ export class AccountService {
     }
   }
 
-  public login(userDto: IUserLoginDto) {
-    return this.httpClient.post<IUser>(`${this.baseUrl}/login`, userDto)
+  public register(userRegisterDto: IUserRegisterDto) {
+    return this.httpClient.post<IUser>(`${this.baseUrl}/register`, userRegisterDto)
+      .pipe(
+        filter(registeredUser => !!registeredUser),
+        tap(registeredUser => this.setCurrentUser(registeredUser)),
+        tap(loggedUser => this.setStorageUser(loggedUser, false))
+      );
+  }
+
+  public login(userLoginDto: IUserLoginDto) {
+    return this.httpClient.post<IUser>(`${this.baseUrl}/login`, userLoginDto)
       .pipe(
         filter(loggedUser => !!loggedUser),
         tap(loggedUser => this.setCurrentUser(loggedUser)),
-        tap(loggedUser => this.setStorageUser(loggedUser, userDto.rememberMe)));
+        tap(loggedUser => this.setStorageUser(loggedUser, userLoginDto.rememberMe)));
   }
 
   public logout() {

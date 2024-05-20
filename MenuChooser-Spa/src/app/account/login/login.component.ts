@@ -1,10 +1,10 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import { IUserLoginDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
-import { ILoginForm } from './models/login.model';
 
 @Component({
   selector: 'mc-login',
@@ -20,10 +20,11 @@ export class LoginComponent implements OnInit {
     public validationService: ValidationService,
     private formBuilder: FormBuilder,
     private accountService: AccountService,
+    private router: Router,
   ) { }
 
   public ngOnInit(): void {
-    this.formGroup = this.formBuilder.nonNullable.group<ILoginForm>({
+    this.formGroup = this.formBuilder.nonNullable.group({
       email: new FormControl('', { validators: [Validators.required, Validators.email] }),
       password: new FormControl('', { validators: Validators.required }),
       rememberMe: new FormControl(false),
@@ -37,7 +38,7 @@ export class LoginComponent implements OnInit {
       this.accountService.login(this.createUserLoginDto())
         .pipe(
           takeUntilDestroyed(this.destroyRef),
-        ).subscribe();
+        ).subscribe(() => this.router.navigateByUrl(''));
     }
   }
 
