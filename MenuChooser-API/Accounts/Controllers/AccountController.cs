@@ -30,8 +30,11 @@ namespace MenuChooser.Accounts.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(UserRegisterDto registerDto)
         {
-            if (UserExists(registerDto.Email))
-                return BadRequest("Username is already taken");
+            if (AccountExists(registerDto.Email))
+                return BadRequest("Account exists");
+
+            if (UsernameTaken(registerDto.Username))
+                return BadRequest("Username already taken");
 
             using var hmac = new HMACSHA512();
 
@@ -73,6 +76,8 @@ namespace MenuChooser.Accounts.Controllers
             };
         }
 
-        private bool UserExists(string username) => _accountService.IsUserExists(username);
+        private bool AccountExists(string email) => _accountService.AccountExist(email);
+
+        private bool UsernameTaken(string username) => _accountService.UsernameTaken(username);
     }
 }

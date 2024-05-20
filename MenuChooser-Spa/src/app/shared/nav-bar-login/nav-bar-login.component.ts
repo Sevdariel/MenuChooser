@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { AccountService } from '../account/account.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,5 +14,9 @@ export class NavbarLoginComponent {
 
   public login() {
     this.router.navigate(['/account/login']);
+  }
+
+  public signUp() {
+    this.router.navigate(['/account/sign-up']);
   }
 }
