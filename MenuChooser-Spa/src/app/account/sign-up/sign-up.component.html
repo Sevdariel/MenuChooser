@@ -35,11 +35,11 @@
                 <div>
                     <label for="repeatPassword" class="block mb-2 text-base font-medium text-gray-900">Repeat
                         password</label>
-                    <input id="password" formControlName="password" type="password" placeholder="•••••••" required
-                        [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['password'].touched}"
+                    <input id="repeatPassword" formControlName="repeatPassword" type="password" placeholder="•••••••" required
+                        [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['repeatPassword'].touched}"
                         class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
-                    @if (validationService.showError(formGroup.controls['password'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['password'])}}</mc-error>
+                    @if (validationService.showError(formGroup.controls['repeatPassword'])) {
+                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['repeatPassword'], 'password')}}</mc-error>
                     }
                 </div>
             </form>

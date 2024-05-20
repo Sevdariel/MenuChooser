@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ISignUpForm } from './models/signup.model';
 import { ValidationService } from '../../core/validation/service/validation.service';
-import { fieldMatchValidator } from '../../shared/validators/password-match.validator';
+import { fieldMatchValidator } from '../../shared/validators/field-match.validator';
 
 @Component({
   selector: 'mc-sign-up',
@@ -23,7 +23,7 @@ export class SignUpComponent implements OnInit {
       username: new FormControl('', { validators: [Validators.required, Validators.minLength(5), Validators.minLength(128)] }),
       email: new FormControl('', { validators: [Validators.required, Validators.email] }),
       password: new FormControl('', { validators: Validators.required }),
-      repeatPassword: new FormControl('false', { validators: Validators.required }),
+      repeatPassword: new FormControl('', { validators: Validators.required }),
     }, { validators: fieldMatchValidator('password', 'repeatPassword') });
   }
 

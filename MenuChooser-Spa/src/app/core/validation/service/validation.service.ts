@@ -7,9 +7,10 @@ import { errorMessages } from './error-messages';
 })
 export class ValidationService {
 
-  public getErrorMessage(abstractControl: AbstractControl): string | null{
+  public getErrorMessage(abstractControl: AbstractControl, parentName?: string): string | null {
     if (!!abstractControl.errors) {
-      return Object.keys(abstractControl.errors).map(error => errorMessages[error])[0];
+      return this.replacePlaceholder(Object.keys(abstractControl.errors)
+        .map(error => errorMessages[error])[0], parentName);
     }
 
     return null;
@@ -17,5 +18,9 @@ export class ValidationService {
 
   public showError(formControl: AbstractControl): boolean {
     return formControl.invalid && !!formControl.errors && formControl.touched;
+  }
+
+  private replacePlaceholder(errorMessage: string, parentName?: string): string {
+    return !!parentName ? errorMessage.replace('{{parentName}}', parentName) : errorMessage;
   }
 }
