@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { filter, tap } from 'rxjs';
+import { Observable, catchError, filter, tap, throwError } from 'rxjs';
 import { IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
 
 @Injectable({
@@ -24,8 +24,8 @@ export class AccountService {
     return this.httpClient.post<IUser>(`${this.baseUrl}/register`, userRegisterDto)
       .pipe(
         filter(registeredUser => !!registeredUser),
-        tap(registeredUser => this.setCurrentUser(registeredUser)),
-        tap(loggedUser => this.setStorageUser(loggedUser, false))
+        tap(loggedUser => this.setStorageUser(loggedUser, false)),
+        catchError(this.handleError())
       );
   }
 
@@ -33,8 +33,9 @@ export class AccountService {
     return this.httpClient.post<IUser>(`${this.baseUrl}/login`, userLoginDto)
       .pipe(
         filter(loggedUser => !!loggedUser),
-        tap(loggedUser => this.setCurrentUser(loggedUser)),
-        tap(loggedUser => this.setStorageUser(loggedUser, userLoginDto.rememberMe)));
+        tap(loggedUser => this.setStorageUser(loggedUser, userLoginDto.rememberMe)),
+        catchError(this.handleError())
+      );
   }
 
   public logout() {
@@ -53,9 +54,17 @@ export class AccountService {
     } else {
       sessionStorage.setItem('user', JSON.stringify(user));
     }
+
+    this.setCurrentUser(user);
   }
 
   private setCurrentUser(user: IUser) {
     this.currentUser.set(user);
+  }
+
+  private handleError<T>() {
+    return (error: HttpErrorResponse): Observable<T> => {
+      return throwError(() => error);
+    };
   }
 }

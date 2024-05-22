@@ -14,10 +14,10 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'MenuChooser-Spa' title`, () => {
+  it(`should have the 'MenuChooserSpa' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('MenuChooser-Spa');
+    expect(app.title).toEqual('MenuChooserSpa');
   });
 
   it('should render title', () => {
