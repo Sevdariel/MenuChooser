@@ -1,10 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { defer } from 'rxjs';
+import { asyncData, asyncError } from '../../core/tests/tests-async-helper-functions';
 import { IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
 import { AccountService } from './account.service';
-import { asyncData, asyncError } from '../../core/tests/tests-async-helper-functions';
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -31,9 +29,7 @@ describe('AccountService', () => {
   }
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
-    });
+    TestBed.configureTestingModule({});
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['post']);
     accountService = new AccountService(httpClientSpy);
   });
