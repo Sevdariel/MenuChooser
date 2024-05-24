@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LoginComponent } from './login.component';
 import { AccountModule } from '../account.module';
+import { AccountService } from '../../shared/account/account.service';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -11,10 +13,12 @@ describe('LoginComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         AccountModule,
-        LoginComponent,
-      ]
+        HttpClientModule,
+      ],
     })
     .compileComponents();
+
+
     
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
