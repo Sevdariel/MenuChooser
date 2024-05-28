@@ -62,10 +62,11 @@ describe('AccountService', () => {
     httpClientSpy.post.and.returnValue(asyncData(expectedUser));
 
     loginDto.rememberMe = true;
-    accountService.login(loginDto).subscribe(() => done());
-
-    let storage = JSON.parse(localStorage.getItem('user')!) as IUser;
-    expect(storage).toEqual(expectedUser);
+    accountService.login(loginDto).subscribe(() => {
+      done();
+      let storage = JSON.parse(localStorage.getItem('user')!) as IUser;
+      expect(storage).toEqual(expectedUser);
+    });
   })
 
   it('login with rememberMe = false should save user to sessionStorage', (done: DoneFn) => {
