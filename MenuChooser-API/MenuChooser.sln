@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MenuChooser", "MenuChooser.csproj", "{06AC89D2-DA46-48F0-A50E-66A797C8695B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Email", "..\EmailProject\Email.csproj", "{B24629EC-F851-4893-BEFE-625995BE3885}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{06AC89D2-DA46-48F0-A50E-66A797C8695B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06AC89D2-DA46-48F0-A50E-66A797C8695B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06AC89D2-DA46-48F0-A50E-66A797C8695B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B24629EC-F851-4893-BEFE-625995BE3885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24629EC-F851-4893-BEFE-625995BE3885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24629EC-F851-4893-BEFE-625995BE3885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B24629EC-F851-4893-BEFE-625995BE3885}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
