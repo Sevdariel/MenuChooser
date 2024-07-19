@@ -5,10 +5,12 @@ import { IUserLoginDto } from '../../shared/account/account-dto.model';
 import { AccountModule } from '../account.module';
 import { LoginComponent } from './login.component';
 import { By } from '@angular/platform-browser';
+import { AccountService } from '../../shared/account/account.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
+  let accountServiceSpy: jasmine.SpyObj<AccountService>;
   const correctUser: IUserLoginDto = {
     email: 'email@email.com',
     password: 'password',
@@ -27,6 +29,7 @@ describe('LoginComponent', () => {
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
+    accountServiceSpy = jasmine.createSpyObj('AccountService', ['login', 'register']);
     fixture.detectChanges();
   });
 
@@ -47,11 +50,11 @@ describe('LoginComponent', () => {
   })
 
   it('email formControl should show required error when no input', () => {
-    console.log('fixture.debugElement', fixture.debugElement)
+    // console.log('fixture.debugElement', fixture.debugElement)
     component.formGroup.controls['email'].setValue('');
     component.formGroup.markAllAsTouched();
     const emailErrorMessageElement = fixture.debugElement.query(By.css('[data-testid="emailErrorMessage"]'));
-    console.log('emailErrorMessageElement', emailErrorMessageElement)
+    // console.log('emailErrorMessageElement', emailErrorMessageElement)
   })
 
   it('email formControl should show type error when value is not email')
@@ -63,4 +66,14 @@ describe('LoginComponent', () => {
   it('email and password should show error when sign in button clicked')
 
   it('api call should happen once when sign in button clicked and form is valid')
+
+  it('sign in button clicked', () => {
+    const debugElement = fixture.debugElement.query(By.css('#signIn'));
+    
+    debugElement.triggerEventHandler('click', null);
+
+    expect(accountServiceSpy.login()).toHaveBeenCalled();
+
+    // expect(debugElement.triggerEventHandler('click', null)).toHaveBeenCalled();
+  })
 });
