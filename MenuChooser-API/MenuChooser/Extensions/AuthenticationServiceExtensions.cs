@@ -7,7 +7,7 @@ namespace MenuChooser.Extensions
     public static class AuthenticationServiceExtensions
     {
         public static IServiceCollection AddAuthenticationService(this IServiceCollection services,
-            IConfiguration configuration) 
+            IConfiguration configuration)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

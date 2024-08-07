@@ -1,4 +1,4 @@
-﻿using MenuChooser.Data;
+﻿using Database.Data;
 
 namespace MenuChooser.Extensions
 {
