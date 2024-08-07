@@ -398,3 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 UIDesign/
+appsettings.Development.json
+appsettings.json
