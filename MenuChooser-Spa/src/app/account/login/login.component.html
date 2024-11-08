@@ -11,7 +11,7 @@
                         [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['email'].touched}"
                         class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
                     @if (validationService.showError(formGroup.controls['email'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['email'])}}</mc-error>
+                    <mc-error data-testid="emailErrorMessage" id="emailErrorMessage">{{validationService.getErrorMessage(formGroup.controls['email'])}}</mc-error>
                     }
                 </div>
                 <div>
@@ -20,7 +20,7 @@
                     [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['password'].touched}"
                         class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
                     @if (validationService.showError(formGroup.controls['password'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['password'])}}</mc-error>
+                    <mc-error id="passwordErrorMessage">{{validationService.getErrorMessage(formGroup.controls['password'])}}</mc-error>
                     }
                 </div>
                 <div class="flex items-center">
@@ -29,7 +29,7 @@
                     <label for="checkbox" class="ms-2 text-base">Remember me</label>
                 </div>
                 <div class="items-center justify-center flex">
-                    <button type="submit"
+                    <button type="submit" id="signIn" data-testid="signIn"
                         class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600" (click)="login()">Sign
                         in</button>
                 </div>

@@ -13,10 +13,10 @@ export class NavbarLoginComponent {
   constructor(private router: Router) { }
 
   public login() {
-    this.router.navigate(['/account/login']);
+    this.router.navigateByUrl('/account/login');
   }
 
   public signUp() {
-    this.router.navigate(['/account/sign-up']);
+    this.router.navigateByUrl('/account/sign-up');
   }
 }
