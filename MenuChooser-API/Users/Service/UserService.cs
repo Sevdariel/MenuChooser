@@ -17,6 +17,8 @@ namespace Users.Service
 
         public async Task<User?> GetUserByEmailAsync(string email) => await _userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
 
+        public User GetUserByEmail(string email) => _userCollection.Find(email).FirstOrDefault();
+
         public async Task CreateUserAsync(User newUser) => await _userCollection.InsertOneAsync(newUser);
 
         public async Task UpdateUserAsync(string email, User updatedUser) => await _userCollection.ReplaceOneAsync(x => x.Email == email, updatedUser);

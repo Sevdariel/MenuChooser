@@ -13,14 +13,19 @@ namespace Users.Entities
         [BsonElement("email")]
         [JsonPropertyName("email")]
         public string Email { get; set; } = null!;
+
         [BsonElement("username")]
         public string Username { get; set; } = null!;
+
         [BsonElement("passwordHash")]
         public byte[] PasswordHash { get; set; } = null!;
+
         [BsonElement("passwordSalt")]
         public byte[] PasswordSalt { get; set; } = null!;
+
         [BsonElement("termsOfUse")]
         public bool TermsOfUse { get; set; } = false;
+        
         [BsonElement("privacyPolicy")]
         public bool PrivacyPolicy { get; set; } = false;
     }

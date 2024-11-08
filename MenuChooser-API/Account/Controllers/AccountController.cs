@@ -76,6 +76,17 @@ namespace Account.Controllers
             };
         }
 
+        //[HttpPost("forgot-password")]
+        //public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        //{
+        //    var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
+
+        //    if (user == null)
+        //        return BadRequest('Invalid request');
+
+        //    var token = await 
+        //}
+
         private bool AccountExists(string email) => _accountService.AccountExist(email);
 
         private bool UsernameTaken(string username) => _accountService.UsernameTaken(username);
