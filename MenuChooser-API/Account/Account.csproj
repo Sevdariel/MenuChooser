@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Email\Email.csproj" />
     <ProjectReference Include="..\Users\Users.csproj" />
   </ItemGroup>
 

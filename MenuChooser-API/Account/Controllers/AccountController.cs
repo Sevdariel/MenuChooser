@@ -1,5 +1,6 @@
 ﻿using Account.Dto;
 using Account.Services;
+using Email.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,21 +12,16 @@ namespace Account.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : ControllerBase
+    public class AccountController(
+        AccountService accountService,
+        UserService userService,
+        ITokenService tokenService,
+        IEmailSender emailSender) : ControllerBase
     {
-        private readonly AccountService _accountService;
-        private readonly UserService _userService;
-        private readonly ITokenService _tokenService;
-
-        public AccountController(
-            AccountService accountService,
-            UserService userService,
-            ITokenService tokenService)
-        {
-            _accountService = accountService;
-            _userService = userService;
-            _tokenService = tokenService;
-        }
+        private readonly AccountService _accountService = accountService;
+        private readonly UserService _userService = userService;
+        private readonly ITokenService _tokenService = tokenService;
+        private readonly IEmailSender _emailSender = emailSender;
 
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(UserRegisterDto registerDto)
@@ -76,16 +72,17 @@ namespace Account.Controllers
             };
         }
 
-        //[HttpPost("forgot-password")]
-        //public async Task<IActionResult> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
-        //{
-        //    var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult?> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
 
-        //    if (user == null)
-        //        return BadRequest('Invalid request');
+            if (user == null)
+                return BadRequest("Invalid request");
 
-        //    var token = await 
-        //}
+            //var token = await
+            return null;
+        }
 
         private bool AccountExists(string email) => _accountService.AccountExist(email);
 
