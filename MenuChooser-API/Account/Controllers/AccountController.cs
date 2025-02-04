@@ -1,5 +1,6 @@
 ﻿using Account.Dto;
 using Account.Services;
+using Email.Entities;
 using Email.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
@@ -80,8 +81,13 @@ namespace Account.Controllers
             if (user == null)
                 return BadRequest("Invalid request");
 
-            //var token = await
-            return null;
+            var token = _tokenService.CreatePasswordResetTokenAsync(user);
+            var resetLink = $"{forgotPasswordDto.ClientURI}?email={forgotPasswordDto.Email}&token={token}";
+
+            var message = new Message([user.Email], "Reset password token", $"To reset your password, click here: {resetLink}");
+
+            await _emailSender.SendEmailAsync(message);
+            return Ok();
         }
 
         private bool AccountExists(string email) => _accountService.AccountExist(email);
