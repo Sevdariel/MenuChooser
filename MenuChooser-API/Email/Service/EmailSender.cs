@@ -3,7 +3,6 @@ using Email.Interface;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using Users.Entities;
 using Users.Service;
 
 namespace Email.Service
@@ -19,65 +18,34 @@ namespace Email.Service
             _userService = userService;
         }
 
-        public void SendEmail(User user)
+        public async Task SendEmailAsync(Message message)
         {
-            var emailMessage = CreateEmailMessage(user);
-
-            Send(emailMessage);
-        }
-
-        public async Task SendEmailAsync(User user)
-        {
-            var emailMessage = CreateEmailMessage(user);
+            var emailMessage = CreateEmailMessage(message.To, message.Content, message.Subject);
 
             await SendAsync(emailMessage);
         }
 
-
-        private MimeMessage CreateEmailMessage(User user)
+        private MimeMessage CreateEmailMessage(List<MailboxAddress> users, string messageContent, string subject)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_configuration.Value.Username, _configuration.Value.From));
-            emailMessage = AddReceiverInfo(emailMessage, user);
-            // ToDo: Change subject to internationalization
-            emailMessage.Subject = "Reset password";
+            emailMessage = AddReceiverInfo(emailMessage, users);
+            emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
-                Text = string.Format("<h2 style='color:red'>{0}</h2>", "Treść wiadomości"),
+                Text = messageContent,
             };
 
             return emailMessage;
         }
 
-        private MimeMessage AddReceiverInfo(MimeMessage message, User user)
+        private MimeMessage AddReceiverInfo(MimeMessage message, List<MailboxAddress> users)
         {
-            message.To.Add(new MailboxAddress(user.Username, user.Email));
+            foreach (var user in users) {
+                message.To.Add(user);
+            }
 
             return message;
-        }
-
-        private void Send(MimeMessage mailMessage)
-        {
-            using (var client = new SmtpClient())
-            {
-                try
-                {
-                    client.Connect(_configuration.Value.SmtpServer, _configuration.Value.Port, true);
-                    client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Authenticate(_configuration.Value.Username, _configuration.Value.Password);
-
-                    client.Send(mailMessage);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
-                    client.Disconnect(true);
-                    client.Dispose();
-                }
-            }
         }
 
         private async Task SendAsync(MimeMessage mailMessage)
@@ -86,15 +54,24 @@ namespace Email.Service
             {
                 try
                 {
-                    await client.ConnectAsync(_configuration.Value.SmtpServer, _configuration.Value.Port, true);
+                    client.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
+
+                    await client.ConnectAsync(_configuration.Value.SmtpServer, _configuration.Value.Port, MailKit.Security.SecureSocketOptions.StartTls);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     await client.AuthenticateAsync(_configuration.Value.Username, _configuration.Value.Password);
 
                     await client.SendAsync(mailMessage);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    throw;
+                    var errorMessage = $"Failed to send email. Error details:\n" +
+                             $"Server: {_configuration.Value.SmtpServer}\n" +
+                             $"Port: {_configuration.Value.Port}\n" +
+                             $"Username: {_configuration.Value.Username}\n" +
+                             $"Error: {ex.Message}\n" +
+                             $"Stack Trace: {ex.StackTrace}";
+            
+                    throw new Exception(errorMessage, ex);
                 }
                 finally
                 {

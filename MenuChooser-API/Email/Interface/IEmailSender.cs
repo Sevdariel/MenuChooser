@@ -1,10 +1,9 @@
-﻿using Users.Entities;
+﻿using Email.Entities;
 
 namespace Email.Interface
 {
     public interface IEmailSender
     {
-        void SendEmail(User user);
-        Task SendEmailAsync(User user);
+        Task SendEmailAsync(Message message);
     }
 }
