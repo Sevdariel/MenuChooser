@@ -4,7 +4,7 @@ using Users.Entities;
 
 namespace Users.Service
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IMongoCollection<User> _userCollection;
 
