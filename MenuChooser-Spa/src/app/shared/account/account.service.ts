@@ -41,8 +41,7 @@ export class AccountService {
   public forgotPassword(forgotPasswordDto: IForgotPasswordDto): Observable<IResetPasswordDto> {
     return this.httpClient.post<IResetPasswordDto>(`${this.baseUrl}/forgot-password`, forgotPasswordDto)
       .pipe(
-        filter(resetPasswordDto => !!resetPasswordDto),
-        catchError(this.handleError()))
+        filter(resetPasswordDto => !!resetPasswordDto));
   }
 
   public logout() {

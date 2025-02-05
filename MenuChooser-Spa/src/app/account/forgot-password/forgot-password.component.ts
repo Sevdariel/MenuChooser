@@ -21,7 +21,7 @@ export class ForgotPasswordComponent implements OnInit {
   public formBuilder = inject(FormBuilder);
   public accountService = inject(AccountService);
   public router = inject(Router);
-  
+
   private destroyRef = inject(DestroyRef);
 
   public ngOnInit(): void {
@@ -38,6 +38,8 @@ export class ForgotPasswordComponent implements OnInit {
 
     this.accountService.forgotPassword(forgotPasswordDto).pipe(
       tap((resetPasswordDto: IResetPasswordDto) => this.isReset.set(resetPasswordDto.isReset)),
-      takeUntilDestroyed(this.destroyRef)).subscribe();
+      tap(() => this.formGroup.controls.email.setValue('')),
+      takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 }

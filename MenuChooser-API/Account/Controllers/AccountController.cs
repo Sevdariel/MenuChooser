@@ -86,8 +86,8 @@ namespace Account.Controllers
 
             var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
 
-
             await _emailSender.SendEmailAsync(message);
+
             return new ResetPasswordDto
             {
                 IsReset = true,
