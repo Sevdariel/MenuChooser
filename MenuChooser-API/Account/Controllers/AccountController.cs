@@ -74,7 +74,7 @@ namespace Account.Controllers
         }
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult?> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        public async Task<ActionResult<ResetPasswordDto>> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
             var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
 
@@ -84,13 +84,14 @@ namespace Account.Controllers
             var token = _tokenService.CreatePasswordResetTokenAsync(user);
             var resetLink = $"{forgotPasswordDto.ClientURI}?token={token}";
 
-
-            //var message = new Message([user.Email], "Reset password token", string.Format("To reset your password, click here: <a>{0}</a>", resetLink));
             var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
 
 
             await _emailSender.SendEmailAsync(message);
-            return Ok();
+            return new ResetPasswordDto
+            {
+                IsReset = true,
+            };
         }
 
         private bool AccountExists(string email) => _accountService.AccountExist(email);
