@@ -26,3 +26,10 @@ export interface IForgotPasswordDto {
 export interface IResetPasswordSendDto {
     isReset: boolean;
 }
+
+export interface IResetPasswordDto {
+    token: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}

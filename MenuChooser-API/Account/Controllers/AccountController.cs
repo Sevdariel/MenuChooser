@@ -83,7 +83,7 @@ namespace Account.Controllers
                 return BadRequest("Invalid request");
 
             var token = _tokenService.CreatePasswordResetTokenAsync(user);
-            var resetLink = $"{forgotPasswordDto.ClientURI}?token={token}";
+            var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}&email={forgotPasswordDto.Email}";
 
             var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
 
