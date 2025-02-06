@@ -3,6 +3,7 @@ using Account.Services;
 using Email.Entities;
 using Email.Interface;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
 using System.Text;
 using Users.Dto;
@@ -74,7 +75,7 @@ namespace Account.Controllers
         }
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult?> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        public async Task<ActionResult<ResetPasswordSendDto>> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
             var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
 
@@ -82,15 +83,56 @@ namespace Account.Controllers
                 return BadRequest("Invalid request");
 
             var token = _tokenService.CreatePasswordResetTokenAsync(user);
-            var resetLink = $"{forgotPasswordDto.ClientURI}?token={token}";
+            var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}&email={forgotPasswordDto.Email}";
 
-
-            //var message = new Message([user.Email], "Reset password token", string.Format("To reset your password, click here: <a>{0}</a>", resetLink));
             var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
 
-
             await _emailSender.SendEmailAsync(message);
-            return Ok();
+
+            return new ResetPasswordSendDto
+            {
+                IsReset = true,
+            };
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var user = await _userService.GetUserByEmailAsync(resetPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid request");
+
+            if (!_tokenService.ValidatePasswordResetToken(resetPasswordDto.Token))
+                return BadRequest("Invalid or expired token");
+
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadJwtToken(resetPasswordDto.Token);
+                var emailClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.NameId)?.Value;
+                var tokenTypeClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "TokenType")?.Value;
+
+                if (emailClaim != resetPasswordDto.Email || tokenTypeClaim != "PasswordReset")
+                    return BadRequest("Invalid token");
+
+                using var hmac = new HMACSHA512(user.PasswordSalt);
+
+                var newPasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(resetPasswordDto.Password));
+
+                if (_accountService.IsPasswordUnchanged(user.PasswordHash, newPasswordHash))
+                    return BadRequest("Password unchanged");
+
+                user.PasswordHash = newPasswordHash;
+                user.PasswordSalt = hmac.Key;
+
+                await _userService.UpdateUserAsync(user);
+
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Invalid token");
+            }
         }
 
         private bool AccountExists(string email) => _accountService.AccountExist(email);

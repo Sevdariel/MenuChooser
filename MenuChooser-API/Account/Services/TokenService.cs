@@ -10,12 +10,10 @@ namespace Account.Services
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
-        private readonly IConfiguration _configuration;
 
         public TokenService(IConfiguration configuration)
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]!));
-            _configuration = configuration;
         }
 
         public string CreateToken(User user)
@@ -44,6 +42,7 @@ namespace Account.Services
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("TokenType", "PasswordReset")
             };
 
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -51,7 +50,8 @@ namespace Account.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(15),
+                // ToDo: Change to lower value ie. 15 minutes
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = credentials,
             };
 
@@ -60,6 +60,31 @@ namespace Account.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public bool ValidatePasswordResetToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = _key,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+                return true;
+            }
+            catch 
+            {
+                return false;
+            }
         }
     }
 }

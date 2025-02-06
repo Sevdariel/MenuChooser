@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Account.Extensions;
 using Database.Extensions;
 using Email.Extensions;
@@ -6,7 +7,7 @@ using Users.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
 builder.Services.AddAuthenticationService(builder.Configuration);
 builder.Services.AddEmailServices(builder.Configuration);

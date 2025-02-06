@@ -17,3 +17,19 @@ export interface IUserRegisterDto {
     termsOfUse: boolean;
     privacyPolicy: boolean;
 }
+
+export interface IForgotPasswordDto {
+    email: string;
+    clientURI: string;
+}
+
+export interface IResetPasswordSendDto {
+    isReset: boolean;
+}
+
+export interface IResetPasswordDto {
+    token: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+}
