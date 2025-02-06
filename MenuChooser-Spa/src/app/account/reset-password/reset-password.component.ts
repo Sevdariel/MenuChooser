@@ -4,6 +4,7 @@ import { AccountService } from '../../shared/account/account.service';
 import { IResetPasswordDto } from '../../shared/account/account-dto.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastrService } from 'ngx-toastr';
 
 type ResetPasswordFormType = {
   password: FormControl<string>;
@@ -21,6 +22,7 @@ export class ResetPasswordComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
+  private toastrService = inject(ToastrService);
 
   public formGroup!: FormGroup<ResetPasswordFormType>;
 
@@ -32,8 +34,11 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   public resetPassword() {
-    if (this.formGroup.controls.password.value !== this.formGroup.controls.confirmPassword.value)
+    if (this.formGroup.controls.password.value !== this.formGroup.controls.confirmPassword.value) {
+      this.toastrService.error('Hasła nie są zgodne', 'Błąd')
+
       return;
+    }
 
     const resetPasswordDto: IResetPasswordDto = {
       password: this.formGroup.controls.password.value,
