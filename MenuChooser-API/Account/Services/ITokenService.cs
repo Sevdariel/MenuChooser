@@ -6,5 +6,6 @@ namespace Account.Services
     {
         string CreateToken(User user);
         string CreatePasswordResetTokenAsync(User user);
+        bool ValidatePasswordResetToken(string token);
     }
 }

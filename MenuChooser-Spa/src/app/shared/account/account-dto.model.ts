@@ -23,6 +23,6 @@ export interface IForgotPasswordDto {
     clientURI: string;
 }
 
-export interface IResetPasswordDto {
+export interface IResetPasswordSendDto {
     isReset: boolean;
 }

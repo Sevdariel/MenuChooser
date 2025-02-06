@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, catchError, filter, tap, throwError } from 'rxjs';
-import { IForgotPasswordDto, IResetPasswordDto, IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
+import { IForgotPasswordDto, IResetPasswordSendDto, IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -38,8 +38,8 @@ export class AccountService {
       );
   }
 
-  public forgotPassword(forgotPasswordDto: IForgotPasswordDto): Observable<IResetPasswordDto> {
-    return this.httpClient.post<IResetPasswordDto>(`${this.baseUrl}/forgot-password`, forgotPasswordDto)
+  public forgotPassword(forgotPasswordDto: IForgotPasswordDto): Observable<IResetPasswordSendDto> {
+    return this.httpClient.post<IResetPasswordSendDto>(`${this.baseUrl}/forgot-password`, forgotPasswordDto)
       .pipe(
         filter(resetPasswordDto => !!resetPasswordDto));
   }

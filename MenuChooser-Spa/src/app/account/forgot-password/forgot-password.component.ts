@@ -4,7 +4,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { ValidationService } from '../../core/validation/service/validation.service';
-import { IForgotPasswordDto, IResetPasswordDto } from '../../shared/account/account-dto.model';
+import { IForgotPasswordDto, IResetPasswordSendDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
 
 @Component({
@@ -37,7 +37,7 @@ export class ForgotPasswordComponent implements OnInit {
     }
 
     this.accountService.forgotPassword(forgotPasswordDto).pipe(
-      tap((resetPasswordDto: IResetPasswordDto) => this.isReset.set(resetPasswordDto.isReset)),
+      tap((resetPasswordDto: IResetPasswordSendDto) => this.isReset.set(resetPasswordDto.isReset)),
       tap(() => this.formGroup.controls.email.setValue('')),
       takeUntilDestroyed(this.destroyRef))
       .subscribe();

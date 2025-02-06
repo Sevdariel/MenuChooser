@@ -4,7 +4,7 @@ using Users.Entities;
 
 namespace Account.Services
 {
-    public class AccountService
+    public class AccountService : IAccountService
     {
         private readonly IMongoCollection<User> _userCollection;
 
@@ -16,5 +16,6 @@ namespace Account.Services
         public bool AccountExist(string email) => _userCollection.Find(user => user.Email == email).Any();
         public async Task RegisterUser(User user) => await _userCollection.InsertOneAsync(user);
         public bool UsernameTaken(string username) => _userCollection.Find(user => user.Username == username).Any();
+        public bool IsPasswordUnchanged(byte[] oldHash, byte[] newHash) => oldHash.SequenceEqual(newHash);
     }
 }
