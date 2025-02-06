@@ -16,9 +16,9 @@ namespace Users.Controllers
         public async Task<List<User>> Get() => await _userService.GetUsersAsync();
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(string id)
+        public async Task<ActionResult<User>> Get(string email)
         {
-            var user = await _userService.GetUserByEmailAsync(id);
+            var user = await _userService.GetUserByEmailAsync(email);
 
             if (user is null)
                 return NotFound();
@@ -35,31 +35,29 @@ namespace Users.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, User updatedUser)
+        public async Task<IActionResult> Update(User updatedUser)
         {
-            var user = await _userService.GetUserByEmailAsync(id);
+            var user = await _userService.GetUserByEmailAsync(updatedUser.Email);
 
             if (user is null)
                 return NotFound();
 
-            updatedUser.Email = user.Email;
-
-            await _userService.UpdateUserAsync(id, updatedUser);
+            await _userService.UpdateUserAsync(updatedUser);
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(string email)
         {
-            var user = await _userService.GetUserByEmailAsync(id);
+            var user = await _userService.GetUserByEmailAsync(email);
 
             if (user is null)
             {
                 return NotFound();
             }
 
-            await _userService.RemoveUserAsync(id);
+            await _userService.RemoveUserAsync(email);
 
             return NoContent();
         }

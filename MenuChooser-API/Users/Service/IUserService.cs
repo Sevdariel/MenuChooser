@@ -12,7 +12,7 @@ namespace Users.Service
 
         Task CreateUserAsync(User newUser);
 
-        Task UpdateUserAsync(string email, User updatedUser);
+        Task UpdateUserAsync(User updatedUser);
 
         Task RemoveUserAsync(string email);
     }
