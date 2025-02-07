@@ -29,7 +29,7 @@ namespace Account.Controllers
         public async Task<ActionResult<UserDto>> Register(UserRegisterDto registerDto)
         {
             if (AccountExists(registerDto.Email))
-                return BadRequest("Account exists");
+                return BadRequest("Account with provided email exists");
 
             if (UsernameTaken(registerDto.Username))
                 return BadRequest("Username already taken");
@@ -58,14 +58,14 @@ namespace Account.Controllers
             var user = await _userService.GetUserByEmailAsync(loginDto.Email);
 
             if (user == null)
-                return Unauthorized("Invalid email");
+                return Unauthorized("Invalid login data");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
 
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
 
             if (!computedHash.SequenceEqual(user.PasswordHash))
-                return Unauthorized("Invalid password");
+                return Unauthorized("Invalid login data");
 
             return new UserDto
             {
@@ -80,7 +80,7 @@ namespace Account.Controllers
             var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
 
             if (user == null)
-                return BadRequest("Invalid request");
+                return BadRequest("User with provided email doesn't exists");
 
             var token = _tokenService.CreatePasswordResetTokenAsync(user);
             var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}&email={forgotPasswordDto.Email}";
