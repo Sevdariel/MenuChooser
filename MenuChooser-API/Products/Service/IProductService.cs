@@ -6,6 +6,7 @@ namespace Products.Service
     public interface IProductService
     {
         Task<Product> GetProductByIdAsync(string id);
+        Task<List<Product>> GetProductsAsync();
         Task<Product> CreateProductAsync(Product product);
         Task UpdateProductAsync(Product product);
         Task DeleteProductAsync(string id);

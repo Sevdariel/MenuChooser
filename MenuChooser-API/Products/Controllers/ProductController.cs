@@ -25,6 +25,14 @@ namespace Products.Controllers
             return product;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<Product>>> GetProducts()
+        {
+            var products = await _productService.GetProductsAsync();
+
+            return products;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateProduct(CreateProductDto saveProductDto)
         {
