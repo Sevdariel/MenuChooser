@@ -15,6 +15,7 @@
     <ProjectReference Include="..\Database\Database.csproj" />
     <ProjectReference Include="..\Email\Email.csproj" />
     <ProjectReference Include="..\Users\Users.csproj" />
+    <ProjectReference Include="..\Products\Products.csproj" />
   </ItemGroup>
 
 </Project>
