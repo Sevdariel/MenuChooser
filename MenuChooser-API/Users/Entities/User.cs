@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Text.Json.Serialization;
 
 namespace Users.Entities
 {
@@ -11,7 +10,6 @@ namespace Users.Entities
         public string? Id { get; set; }
 
         [BsonElement("email")]
-        [JsonPropertyName("email")]
         public string Email { get; set; } = null!;
 
         [BsonElement("username")]
@@ -25,7 +23,7 @@ namespace Users.Entities
 
         [BsonElement("termsOfUse")]
         public bool TermsOfUse { get; set; } = false;
-        
+
         [BsonElement("privacyPolicy")]
         public bool PrivacyPolicy { get; set; } = false;
     }
