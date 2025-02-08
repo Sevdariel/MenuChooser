@@ -30,8 +30,8 @@
                         <p class="block text-sm text-slate-800">{{product.createdBy}}</p>
                     </td>
                     <td class="p-4 border-b border-slate-200 flex justify-center items-center">
-                        <button>
-                            <svg-icon src="assets\icons\preview.svg" [svgStyle]="{'width.px': 40}"></svg-icon>
+                        <button (click)="openProductPreview(product.id)">
+                            <svg-icon src="assets\icons\preview.svg" [svgStyle]="{'height.px': 20}"></svg-icon>
                         </button>
                     </td>
                 </tr>
