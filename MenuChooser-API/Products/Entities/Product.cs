@@ -15,8 +15,8 @@ namespace Products.Entities
         [BsonElement("producent")]
         public string Producent { get; set; } = null!;
         [BsonElement("createdBy")]
-        public string createdBy { get; set; } = null!;
+        public string CreatedBy { get; set; } = null!;
         [BsonElement("updatedBy")]
-        public string updatedBy { get; set; } = null!;
+        public string UpdatedBy { get; set; } = null!;
     }
 }

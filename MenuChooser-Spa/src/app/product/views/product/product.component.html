@@ -1,6 +1,8 @@
-<div>
+<div class="flex flex-col items-center">
     <div>
         <h3>Product</h3>
+        <p>Created by: {{product().createdBy}}@if(product().updatedBy) {, updated by: {{product().updatedBy}}
+            }</p>
     </div>
     <div>
         <form [formGroup]="formGroup">

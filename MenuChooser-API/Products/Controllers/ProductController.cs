@@ -59,7 +59,9 @@ namespace Products.Controllers
             {
                 Id = updatedProductDto.Id,
                 Name = updatedProductDto.Name,
-                Producent = updatedProductDto.Producent
+                Producent = updatedProductDto.Producent,
+                CreatedBy = updatedProductDto.CreatedBy,
+                UpdatedBy = updatedProductDto.UpdatedBy,
             };
 
             await _productService.UpdateProductAsync(updatedProduct);
