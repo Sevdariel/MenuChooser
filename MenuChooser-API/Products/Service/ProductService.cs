@@ -16,6 +16,8 @@ namespace Products.Service
 
         public async Task<Product> GetProductByIdAsync(string id) => await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
 
+        public async Task<List<Product>> GetProductsAsync() => await _productCollection.Find(_ => true).ToListAsync();
+
         public async Task<Product> CreateProductAsync(Product product)
         {
             await _productCollection.InsertOneAsync(product);
