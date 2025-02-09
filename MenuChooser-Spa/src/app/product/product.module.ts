@@ -6,6 +6,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { ProductRoutingModule } from './product-routing.module';
 import { ProductComponent } from './views/product/product.component';
 import { ProductsListComponent } from './views/products-list/products-list.component';
+import { ProductEditComponent } from "./views/product-edit/product-edit.component";
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { ProductsListComponent } from './views/products-list/products-list.compo
     SvgIconComponent,
     ReactiveFormsModule,
     DrawerModule,
-  ]
+    ProductEditComponent
+]
 })
 export class ProductModule { }

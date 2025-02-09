@@ -66,7 +66,7 @@ namespace Products.Controllers
 
             await _productService.UpdateProductAsync(updatedProduct);
 
-            return Ok("Product sucessfully updated");
+            return Ok();
         }
 
         [HttpDelete("{id}")]
