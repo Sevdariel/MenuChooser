@@ -18,6 +18,7 @@ export class ProductComponent implements OnInit {
 
   private productSignal = signal<IProduct>(defaultProduct);
   public product = this.productSignal.asReadonly();
+  public togglePanel = false;
 
   public ngOnInit(): void {
     this.activatedRoute.data.pipe(

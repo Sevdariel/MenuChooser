@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SvgIconComponent } from 'angular-svg-icon';
-import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
 import { ProductRoutingModule } from './product-routing.module';
 import { ProductComponent } from './views/product/product.component';
 import { ProductsListComponent } from './views/products-list/products-list.component';
@@ -17,7 +17,7 @@ import { ProductsListComponent } from './views/products-list/products-list.compo
     ProductRoutingModule,
     SvgIconComponent,
     ReactiveFormsModule,
-    ButtonModule,
+    DrawerModule,
   ]
 })
 export class ProductModule { }
