@@ -1,15 +1,13 @@
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        AppComponent,
-        HttpClientModule,
-      ],
-    }).compileComponents();
+    imports: [AppComponent],
+    providers: [provideHttpClient(withInterceptorsFromDi())]
+}).compileComponents();
   });
 
   it('should create the app', () => {
