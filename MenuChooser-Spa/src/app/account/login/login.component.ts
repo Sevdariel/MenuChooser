@@ -7,9 +7,10 @@ import { IUserLoginDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
 
 @Component({
-  selector: 'mc-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+    selector: 'mc-login',
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss',
+    standalone: false
 })
 export class LoginComponent implements OnInit {
 

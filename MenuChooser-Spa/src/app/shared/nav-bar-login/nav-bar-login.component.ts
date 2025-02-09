@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'mc-nav-bar-login',
-  standalone: true,
-  imports: [],
-  templateUrl: './nav-bar-login.component.html',
-  styleUrl: './nav-bar-login.component.scss'
+    selector: 'mc-nav-bar-login',
+    imports: [],
+    templateUrl: './nav-bar-login.component.html',
+    styleUrl: './nav-bar-login.component.scss'
 })
 export class NavbarLoginComponent {
 

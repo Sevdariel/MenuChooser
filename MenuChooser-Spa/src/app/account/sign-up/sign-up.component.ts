@@ -8,9 +8,10 @@ import { AccountService } from '../../shared/account/account.service';
 import { fieldMatchValidator } from '../../shared/validators/field-match.validator';
 
 @Component({
-  selector: 'mc-sign-up',
-  templateUrl: './sign-up.component.html',
-  styleUrl: './sign-up.component.scss'
+    selector: 'mc-sign-up',
+    templateUrl: './sign-up.component.html',
+    styleUrl: './sign-up.component.scss',
+    standalone: false
 })
 export class SignUpComponent implements OnInit {
 
