@@ -12,9 +12,10 @@ type ResetPasswordFormType = {
 };
 
 @Component({
-  selector: 'mc-reset-password',
-  templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss'
+    selector: 'mc-reset-password',
+    templateUrl: './reset-password.component.html',
+    styleUrl: './reset-password.component.scss',
+    standalone: false
 })
 export class ResetPasswordComponent implements OnInit {
   private formBuilder = inject(FormBuilder);

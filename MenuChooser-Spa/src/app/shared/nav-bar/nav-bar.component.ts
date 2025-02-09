@@ -6,15 +6,14 @@ import { IDropdownItem, IDropdownSettings } from '../dropdown-menu/models/dropdo
 import { NavbarLoginComponent } from '../nav-bar-login/nav-bar-login.component';
 
 @Component({
-  selector: 'mc-nav-bar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    DropdownMenuComponent,
-    NavbarLoginComponent,
-  ],
-  templateUrl: './nav-bar.component.html',
-  styleUrl: './nav-bar.component.scss'
+    selector: 'mc-nav-bar',
+    imports: [
+        CommonModule,
+        DropdownMenuComponent,
+        NavbarLoginComponent,
+    ],
+    templateUrl: './nav-bar.component.html',
+    styleUrl: './nav-bar.component.scss'
 })
 export class NavBarComponent {
 

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { IUserLoginDto } from '../../shared/account/account-dto.model';
 import { AccountModule } from '../account.module';
 import { LoginComponent } from './login.component';
@@ -21,11 +21,9 @@ describe('LoginComponent', () => {
 
 
     await TestBed.configureTestingModule({
-      imports: [
-        AccountModule,
-        HttpClientModule,
-      ],
-    }).compileComponents();
+    imports: [AccountModule],
+    providers: [provideHttpClient(withInterceptorsFromDi())]
+}).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
