@@ -21,5 +21,5 @@
 </div>
 
 <p-drawer header="Right drawer" [(visible)]="togglePanel" position="right" dismissible="false">
-    panel do wyświetlania edycji produktu
+    <mc-product-edit [product]="product()"></mc-product-edit>
 </p-drawer>
