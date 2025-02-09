@@ -1,12 +1,11 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { ProductRoutingModule } from './product-routing.module';
-import { ProductsListComponent } from './views/products-list/products-list.component';
-import { SvgIconComponent } from 'angular-svg-icon';
-import { ProductComponent } from './views/product/product.component';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-
+import { SvgIconComponent } from 'angular-svg-icon';
+import { ButtonModule } from 'primeng/button';
+import { ProductRoutingModule } from './product-routing.module';
+import { ProductComponent } from './views/product/product.component';
+import { ProductsListComponent } from './views/products-list/products-list.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +17,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     ProductRoutingModule,
     SvgIconComponent,
     ReactiveFormsModule,
+    ButtonModule,
   ]
 })
 export class ProductModule { }

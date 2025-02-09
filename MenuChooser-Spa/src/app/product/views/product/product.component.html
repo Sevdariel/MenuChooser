@@ -3,7 +3,7 @@
         <div>
             <div class="flex flex-row justify-between">
                 <h1 class="text-2xl font-bold leading-tight">{{product().name}}</h1>
-                <button (click)="edit()">
+                <button id="edit-button" (click)="edit()">
                     <svg-icon src="assets\icons\edit.svg" [svgStyle]="{'height.px': 20, 'width.px': 20 }"></svg-icon>
                 </button>
             </div>
@@ -17,6 +17,5 @@
                 <p>{{product().producent}}</p>
             </div>
         </div>
-
     </div>
 </div>
