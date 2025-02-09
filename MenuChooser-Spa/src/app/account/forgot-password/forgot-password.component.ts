@@ -8,9 +8,10 @@ import { IForgotPasswordDto, IResetPasswordSendDto } from '../../shared/account/
 import { AccountService } from '../../shared/account/account.service';
 
 @Component({
-  selector: 'mc-forgot-password',
-  templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss'
+    selector: 'mc-forgot-password',
+    templateUrl: './forgot-password.component.html',
+    styleUrl: './forgot-password.component.scss',
+    standalone: false
 })
 export class ForgotPasswordComponent implements OnInit {
 

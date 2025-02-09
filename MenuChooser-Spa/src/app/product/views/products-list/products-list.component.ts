@@ -5,9 +5,10 @@ import { tap } from 'rxjs';
 import { IProduct } from '../../models/product.model';
 
 @Component({
-  selector: 'mc-products-list',
-  templateUrl: './products-list.component.html',
-  styleUrl: './products-list.component.scss'
+    selector: 'mc-products-list',
+    templateUrl: './products-list.component.html',
+    styleUrl: './products-list.component.scss',
+    standalone: false
 })
 export class ProductsListComponent implements OnInit {
 

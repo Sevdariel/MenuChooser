@@ -6,9 +6,10 @@ import { defaultProduct } from '../../models/default-product.model';
 import { IProduct } from '../../models/product.model';
 
 @Component({
-  selector: 'mc-product',
-  templateUrl: './product.component.html',
-  styleUrl: './product.component.scss'
+    selector: 'mc-product',
+    templateUrl: './product.component.html',
+    styleUrl: './product.component.scss',
+    standalone: false
 })
 export class ProductComponent implements OnInit {
 
