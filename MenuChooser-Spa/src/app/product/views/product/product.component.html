@@ -20,6 +20,6 @@
     </div>
 </div>
 
-<p-drawer header="Right drawer" [(visible)]="togglePanel" position="right" dismissible="false">
-    <mc-product-edit [product]="product()"></mc-product-edit>
+<p-drawer header="Right drawer" [(visible)]="togglePanel" position="right" dismissible="false" styleClass="!w-full md:!w-80 lg:!w-[30rem]">
+    <mc-product-edit (saved)="updateProduct($event)" [product]="product()"></mc-product-edit>
 </p-drawer>

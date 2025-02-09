@@ -3,13 +3,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { tap } from 'rxjs';
 import { defaultProduct } from '../../models/default-product.model';
+import { IUpdateProductDto } from '../../models/product-dto.model';
 import { IProduct } from '../../models/product.model';
 
 @Component({
-    selector: 'mc-product',
-    templateUrl: './product.component.html',
-    styleUrl: './product.component.scss',
-    standalone: false
+  selector: 'mc-product',
+  templateUrl: './product.component.html',
+  styleUrl: './product.component.scss',
+  standalone: false
 })
 export class ProductComponent implements OnInit {
 
@@ -27,7 +28,8 @@ export class ProductComponent implements OnInit {
       .subscribe();
   }
 
-  public edit() {
-    
+  updateProduct(updatedProduct: IUpdateProductDto) {
+    this.productSignal.update(() => updatedProduct);
+    this.togglePanel = false;
   }
 }
