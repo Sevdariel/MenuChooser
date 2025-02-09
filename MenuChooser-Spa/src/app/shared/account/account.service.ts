@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, catchError, filter, tap, throwError } from 'rxjs';
-import { IForgotPasswordDto, IResetPasswordDto, IResetPasswordSendDto, IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
+import { IForgotPasswordDto, IResetPasswordDto, IResetPasswordSendDto, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
+import { IUser, StorageUser } from './account.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class AccountService {
   public loggedUser = this.currentUser.asReadonly();
 
   constructor(private httpClient: HttpClient) {
+    // Todo: Do przerobienia aby zapewnić pełną ilość danych zalogowanego użytkownika
     if (!!localStorage.getItem('user')) {
       this.currentUser.set(JSON.parse(localStorage.getItem('user')!))
     } else if (!!sessionStorage.getItem('user')) {
@@ -25,7 +27,6 @@ export class AccountService {
       .pipe(
         filter(registeredUser => !!registeredUser),
         tap(loggedUser => this.setStorageUser(loggedUser, false)),
-        catchError(this.handleError())
       );
   }
 
@@ -34,7 +35,6 @@ export class AccountService {
       .pipe(
         filter(loggedUser => !!loggedUser),
         tap(loggedUser => this.setStorageUser(loggedUser, userLoginDto.rememberMe)),
-        catchError(this.handleError())
       );
   }
 
@@ -60,10 +60,14 @@ export class AccountService {
   }
 
   private setStorageUser(user: IUser, rememberMe: boolean) {
+    const storageUser: StorageUser = {
+      email: user.email,
+      token: user.token,
+    }
     if (rememberMe) {
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(storageUser));
     } else {
-      sessionStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(storageUser));
     }
 
     this.setCurrentUser(user);
@@ -71,11 +75,5 @@ export class AccountService {
 
   private setCurrentUser(user: IUser) {
     this.currentUser.set(user);
-  }
-
-  private handleError<T>() {
-    return (error: HttpErrorResponse): Observable<T> => {
-      return throwError(() => error);
-    };
   }
 }
