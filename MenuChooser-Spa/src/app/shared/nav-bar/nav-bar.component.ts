@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { AccountService } from '../account/account.service';
+import { Component, inject } from '@angular/core';
+import { AuthService } from '../../core/authorization/auth.service';
 import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu.component';
 import { IDropdownItem, IDropdownSettings } from '../dropdown-menu/models/dropdown-menu.model';
 import { NavbarLoginComponent } from '../nav-bar-login/nav-bar-login.component';
+import { ButtonModule } from 'primeng/button';
+import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'mc-nav-bar',
@@ -11,13 +13,15 @@ import { NavbarLoginComponent } from '../nav-bar-login/nav-bar-login.component';
         CommonModule,
         DropdownMenuComponent,
         NavbarLoginComponent,
+        ButtonModule,
+        RouterModule,
     ],
     templateUrl: './nav-bar.component.html',
     styleUrl: './nav-bar.component.scss'
 })
 export class NavBarComponent {
 
-  constructor(public accountService: AccountService) { }
+  public readonly authService = inject(AuthService);
 
   public dropdownSettings: IDropdownSettings = {
     id: 'nav-bar-profile',
@@ -38,7 +42,7 @@ export class NavBarComponent {
     {
       linkDestination: '',
       name: 'Sign out',
-      action: () => this.accountService.logout(),
+      action: () => this.authService.logout(),
     }
   ];
 }

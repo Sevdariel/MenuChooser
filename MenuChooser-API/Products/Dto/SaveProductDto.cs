@@ -4,5 +4,6 @@ namespace Products.Dto
     {
         public required string Name { get; set; }
         public required string Producent { get; set; }
+        public required string CreatedBy { get; set; }
     }
 }

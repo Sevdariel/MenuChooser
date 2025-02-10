@@ -40,6 +40,7 @@ namespace Products.Controllers
             {
                 Name = saveProductDto.Name,
                 Producent = saveProductDto.Producent,
+                CreatedBy = saveProductDto.CreatedBy,
             };
 
             var createdProduct = await _productService.CreateProductAsync(product);
