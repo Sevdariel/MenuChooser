@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { IProduct } from '../models/product.model';
 import { Observable } from 'rxjs';
-import { IUpdateProductDto } from '../models/product-dto.model';
+import { IAddProductDto, IUpdateProductDto } from '../models/product-dto.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,5 +22,9 @@ export class ProductService {
 
   public updateProduct(productDto: IUpdateProductDto) {
     return this.httpClient.put(`${this.baseUrl}`, productDto);
+  }
+
+  public addProduct(productDto: IAddProductDto): Observable<IProduct> {
+    return this.httpClient.post<IProduct>(`${this.baseUrl}`, productDto);
   }
 }

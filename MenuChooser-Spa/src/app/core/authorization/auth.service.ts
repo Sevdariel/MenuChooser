@@ -29,8 +29,16 @@ export class AuthService {
   }
 
   public logout() {
-    if (!!localStorage.getItem('user') && (!this.rememberMe() || this.isTokenExpired(this.getToken()!))) {
-      localStorage.removeItem('user');
+    if (this.isTokenExpired(this.getToken()!)) {
+      localStorage.removeItem(this.tokenKey);
+    }
+
+    if (!this.rememberMe) {
+      localStorage.removeItem(this.tokenKey);
+    }
+
+    if (!!localStorage.getItem(this.tokenKey)) {
+      localStorage.removeItem(this.tokenKey);
     }
 
     this.currentUser.set(undefined);
@@ -64,8 +72,9 @@ export class AuthService {
       const decoded: any = jwtDecode(token);
       this.currentUser.set({
         email: decoded.email,
-        username: decoded.username,
+        username: decoded.preferred_username,
       });
+      this.rememberMe.set(true);
     } catch (error) {
 
     }

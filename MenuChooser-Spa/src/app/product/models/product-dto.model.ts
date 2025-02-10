@@ -5,3 +5,9 @@ export interface IUpdateProductDto {
     createdBy: string;
     updatedBy: string;
 }
+
+export interface IAddProductDto {
+    name: string;
+    producent: string;
+    createdBy: string;
+}

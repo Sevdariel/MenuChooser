@@ -18,7 +18,10 @@ namespace Account.Services
 
         public string CreateToken(User user)
         {
-            var claims = new List<Claim> { new Claim(JwtRegisteredClaimNames.NameId, user.Email) };
+            var claims = new List<Claim> {
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.PreferredUsername, user.Username),
+             };
 
             var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -81,7 +84,7 @@ namespace Account.Services
 
                 return true;
             }
-            catch 
+            catch
             {
                 return false;
             }

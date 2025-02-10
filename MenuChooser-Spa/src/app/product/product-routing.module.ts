@@ -4,12 +4,17 @@ import { ProductsListComponent } from './views/products-list/products-list.compo
 import { productsResolver } from './resolvers/products.resolver';
 import { ProductComponent } from './views/product/product.component';
 import { productResolver } from './resolvers/product.resolver';
+import { AddProductComponent } from './views/add-product/add-product.component';
 
 const routes: Routes = [
   {
     path: '',
     component: ProductsListComponent,
     resolve: { products: productsResolver },
+  },
+  {
+    path: 'new',
+    component: AddProductComponent,
   },
   {
     path: ':id',
