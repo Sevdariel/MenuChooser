@@ -26,7 +26,7 @@ namespace Account.Controllers
         private readonly IEmailSender _emailSender = emailSender;
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(UserRegisterDto registerDto)
+        public async Task<ActionResult<TokenDto>> Register(UserRegisterDto registerDto)
         {
             if (AccountExists(registerDto.Email))
                 return BadRequest("Account with provided email exists");
@@ -39,21 +39,21 @@ namespace Account.Controllers
             var user = new User
             {
                 Email = registerDto.Email,
+                Username = registerDto.Username,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
                 PasswordSalt = hmac.Key,
             };
 
             await _accountService.RegisterUser(user);
 
-            return new UserDto
+            return new TokenDto
             {
-                Email = registerDto.Email,
                 Token = _tokenService.CreateToken(user)
             };
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(UserLoginDto loginDto)
+        public async Task<ActionResult<TokenDto>> Login(UserLoginDto loginDto)
         {
             var user = await _userService.GetUserByEmailAsync(loginDto.Email);
 
@@ -67,9 +67,8 @@ namespace Account.Controllers
             if (!computedHash.SequenceEqual(user.PasswordHash))
                 return Unauthorized("Invalid login data");
 
-            return new UserDto
+            return new TokenDto
             {
-                Email = user.Email,
                 Token = _tokenService.CreateToken(user),
             };
         }

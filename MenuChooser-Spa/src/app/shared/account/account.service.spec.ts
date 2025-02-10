@@ -1,14 +1,16 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { asyncData, asyncError } from '../../core/tests/tests-async-helper-functions';
-import { IUser, IUserLoginDto, IUserRegisterDto } from './account-dto.model';
+import { IUserLoginDto, IUserRegisterDto } from './account-dto.model';
 import { AccountService } from './account.service';
+import { IUser } from './account.model';
 
 describe('AccountService', () => {
   let accountService: AccountService;
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
 
   const expectedUser: IUser = {
+    username: 'username',
     email: 'email@email.com',
     token: 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJlbWFpbEBlbWFpbC5jb20iLCJuYmYiOjE3MTYzNzA4ODUsImV4cCI6MTcxNjk3NTY4NSwiaWF0IjoxNzE2MzcwODg1fQ.vXKFlUq36Ubs1tb3XXE-9srD46k32lPLZhPsK6DX1apyzUiute4UQdrGveRJgcliXfGfxQUizKlNJmjC9OGqRw',
   }
