@@ -1,10 +1,10 @@
 import { Component, DestroyRef, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { AccountService } from '../../shared/account/account.service';
-import { IResetPasswordDto } from '../../shared/account/account-dto.model';
-import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ToastrService } from 'ngx-toastr';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { IResetPasswordDto } from '../../shared/account/account-dto.model';
+import { AccountService } from '../../shared/account/account.service';
 
 type ResetPasswordFormType = {
   password: FormControl<string>;
@@ -15,7 +15,8 @@ type ResetPasswordFormType = {
     selector: 'mc-reset-password',
     templateUrl: './reset-password.component.html',
     styleUrl: './reset-password.component.scss',
-    standalone: false
+    standalone: false,
+    providers: [MessageService],
 })
 export class ResetPasswordComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
@@ -23,7 +24,7 @@ export class ResetPasswordComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private toastrService = inject(ToastrService);
+  private messageService = inject(MessageService);
 
   public formGroup!: FormGroup<ResetPasswordFormType>;
 
@@ -36,9 +37,7 @@ export class ResetPasswordComponent implements OnInit {
 
   public resetPassword() {
     if (this.formGroup.controls.password.value !== this.formGroup.controls.confirmPassword.value) {
-      this.toastrService.error('Hasła nie są zgodne', 'Błąd')
-
-      return;
+      return this.messageService.add({severity: 'error', summary: 'Error', detail: 'Passwords don\'t match', life: 3000})
     }
 
     const resetPasswordDto: IResetPasswordDto = {

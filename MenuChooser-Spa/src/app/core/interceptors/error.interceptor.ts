@@ -1,15 +1,15 @@
-import { HttpErrorResponse, HttpEvent, HttpEventType, HttpHandlerFn, HttpRequest } from "@angular/common/http";
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from "@angular/common/http";
 import { inject } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
-import { catchError, Observable, tap, throwError } from "rxjs";
+import { MessageService } from "primeng/api";
+import { catchError, Observable, throwError } from "rxjs";
 
 export function errorInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-    const toastrService = inject(ToastrService);
+    const messageService = inject(MessageService);
 
     return next(request)
         .pipe(
             catchError((error: HttpErrorResponse) => {
-                toastrService.error(error.error, error.statusText);
+                messageService.add({ severity: 'error', summary: 'Error', detail: error.error, life: 3000 })
                 return handleError(error);
             }));
 }
