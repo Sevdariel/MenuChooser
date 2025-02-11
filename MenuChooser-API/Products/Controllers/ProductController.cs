@@ -34,16 +34,9 @@ namespace Products.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(CreateProductDto saveProductDto)
+        public async Task<IActionResult> CreateProduct(CreateProductDto createProductDto)
         {
-            var product = new Product
-            {
-                Name = saveProductDto.Name,
-                Producent = saveProductDto.Producent,
-                CreatedBy = saveProductDto.CreatedBy,
-            };
-
-            var createdProduct = await _productService.CreateProductAsync(product);
+            var createdProduct = await _productService.CreateProductAsync(createProductDto);
 
             return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
         }
@@ -56,18 +49,9 @@ namespace Products.Controllers
             if (product == null)
                 return NotFound("Product doesn't exist");
 
-            var updatedProduct = new Product
-            {
-                Id = updatedProductDto.Id,
-                Name = updatedProductDto.Name,
-                Producent = updatedProductDto.Producent,
-                CreatedBy = updatedProductDto.CreatedBy,
-                UpdatedBy = updatedProductDto.UpdatedBy,
-            };
+            var result = await _productService.UpdateProductAsync(updatedProductDto);
 
-            await _productService.UpdateProductAsync(updatedProduct);
-
-            return Ok();
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

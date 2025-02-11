@@ -1,30 +1,59 @@
+using AutoMapper;
 using Database.Data;
 using MongoDB.Driver;
 using Products.Dto;
 using Products.Entities;
+using System.Reflection;
 
 namespace Products.Service
 {
     public class ProductService : IProductService
     {
         private readonly IMongoCollection<Product> _productCollection;
+        private readonly IMapper _mapper;
 
-        public ProductService(DatabaseContext databaseContext)
+        public ProductService(DatabaseContext databaseContext, IMapper mapper)
         {
             _productCollection = databaseContext.GetMongoDatabase().GetCollection<Product>(DatabaseExtensions.CollectionName(GetType().Name));
+            _mapper = mapper;
         }
 
         public async Task<Product> GetProductByIdAsync(string id) => await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
 
         public async Task<List<Product>> GetProductsAsync() => await _productCollection.Find(_ => true).ToListAsync();
 
-        public async Task<Product> CreateProductAsync(Product product)
+        public async Task<Product> CreateProductAsync(CreateProductDto createProductDto)
         {
-            await _productCollection.InsertOneAsync(product);
-            return product;
+            var createProduct = _mapper.Map<Product>(createProductDto);
+
+            await _productCollection.InsertOneAsync(createProduct);
+
+            return createProduct;
         }
 
-        public async Task UpdateProductAsync(Product updatedProduct) => await _productCollection.ReplaceOneAsync(product => product.Id == updatedProduct.Id, updatedProduct);
+        public async Task<bool> UpdateProductAsync(UpdateProductDto updatedProductDto)
+        {
+            var filter = Builders<Product>.Filter.Eq(product => product.Id, updatedProductDto.Id);
+
+            var updatedProduct = _mapper.Map<Product>(updatedProductDto);
+
+            var updateDefinitions = new List<UpdateDefinition<Product>>();
+
+            foreach (PropertyInfo prop in typeof(UpdateProductDto).GetProperties())
+            {
+                var newValue = prop.GetValue(updatedProductDto);
+                if (newValue != null)
+                    updateDefinitions.Add(Builders<Product>.Update.Set(prop.Name, newValue));
+            }
+
+            if (!updateDefinitions.Any()) return false;
+
+            var update = Builders<Product>.Update.Combine(updateDefinitions);
+
+            var result = await _productCollection.UpdateOneAsync(filter, update);
+
+            return result.ModifiedCount > 0;
+        }
 
         public async Task DeleteProductAsync(string id) => await _productCollection.DeleteOneAsync(product => product.Id == id);
     }

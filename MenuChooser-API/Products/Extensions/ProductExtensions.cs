@@ -9,6 +9,7 @@ namespace Products.Extensions
             this IServiceCollection services
         )
         {
+            services.AddAutoMapper(typeof(ProductMappingProfile));
             services.AddSingleton<ProductService>();
 
             return services;

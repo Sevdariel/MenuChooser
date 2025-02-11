@@ -10,6 +10,7 @@ import { IUpdateProductDto } from '../../models/product-dto.model';
 import { AccountService } from '../../../shared/account/account.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
+import { AuthService } from '../../../core/authorization/auth.service';
 
 @Component({
   selector: 'mc-product-edit',
@@ -26,7 +27,7 @@ export class ProductEditComponent implements OnInit {
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly productService = inject(ProductService);
-  private readonly accountService = inject(AccountService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
 
   public product = input(defaultProduct);
@@ -47,7 +48,7 @@ export class ProductEditComponent implements OnInit {
       id: this.product().id,
       name: this.formGroup.controls.name.value!,
       producent: this.formGroup.controls.producent.value!,
-      updatedBy: this.accountService.loggedUser()!.email,
+      updatedBy: this.authService.loggedUser()!.username,
     }
 
     this.productService.updateProduct(updateProductDto).pipe(
