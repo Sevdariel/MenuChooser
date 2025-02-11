@@ -22,6 +22,7 @@
     "angular-svg-icon": "^19.1.1",
     "jwt-decode": "^4.0.0",
     "ngx-toastr": "^19.0.0",
+    "primeng": "^19.0.6",
     "rxjs": "~7.8.0",
     "tailwindcss": "^3.4.3",
     "tailwindcss-primeui": "^0.4.0",
@@ -32,7 +33,6 @@
     "@angular-devkit/build-angular": "^19.1.6",
     "@angular/cli": "^19.1.6",
     "@angular/compiler-cli": "^19.1.5",
-    "@primeng/themes": "^19.0.6",
     "@tailwindcss/forms": "^0.5.7",
     "@types/jasmine": "~5.1.0",
     "@types/jest": "^29.5.12",
@@ -44,9 +44,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "^2.0.1",
-    "primeng": "^19.0.6",
     "tailwindcss": "^3.4.3",
-    "tailwindcss-primeui": "^0.4.0",
     "typescript": "^5.7.3"
   }
 }
