@@ -1,12 +1,13 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AccountRoutingModule } from './account-routing.module';
-import { LoginComponent } from './login/login.component';
+import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Toast } from 'primeng/toast';
 import { ErrorDirective } from '../core/validation/error-directive/error.directive';
-import { SignUpComponent } from './sign-up/sign-up.component';
+import { AccountRoutingModule } from './account-routing.module';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { LoginComponent } from './login/login.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
     CommonModule,
     AccountRoutingModule,
     ReactiveFormsModule,
+    Toast,
   ]
 })
 export class AccountModule { }
