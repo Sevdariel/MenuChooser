@@ -5,12 +5,19 @@ import { tap } from 'rxjs';
 import { defaultProduct } from '../../models/default-product.model';
 import { IUpdateProductDto } from '../../models/product-dto.model';
 import { IProduct } from '../../models/product.model';
+import { DrawerModule } from 'primeng/drawer';
+import { ProductEditComponent } from '../product-edit/product-edit.component';
+import { SvgIconComponent } from 'angular-svg-icon';
 
 @Component({
   selector: 'mc-product',
+  imports: [
+    DrawerModule,
+    ProductEditComponent,
+    SvgIconComponent,
+  ],
   templateUrl: './product.component.html',
   styleUrl: './product.component.scss',
-  standalone: false
 })
 export class ProductComponent implements OnInit {
 

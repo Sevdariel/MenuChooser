@@ -1,42 +1,32 @@
 <div class="flex flex-col items-center justify-center space-y-5 pt-5">
-    <div class="w-1/2 flex justify-center">
-        <h3 class="text-3xl font-semibold ml-3">Product list</h3>
-    </div>
-    <div
-        class="relative flex flex-col w-1/2 h-full overflow-auto text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
-        <table class="w-full text-left table-auto min-w-max">
-            <thead>
+    <div class="shadow-md border rounded-lg bg-clip-border p-4">
+        <p-table [columns]="columns" [value]="products()" [tableStyle]="{'min-width': '50rem'}" stripedRows
+            [paginator]="true" [rows]="20" [rowsPerPageOptions]="[5, 10, 20, 50, 100]" [paginatorStyleClass]="'flex justify-end'">
+            <ng-template #caption>
+                <div>
+                    <span class="text-xl font-bold">Products</span>
+                </div>
+            </ng-template>
+            <ng-template #header let-columns>
                 <tr>
-                    @for(column of columns; track column) {
-                    <th class="p-4 border-b border-slate-300 bg-slate-50">
-                        <p class="block text-sm font-normal leading-none text-slate-500">{{column}}</p>
-                    </th>
+                    @for (column of columns; track column) {
+                    <th>{{column.header}}</th>
                     }
-                    <th class="p-4 border-b border-slate-300 bg-slate-50">
-                        <p class="block text-sm font-normal leading-none text-slate-500"></p>
-                    </th>
+                    <th></th>
                 </tr>
-            </thead>
-            <tbody>
-                @for(product of products(); track product.id) {
-                <tr class="hover:bg-slate-50">
-                    <td class="p-4 border-b border-slate-200">
-                        <p class="block text-sm text-slate-800">{{product.name}}</p>
-                    </td>
-                    <td class="p-4 border-b border-slate-200">
-                        <p class="block text-sm text-slate-800">{{product.producent}}</p>
-                    </td>
-                    <td class="p-4 border-b border-slate-200">
-                        <p class="block text-sm text-slate-800">{{product.createdBy}}</p>
-                    </td>
+            </ng-template>
+            <ng-template #body let-products let-columns="columns">
+                <tr>
+                    @for (column of columns; track column) {
+                    <td>{{products[column.field]}}</td>
+                    }
                     <td class="p-4 border-b border-slate-200 flex justify-center items-center">
-                        <button (click)="openProductPreview(product.id)">
+                        <button (click)="openProductPreview(products.id)">
                             <svg-icon src="assets\icons\preview.svg" [svgStyle]="{'height.px': 20}"></svg-icon>
                         </button>
                     </td>
                 </tr>
-                }
-            </tbody>
-        </table>
+            </ng-template>
+        </p-table>
     </div>
 </div>
