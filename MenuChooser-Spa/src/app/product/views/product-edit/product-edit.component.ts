@@ -1,16 +1,15 @@
 import { Component, DestroyRef, inject, input, OnInit, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { defaultProduct } from '../../models/default-product.model';
-import { ProductFormType } from '../../models/product.model';
-import { ProductService } from '../../services/product.service';
-import { IUpdateProductDto } from '../../models/product-dto.model';
-import { AccountService } from '../../../shared/account/account.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { tap } from 'rxjs';
 import { AuthService } from '../../../core/authorization/auth.service';
+import { defaultProduct } from '../../models/default-product.model';
+import { IUpdateProductDto } from '../../models/product-dto.model';
+import { ProductFormType } from '../../models/product.model';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'mc-product-edit',
