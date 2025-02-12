@@ -9,6 +9,9 @@ import { ForgotPasswordComponent } from './forgot-password/forgot-password.compo
 import { LoginComponent } from './login/login.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { InputTextModule } from 'primeng/inputtext';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,9 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     ReactiveFormsModule,
     ToastModule,
     MessageModule,
+    InputTextModule,
+    FloatLabelModule,
+    CheckboxModule,
   ]
 })
 export class AccountModule { }

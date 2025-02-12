@@ -8,7 +8,6 @@ export interface IUserRegisterDto {
     username: string;
     email: string;
     password: string;
-    repeatPassword: string;
     termsOfUse: boolean;
     privacyPolicy: boolean;
 }
