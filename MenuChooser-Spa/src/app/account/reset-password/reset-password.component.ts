@@ -37,7 +37,7 @@ export class ResetPasswordComponent implements OnInit {
 
   public resetPassword() {
     if (this.formGroup.controls.password.value !== this.formGroup.controls.confirmPassword.value) {
-      return this.messageService.add({severity: 'error', summary: 'Error', detail: 'Passwords don\'t match', life: 3000})
+      return this.messageService.add({severity: 'error', summary: 'Error', detail: 'Email field can\'t be empty', life: 3000})
     }
 
     const resetPasswordDto: IResetPasswordDto = {

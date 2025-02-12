@@ -2,16 +2,18 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { tap } from 'rxjs';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import { IForgotPasswordDto, IResetPasswordSendDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
 
 @Component({
-    selector: 'mc-forgot-password',
-    templateUrl: './forgot-password.component.html',
-    styleUrl: './forgot-password.component.scss',
-    standalone: false
+  selector: 'mc-forgot-password',
+  templateUrl: './forgot-password.component.html',
+  styleUrl: './forgot-password.component.scss',
+  standalone: false,
+  providers: [MessageService]
 })
 export class ForgotPasswordComponent implements OnInit {
 
@@ -22,6 +24,7 @@ export class ForgotPasswordComponent implements OnInit {
   public formBuilder = inject(FormBuilder);
   public accountService = inject(AccountService);
   public router = inject(Router);
+  private messageService = inject(MessageService);
 
   private destroyRef = inject(DestroyRef);
 
@@ -32,6 +35,10 @@ export class ForgotPasswordComponent implements OnInit {
   }
 
   public forgotPassword() {
+    if (!this.formGroup.controls.email.value) {
+      return this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Passwords don\'t match', life: 3000 })
+    }
+
     const forgotPasswordDto: IForgotPasswordDto = {
       email: this.formGroup.controls.email.value,
       clientURI: this.router.url,
