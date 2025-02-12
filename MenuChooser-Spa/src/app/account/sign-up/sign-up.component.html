@@ -6,69 +6,93 @@
             </h1>
             <form class="space-y-4 md:space-y-6" [formGroup]="formGroup" (submit)="signUp()">
                 <div>
-                    <label for="username" class="block mb-2 text-base font-medium text-gray-900">Username</label>
-                    <input type="text" id="username" placeholder="username" required formControlName="username"
-                        [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['username'].touched}"
-                        class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    <p-floatlabel variant="on">
+                        <label for="username">Username</label>
+                        <input type="text" pInputText formControlName="username"
+                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['username'])}"
+                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
+                    </p-floatlabel>
                     @if (validationService.showError(formGroup.controls['username'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['username'])}}</mc-error>
+                    <p-message severity="error" variant="simple"
+                        size="small">{{validationService.getErrorMessage(formGroup.controls['username'])}}</p-message>
                     }
                 </div>
                 <div>
-                    <label for="email" class="block mb-2 text-base font-medium text-gray-900">Email</label>
-                    <input type="email" id="email" placeholder="email@example.com" required formControlName="email"
-                        [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['email'].touched}"
-                        class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    <p-floatlabel variant="on">
+                        <label for="email">Email</label>
+                        <input type="email" pInputText formControlName="email"
+                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['email'])}"
+                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
+                    </p-floatlabel>
                     @if (validationService.showError(formGroup.controls['email'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['email'])}}</mc-error>
+                    <p-message severity="error" variant="simple"
+                        size="small">{{validationService.getErrorMessage(formGroup.controls['email'])}}</p-message>
                     }
                 </div>
                 <div>
-                    <label for="password" class="block mb-2 text-base font-medium text-gray-900">Password</label>
-                    <input id="password" formControlName="password" type="password" placeholder="•••••••" required
-                        [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['password'].touched}"
-                        class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    <p-floatlabel variant="on">
+                        <label for="password">Password</label>
+                        <input type="password" pInputText formControlName="password" required
+                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['password'])}"
+                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
+                    </p-floatlabel>
                     @if (validationService.showError(formGroup.controls['password'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['password'])}}</mc-error>
+                    <p-message severity="error" variant="simple"
+                        size="small">{{validationService.getErrorMessage(formGroup.controls['password'])}}</p-message>
                     }
                 </div>
                 <div>
-                    <label for="repeatPassword" class="block mb-2 text-base font-medium text-gray-900">Repeat
-                        password</label>
-                    <input id="repeatPassword" formControlName="repeatPassword" type="password" placeholder="•••••••"
-                        required
-                        [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['repeatPassword'].touched}"
-                        class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" />
+                    <p-floatlabel variant="on">
+                        <label for="repeatPassword">Repeat password</label>
+                        <input type="password" pInputText formControlName="repeatPassword" required
+                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['repeatPassword'])}"
+                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
+                    </p-floatlabel>
                     @if (validationService.showError(formGroup.controls['repeatPassword'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['repeatPassword'],
-                        'password')}}</mc-error>
+                    <p-message severity="error" variant="simple"
+                        size="small">{{validationService.getErrorMessage(formGroup.controls['repeatPassword'])}}</p-message>
                     }
                 </div>
                 <div class="space-y-3 md:space-y-4">
-                    <div class="flex items-center">
-                        <input id="termsOfUse" type="checkbox" required formControlName="termsOfUse"
-                            [ngClass]="{'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600': formGroup.controls['termsOfUse'].touched}"
-                            class="w-4 h-4 text-orange-500 rounded focus:ring-transparent">
-                        <label for="termsOfUse" class="ms-2 text-base"
-                            [ngClass]="{'text-red-600': formGroup.controls['termsOfUse'].touched && formGroup.controls['termsOfUse'].errors}">I
-                            agree to the Terms of Use</label>
+                    <div>
+                        <div class="flex items-center">
+                            <p-checkbox formControlName="termsOfUse" inputId="termsOfUse" required binary="true"
+                                size="small" styleClass="flex items-center" />
+                            <label for="termsOfUse" class="ms-2 text-base"
+                                [ngClass]="{'text-red-600': formGroup.controls['termsOfUse'].touched && formGroup.controls['termsOfUse'].errors}">I
+                                agree to the Terms of Use</label>
+                        </div>
+                        @if (validationService.showError(formGroup.controls['termsOfUse'])) {
+                        <div>
+                            <mc-error>{{validationService.getErrorMessage(formGroup.controls['termsOfUse'])}}</mc-error>
+                        </div>
+                        }
                     </div>
-                    @if (validationService.showError(formGroup.controls['termsOfUse'])) {
-                    <mc-error>{{validationService.getErrorMessage(formGroup.controls['termsOfUse'])}}</mc-error>
-                    }
-                    <div class="flex items-center">
-                        <input id="privacyPolicy" type="checkbox" formControlName="privacyPolicy"
-                            class="w-4 h-4 text-orange-500 rounded focus:ring-transparent">
-                        <label for="privacyPolicy" class="ms-2 text-base">I agree to the Privacy Policy</label>
+
+                    <div class="space-y-3 md:space-y-4">
+                        <div>
+                            <div class="flex items-center">
+                                <p-checkbox formControlName="privacyPolicy" inputId="privacyPolicy" binary="true"
+                                    required size="small" styleClass="flex items-center" />
+                                <label for="privacyPolicy" class="ms-2 text-base"
+                                    [ngClass]="{'text-red-600': formGroup.controls['privacyPolicy'].touched && formGroup.controls['privacyPolicy'].errors}">I
+                                    agree to the Privacy Policy</label>
+                            </div>
+                            @if (validationService.showError(formGroup.controls['privacyPolicy'])) {
+                            <div>
+                                <mc-error>{{validationService.getErrorMessage(formGroup.controls['privacyPolicy'])}}</mc-error>
+                            </div>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="items-center justify-center flex">
-                    <button type="submit"
-                        class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600"
-                        (click)="signUp()">Sign
-                        up</button>
+                    <div class="items-center justify-center flex">
+                        <button type="submit"
+                            class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600">Sign
+                            up</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<p-toast />
