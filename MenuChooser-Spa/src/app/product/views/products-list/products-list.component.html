@@ -3,8 +3,9 @@
         <p-table [columns]="columns" [value]="products()" [tableStyle]="{'min-width': '50rem'}" stripedRows
             [paginator]="true" [rows]="20" [rowsPerPageOptions]="[5, 10, 20, 50, 100]" [paginatorStyleClass]="'flex justify-end'">
             <ng-template #caption>
-                <div>
+                <div class="flex flex-row justify-between">
                     <span class="text-xl font-bold">Products</span>
+                    <p-button icon="pi pi-plus" iconPos="left" label="Add" (click)="addNewProduct()"/>
                 </div>
             </ng-template>
             <ng-template #header let-columns>
