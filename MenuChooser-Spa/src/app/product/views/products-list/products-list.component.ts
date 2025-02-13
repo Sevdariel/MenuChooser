@@ -6,13 +6,15 @@ import { DrawerModule } from 'primeng/drawer';
 import { TableModule } from 'primeng/table';
 import { tap } from 'rxjs';
 import { IProduct } from '../../models/product.model';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'mc-products-list',
   imports: [
     DrawerModule,
     TableModule,
-    SvgIconComponent
+    SvgIconComponent,
+    ButtonModule,
   ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss',
@@ -41,4 +43,8 @@ export class ProductsListComponent implements OnInit {
   public openProductPreview(productId: string) {
     this.router.navigate([`${this.router.url}/${productId}`]);
   }
+
+  public addNewProduct() {
+    this.router.navigate([`${this.router.url}/new`]);
+    }
 }
