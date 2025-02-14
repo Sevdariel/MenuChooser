@@ -2,6 +2,7 @@
 using Account.Services;
 using Email.Entities;
 using Email.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
@@ -26,6 +27,7 @@ namespace Account.Controllers
         private readonly IEmailSender _emailSender = emailSender;
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<ActionResult<TokenDto>> Register(UserRegisterDto registerDto)
         {
             if (AccountExists(registerDto.Email))
@@ -53,6 +55,7 @@ namespace Account.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<ActionResult<TokenDto>> Login(UserLoginDto loginDto)
         {
             var user = await _userService.GetUserByEmailAsync(loginDto.Email);
@@ -74,6 +77,7 @@ namespace Account.Controllers
         }
 
         [HttpPost("forgot-password")]
+        [AllowAnonymous]
         public async Task<ActionResult<ResetPasswordSendDto>> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
             var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
@@ -95,6 +99,7 @@ namespace Account.Controllers
         }
 
         [HttpPost("reset-password")]
+        [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
             var user = await _userService.GetUserByEmailAsync(resetPasswordDto.Email);
