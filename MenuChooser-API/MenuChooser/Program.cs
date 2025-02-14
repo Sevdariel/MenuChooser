@@ -3,6 +3,7 @@ using Account.Extensions;
 using Database.Extensions;
 using Email.Extensions;
 using MenuChooser.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Products.Extensions;
 using Users.Extensions;
 
@@ -24,6 +25,12 @@ app.Services.AppInitializer();
 
 if (!app.Environment.IsDevelopment())
 {
+    builder.Services.AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    });
     app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
