@@ -9,9 +9,9 @@ namespace Users.Service
     {
         private readonly IMongoCollection<User> _userCollection;
 
-        public UserService(DatabaseContext databaseInitializer)
+        public UserService(MongoDBContext databaseInitializer)
         {
-            _userCollection = databaseInitializer.GetMongoDatabase().GetCollection<User>(DatabaseExtensions.CollectionName(GetType().Name));
+            _userCollection = databaseInitializer.GetMongoDatabase().GetCollection<User>(MongoDBExtensions.CollectionName(GetType().Name));
         }
 
         public async Task<List<User>> GetUsersAsync() => await _userCollection.Find(_ => true).ToListAsync();

@@ -8,7 +8,7 @@ namespace Account.Services
     {
         private readonly IMongoCollection<User> _userCollection;
 
-        public AccountService(DatabaseContext databaseContext)
+        public AccountService(MongoDBContext databaseContext)
         {
             _userCollection = databaseContext.GetMongoDatabase().GetCollection<User>("User");
         }

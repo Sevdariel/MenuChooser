@@ -1,6 +1,6 @@
 ﻿namespace Database.Data
 {
-    public static class DatabaseExtensions
+    public static class MongoDBExtensions
     {
         public static string CollectionName(string serviceName)
         {

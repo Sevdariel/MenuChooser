@@ -3,9 +3,9 @@ using MongoDB.Driver;
 
 namespace Database.Data
 {
-    public class DatabaseContext
+    public class MongoDBContext
     {
-        public DatabaseContext(IOptions<DatabaseSettings> databaseSettings)
+        public MongoDBContext(IOptions<MongoDBSettings> databaseSettings)
         {
             _databaseSettings = databaseSettings;
         }
@@ -45,6 +45,6 @@ namespace Database.Data
 
         private IMongoDatabase _mongoDatabase = null!;
         private MongoClient _mongoClient = null!;
-        private IOptions<DatabaseSettings> _databaseSettings;
+        private IOptions<MongoDBSettings> _databaseSettings;
     }
 }
