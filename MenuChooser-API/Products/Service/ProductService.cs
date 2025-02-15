@@ -12,9 +12,9 @@ namespace Products.Service
         private readonly IMongoCollection<Product> _productCollection;
         private readonly IMapper _mapper;
 
-        public ProductService(DatabaseContext databaseContext, IMapper mapper)
+        public ProductService(MongoDBContext databaseContext, IMapper mapper)
         {
-            _productCollection = databaseContext.GetMongoDatabase().GetCollection<Product>(DatabaseExtensions.CollectionName(GetType().Name));
+            _productCollection = databaseContext.GetMongoDatabase().GetCollection<Product>(MongoDBExtensions.CollectionName(GetType().Name));
             _mapper = mapper;
         }
 

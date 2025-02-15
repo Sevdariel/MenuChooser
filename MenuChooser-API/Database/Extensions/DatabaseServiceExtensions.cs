@@ -1,6 +1,7 @@
 ﻿using Database.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Database.Extensions
 {
@@ -10,8 +11,11 @@ namespace Database.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.Configure<DatabaseSettings>(configuration.GetSection("DatabaseConfiguration"));
-            services.AddSingleton<DatabaseContext>();
+            var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+            services.Configure<MongoDBSettings>(configuration.GetSection("DatabaseConfiguration"));
+            
+            services.AddSingleton<MongoDBContext>();
+            services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(redisConnectionString));
 
             return services;
         }

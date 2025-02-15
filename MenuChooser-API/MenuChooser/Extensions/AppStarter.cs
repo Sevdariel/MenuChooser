@@ -8,7 +8,7 @@ namespace MenuChooser.Extensions
             this IServiceProvider services
             )
         {
-            services.GetRequiredService<DatabaseContext>().DatabaseInitialization();
+            services.GetRequiredService<MongoDBContext>().DatabaseInitialization();
 
             return services;
         }
