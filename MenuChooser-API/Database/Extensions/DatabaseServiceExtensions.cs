@@ -10,7 +10,7 @@ namespace Database.Extensions
             this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.Configure<DatabaseSettings>(configuration.GetSection("UserStoreDatabase"));
+            services.Configure<DatabaseSettings>(configuration.GetSection("DatabaseConfiguration"));
             services.AddSingleton<DatabaseContext>();
 
             return services;
