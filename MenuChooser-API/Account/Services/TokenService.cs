@@ -43,7 +43,8 @@ namespace Account.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId, user.Email),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Username),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim("TokenType", "PasswordReset")
             };

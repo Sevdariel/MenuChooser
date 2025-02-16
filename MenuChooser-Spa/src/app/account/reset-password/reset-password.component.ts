@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { getEmailFromToken } from '../../core/authorization/token-decoder.helper';
 import { IResetPasswordDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
 
@@ -12,11 +13,11 @@ type ResetPasswordFormType = {
 };
 
 @Component({
-    selector: 'mc-reset-password',
-    templateUrl: './reset-password.component.html',
-    styleUrl: './reset-password.component.scss',
-    standalone: false,
-    providers: [MessageService],
+  selector: 'mc-reset-password',
+  templateUrl: './reset-password.component.html',
+  styleUrl: './reset-password.component.scss',
+  standalone: false,
+  providers: [MessageService],
 })
 export class ResetPasswordComponent implements OnInit {
   private formBuilder = inject(FormBuilder);
@@ -37,13 +38,13 @@ export class ResetPasswordComponent implements OnInit {
 
   public resetPassword() {
     if (this.formGroup.controls.password.value !== this.formGroup.controls.confirmPassword.value) {
-      return this.messageService.add({severity: 'error', summary: 'Error', detail: 'Email field can\'t be empty', life: 3000})
+      return this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Email field can\'t be empty', life: 3000 })
     }
 
     const resetPasswordDto: IResetPasswordDto = {
       password: this.formGroup.controls.password.value,
       confirmPassword: this.formGroup.controls.confirmPassword.value,
-      email: this.activatedRoute.snapshot.queryParamMap.get('email')!,
+      email: getEmailFromToken(this.activatedRoute.snapshot.queryParamMap.get('token')!),
       token: this.activatedRoute.snapshot.queryParamMap.get('token')!,
     }
 
@@ -52,3 +53,5 @@ export class ResetPasswordComponent implements OnInit {
       .subscribe(() => this.router.navigate(['account/login']));
   }
 }
+
+
