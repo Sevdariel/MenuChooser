@@ -1,7 +1,6 @@
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { tap } from 'rxjs';
 import { ValidationService } from '../../core/validation/service/validation.service';
@@ -21,11 +20,8 @@ export class ForgotPasswordComponent implements OnInit {
 
   public formGroup!: FormGroup<{ email: FormControl<string> }>;
   public validationService = inject(ValidationService);
-  public formBuilder = inject(FormBuilder);
-  public accountService = inject(AccountService);
-  public router = inject(Router);
+  private accountService = inject(AccountService);
   private messageService = inject(MessageService);
-
   private destroyRef = inject(DestroyRef);
 
   public ngOnInit(): void {
@@ -41,7 +37,7 @@ export class ForgotPasswordComponent implements OnInit {
 
     const forgotPasswordDto: IForgotPasswordDto = {
       email: this.formGroup.controls.email.value,
-      clientURI: this.router.url,
+      clientURI: window.location.origin,
     }
 
     this.accountService.forgotPassword(forgotPasswordDto).pipe(

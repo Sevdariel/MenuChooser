@@ -86,7 +86,7 @@ namespace Account.Controllers
                 return BadRequest("User with provided email doesn't exists");
 
             var token = _tokenService.CreatePasswordResetTokenAsync(user);
-            var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}&email={forgotPasswordDto.Email}";
+            var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}";
 
             var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
 
@@ -113,7 +113,7 @@ namespace Account.Controllers
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var jwtToken = tokenHandler.ReadJwtToken(resetPasswordDto.Token);
-                var emailClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.NameId)?.Value;
+                var emailClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == JwtRegisteredClaimNames.Email)?.Value;
                 var tokenTypeClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "TokenType")?.Value;
 
                 if (emailClaim != resetPasswordDto.Email || tokenTypeClaim != "PasswordReset")
