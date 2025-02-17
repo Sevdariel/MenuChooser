@@ -5,6 +5,7 @@ using Email.Extensions;
 using MenuChooser.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Products.Extensions;
+using Recipes.Extensions;
 using Users.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddAuthenticationService(builder.Configuration);
 builder.Services.AddEmailServices(builder.Configuration);
 builder.Services.AddUserService();
 builder.Services.AddProductServices();
+builder.Services.AddRecipeServices();
 builder.Services.AddAccountServices();
 builder.Services.AddDatabaseServices(builder.Configuration);
 builder.Services.AddApplicationService(builder.Configuration);

@@ -1,4 +1,4 @@
-﻿namespace Recipe.Entities
+﻿namespace Recipes.Entities
 {
     public enum MealType
     {
