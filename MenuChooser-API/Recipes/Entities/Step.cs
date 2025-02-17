@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
-using Products.Entities;
 
 namespace Recipes.Entities
 {
@@ -12,7 +11,7 @@ namespace Recipes.Entities
         [BsonElement("content")]
         public string Content { get; set; } = null!;
 
-        [BsonElement("products")]
+        [BsonElement("productsId")]
         public List<string>? ProductsId { get; set; }
 
         [BsonElement("duration")]

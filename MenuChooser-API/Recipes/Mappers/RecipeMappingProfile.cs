@@ -9,6 +9,7 @@ namespace Recipes.Extensions
         public RecipeMappingProfile()
         {
             CreateMap<CreateRecipeDto, Recipe>();
+            CreateMap<UpdateRecipeDto, Recipe>();
         }
     }
 }
