@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Products.Dto;
 using Recipes.Dto;
 using Recipes.Entities;
 using Recipes.Service;
@@ -27,7 +28,7 @@ namespace Recipes.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Recipe>> GetRecipe(string id)
         {
-            var recipe = await _recipeService.GetRecipeAsync(id);
+            var recipe = await _recipeService.GetRecipeByIdAsync(id);
 
             if (recipe == null)
             {
@@ -38,11 +39,32 @@ namespace Recipes.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Recipe>>> GetRecipes()
+        public async Task<ActionResult<List<Recipe>>> GetRecipesAsync()
         {
             var recipes = await _recipeService.GetRecipesAsync();
 
             return recipes;
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRecipeAsync(string id)
+        {
+            await _recipeService.DeleteRecipeAsync(id);
+
+            return Ok("Recipe delete sucessfully");
+        }
+
+        [HttpPut()]
+        public async Task<IActionResult> UpdateRecipe(UpdateRecipeDto updatedRecipeDto)
+        {
+            var recipe = await _recipeService.GetRecipeByIdAsync(updatedRecipeDto.Id);
+
+            if (recipe == null)
+                return NotFound("Recipe doesn't exist");
+
+            var result = await _recipeService.UpdateRecipeAsync(updatedRecipeDto, recipe);
+
+            return Ok(result);
         }
     }
 }
