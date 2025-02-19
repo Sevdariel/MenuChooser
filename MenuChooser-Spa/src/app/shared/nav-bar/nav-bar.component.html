@@ -26,8 +26,9 @@
                     <div class="hidden sm:ml-6 sm:block">
                         <div class="flex space-x-4">
                             @if (authService.loggedUser()) {
-                            <a href="#"
-                                class="bg-light-orange-500 rounded-md px-3 py-2 text-sm font-medium hover:bg-light-orange-700">Recipes</a>
+                            <p-button
+                                styleClass="bg-light-orange-500 rounded-md px-3 py-2 text-sm text-black font-medium hover:bg-light-orange-700"
+                                variant="text" [routerLink]="['/recipes']">Recipes</p-button>
                             <p-button
                                 styleClass="hover:bg-light-orange-300 rounded-md px-3 py-2 text-sm font-medium text-black"
                                 variant="text" [routerLink]="['/products']">Products</p-button>

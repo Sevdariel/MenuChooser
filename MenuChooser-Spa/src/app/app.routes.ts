@@ -15,6 +15,10 @@ export const routes: Routes = [
                 loadChildren: () => import('./product/product.module').then(m => m.ProductModule),
             },
             {
+                path: 'recipes',
+                loadChildren: () => import('./recipe/recipe.module').then(m => m.RecipeModule),
+            },
+            {
                 path: '',
                 loadChildren: () => import('./home/home.module').then(m => m.HomeModule),
             },

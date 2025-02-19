@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Products.Dto;
 using Recipes.Dto;
 using Recipes.Entities;
 using Recipes.Service;
@@ -13,8 +13,13 @@ namespace Recipes.Controllers
     public class RecipeController : ControllerBase
     {
         private readonly RecipeService _recipeService;
+        private readonly IMapper _mapper;
 
-        public RecipeController(RecipeService recipeService) => _recipeService = recipeService;
+        public RecipeController(RecipeService recipeService, IMapper mapper)
+        {
+            _recipeService = recipeService;
+            _mapper = mapper;
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -22,7 +27,7 @@ namespace Recipes.Controllers
         {
             var createdRecipe = await _recipeService.CreateRecipeAsync(createRecipeDto);
 
-            return CreatedAtAction(nameof(GetRecipe), new {id = createdRecipe.Id}, createdRecipe);
+            return CreatedAtAction(nameof(GetRecipe), new { id = createdRecipe.Id }, createdRecipe);
         }
 
         [HttpGet("{id}")]
@@ -39,15 +44,17 @@ namespace Recipes.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Recipe>>> GetRecipesAsync()
+        public async Task<ActionResult<List<RecipeListItemDto>>> GetRecipes()
         {
             var recipes = await _recipeService.GetRecipesAsync();
 
-            return recipes;
+            var recipeListItems = _mapper.Map<List<RecipeListItemDto>>(recipes);
+
+            return recipeListItems;
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipeAsync(string id)
+        public async Task<IActionResult> DeleteRecipe(string id)
         {
             await _recipeService.DeleteRecipeAsync(id);
 
