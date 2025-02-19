@@ -10,6 +10,7 @@ namespace Recipes.Extensions
         {
             CreateMap<CreateRecipeDto, Recipe>();
             CreateMap<UpdateRecipeDto, Recipe>();
+            CreateMap<Recipe, RecipeListItemDto>();
         }
     }
 }
