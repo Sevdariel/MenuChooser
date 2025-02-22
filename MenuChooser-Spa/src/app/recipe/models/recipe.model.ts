@@ -1,7 +1,7 @@
 import { IProduct } from "../../product/models/product.model";
 
 export interface IRecipe {
-    id: number;
+    id: string;
     name: string;
     duration: number;
     products: IProduct[];

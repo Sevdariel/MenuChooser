@@ -1,5 +1,4 @@
 ﻿using Recipes.Entities;
-using Products.Entities;
 
 namespace Recipes.Dto
 {
