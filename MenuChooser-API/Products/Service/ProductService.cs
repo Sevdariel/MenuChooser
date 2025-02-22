@@ -56,5 +56,12 @@ namespace Products.Service
         }
 
         public async Task DeleteProductAsync(string id) => await _productCollection.DeleteOneAsync(product => product.Id == id);
+
+        public async Task<List<Product>> GetProductsByIdsAsync(List<string> ids)
+        {
+            var filter = Builders<Product>.Filter.In(product => product.Id, ids);
+
+            return await _productCollection.Find(filter).ToListAsync();
+        }
     }
 }

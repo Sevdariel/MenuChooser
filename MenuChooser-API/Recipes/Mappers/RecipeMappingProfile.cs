@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Products.Entities;
 using Recipes.Dto;
 using Recipes.Entities;
 
@@ -11,6 +12,8 @@ namespace Recipes.Extensions
             CreateMap<CreateRecipeDto, Recipe>();
             CreateMap<UpdateRecipeDto, Recipe>();
             CreateMap<Recipe, RecipeListItemDto>();
+            CreateMap<Recipe, RecipeDto>();
+            CreateMap<Product, RecipeProductDto>();
         }
     }
 }
