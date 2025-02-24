@@ -26,3 +26,12 @@ export interface IStepDto {
     productIds: string[];
     duration: number;
 }
+
+export interface IUpdateRecipeDto {
+    id: string;
+    name: string;
+    products: string[];
+    duration: number;
+    steps: IStepDto[];
+    updatedBy: string;
+}

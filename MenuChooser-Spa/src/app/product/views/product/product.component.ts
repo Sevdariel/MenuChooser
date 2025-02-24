@@ -35,7 +35,7 @@ export class ProductComponent implements OnInit {
       .subscribe();
   }
 
-  updateProduct(updatedProduct: IUpdateProductDto) {
+  public updateProduct(updatedProduct: IUpdateProductDto) {
     this.productSignal.update(() => updatedProduct);
     this.togglePanel = false;
   }
