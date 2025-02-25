@@ -4,7 +4,7 @@ export interface IRecipe {
     id: string;
     name: string;
     duration: number;
-    products: IProduct[];
+    products: IRecipeProduct[];
     steps: IStep[];
     createdBy: string;
     updatedBy: string;
@@ -15,6 +15,11 @@ export interface IStep {
     content: string;
     products: IProduct[];
     duration: number;
+}
+
+export interface IRecipeProduct {
+    id: string;
+    name: string;
 }
 
 export enum MealType {

@@ -13,6 +13,9 @@ export interface IRecipeDto {
     duration: number;
     products: IRecipeProductDto[];
     steps: IStepDto[];
+    createdBy: string;
+    updatedBy: string;
+    mealType: MealType;
 }
 
 export interface IRecipeProductDto {

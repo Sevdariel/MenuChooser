@@ -27,9 +27,11 @@
                         </tr>
                     </ng-template>
                     <ng-template #body let-products let-columns="productColumns">
-                        @for (column of columns; track column) {
-                        <td>{{products[column.field]}}</td>
-                        }
+                        <tr>
+                            @for (column of productColumns; track column) {
+                            <td>{{products[column.field]}}</td>
+                            }
+                        </tr>
                     </ng-template>
                 </p-table>
             </div>

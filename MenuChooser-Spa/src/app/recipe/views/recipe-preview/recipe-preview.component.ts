@@ -2,13 +2,13 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { SvgIconComponent } from 'angular-svg-icon';
+import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DrawerModule } from 'primeng/drawer';
+import { TableModule } from 'primeng/table';
 import { tap } from 'rxjs';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IRecipe } from '../../models/recipe.model';
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'mc-recipe-preview',
@@ -32,18 +32,18 @@ export class RecipePreviewComponent implements OnInit {
 
   public productColumns = [
     { field: 'name', header: 'Name' },
-    { field: 'producent', header: 'Producent' },
   ]
 
   public ngOnInit(): void {
     this.activatedRoute.data.pipe(
       tap(data => this.recipeSignal.set(data['recipe'])),
+      tap(() => console.log(this.recipe())),
       takeUntilDestroyed(this.destroyRef))
       .subscribe();
   }
 
   public updateRecipe(updatedRecipe: IRecipe) {
-    this.recipeSignal.update(recipe => updatedRecipe);
+    this.recipeSignal.update(() => updatedRecipe);
     this.togglePanel = false;
   }
 }
