@@ -1,9 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { ChipModule } from 'primeng/chip';
+import { DataViewModule } from 'primeng/dataview';
 import { DrawerModule } from 'primeng/drawer';
 import { TableModule } from 'primeng/table';
 import { tap } from 'rxjs';
@@ -18,6 +21,10 @@ import { IRecipe } from '../../models/recipe.model';
     SvgIconComponent,
     TableModule,
     ButtonModule,
+    DataViewModule,
+    CommonModule,
+    CardModule,
+    ChipModule,
   ],
   templateUrl: './recipe-preview.component.html',
   styleUrl: './recipe-preview.component.scss'
