@@ -10,5 +10,6 @@ namespace Products.Service
         Task<Product> CreateProductAsync(CreateProductDto createProductDto);
         Task<bool> UpdateProductAsync(UpdateProductDto updatedProductDto);
         Task DeleteProductAsync(string id);
+        Task<List<Product>> GetProductsByIdsAsync(List<string> ids);
     }
 }

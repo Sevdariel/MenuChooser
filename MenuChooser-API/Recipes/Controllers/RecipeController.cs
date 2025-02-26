@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Products.Service;
 using Recipes.Dto;
-using Recipes.Entities;
 using Recipes.Service;
 
 namespace Recipes.Controllers
@@ -14,11 +14,13 @@ namespace Recipes.Controllers
     {
         private readonly RecipeService _recipeService;
         private readonly IMapper _mapper;
+        private readonly ProductService _productService;
 
-        public RecipeController(RecipeService recipeService, IMapper mapper)
+        public RecipeController(RecipeService recipeService, IMapper mapper, ProductService productService)
         {
             _recipeService = recipeService;
             _mapper = mapper;
+            _productService = productService;
         }
 
         [HttpPost]
@@ -31,16 +33,20 @@ namespace Recipes.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Recipe>> GetRecipe(string id)
+        public async Task<ActionResult<RecipeDto>> GetRecipe(string id)
         {
             var recipe = await _recipeService.GetRecipeByIdAsync(id);
 
             if (recipe == null)
-            {
                 return NotFound("Recipe doesn't exists");
-            }
 
-            return recipe;
+            var products = await _productService.GetProductsByIdsAsync(recipe.ProductsId);
+
+            var recipeDto = _mapper.Map<RecipeDto>(recipe);
+            var recipeProductsDto = _mapper.Map<List<RecipeProductDto>>(products);
+            recipeDto.Products = recipeProductsDto;            
+
+            return recipeDto;
         }
 
         [HttpGet]
