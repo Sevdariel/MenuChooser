@@ -14,7 +14,7 @@
                 </p-floatlabel>
             </div>
             <div>
-                <p-table [value]="recipe().products" formArrayName="products">
+                <p-table [value]="formGroup.controls.products.controls" formArrayName="products">
                     <ng-template #header>
                         <tr>
                             @for (column of productColumns; track column) {
@@ -22,17 +22,16 @@
                             }
                         </tr>
                     </ng-template>
-                    <ng-template #body let-product let-columns="columns" let-editing="editing" let-rowIndex="rowIndex">
-                        {{product}}
-                        <tr [formGroup]="formGroup.controls.products.controls[rowIndex]">
-                            @for (column of columns; track column) {
+                    <ng-template #body let-product let-editing="editing" let-rowIndex="rowIndex">
+                        <tr formGroupName="{{rowIndex}}">
+                            @for (column of productColumns; track column) {
                             <td [pEditableColumn]="product[column.field]" pEditableColumnField="{{column.field}}">
                                 <p-cellEditor>
                                     <ng-template #input>
-                                        <input pInputText type="text" formControlName="{{column.field}}">
+                                        <input pInputText pSize="small" type="text" formControlName="{{column.field}}">
                                     </ng-template>
                                     <ng-template #output>
-                                        {{product[column.field].value}}
+                                        {{product.controls[column.field]?.value}}
                                     </ng-template>
                                 </p-cellEditor>
                             </td>

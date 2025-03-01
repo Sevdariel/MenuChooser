@@ -36,7 +36,7 @@ export class RecipeEditComponent {
 
   protected formGroup!: FormGroup<RecipeFormType>;
   protected readonly productColumns = [
-    { field: 'productName', caption: 'Name' },
+    { field: 'name', caption: 'Name' },
     { field: 'quantity', caption: 'Quantity' },
   ];
 
@@ -47,8 +47,6 @@ export class RecipeEditComponent {
       products: this.formBuilder.array(this.recipe().products.map(product => this.formBuilder.group(product))),
       steps: new FormControl(this.recipe().steps),
     });
-
-    console.log('RecipeEdit this.formGroup', this.formGroup);
   }
 
   public save() {
