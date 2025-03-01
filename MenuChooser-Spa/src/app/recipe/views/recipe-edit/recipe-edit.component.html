@@ -14,7 +14,7 @@
                 </p-floatlabel>
             </div>
             <div>
-                <p-table [value]="formGroup.controls.products.controls" formArrayName="products">
+                <p-table tableStyleClass="table-fixed" [value]="formGroup.controls.products.controls" formArrayName="products" size="small">
                     <ng-template #header>
                         <tr>
                             @for (column of productColumns; track column) {
@@ -28,7 +28,7 @@
                             <td [pEditableColumn]="product[column.field]" pEditableColumnField="{{column.field}}">
                                 <p-cellEditor>
                                     <ng-template #input>
-                                        <input pInputText pSize="small" type="text" formControlName="{{column.field}}">
+                                        <input required pInputText pSize="small" type="text" class="py-0" formControlName="{{column.field}}">
                                     </ng-template>
                                     <ng-template #output>
                                         {{product.controls[column.field]?.value}}
