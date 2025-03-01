@@ -40,7 +40,7 @@ namespace Recipes.Controllers
             if (recipe == null)
                 return NotFound("Recipe doesn't exists");
 
-            var products = await _productService.GetProductsByIdsAsync(recipe.ProductsId);
+            var products = await _productService.GetProductsByIdsAsync(recipe.ProductIds);
 
             var recipeDto = _mapper.Map<RecipeDto>(recipe);
             var recipeProductsDto = _mapper.Map<List<RecipeProductDto>>(products);

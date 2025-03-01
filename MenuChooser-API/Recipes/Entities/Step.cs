@@ -11,7 +11,7 @@ namespace Recipes.Entities
         [BsonElement("content")]
         public string Content { get; set; } = null!;
 
-        [BsonElement("productsId")]
+        [BsonElement("productIds")]
         public List<string>? ProductIds { get; set; }
 
         [BsonElement("duration")]

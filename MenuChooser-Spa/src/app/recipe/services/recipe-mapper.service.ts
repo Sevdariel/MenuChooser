@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IRecipeDto, IStepDto } from '../models/recipe-dto.model';
-import { IRecipe, IStep } from '../models/recipe.model';
+import { IRecipeDto, IRecipeProductDto, IStepDto, IUpdateRecipeDto } from '../models/recipe-dto.model';
+import { IRecipe, IRecipeProduct, IStep } from '../models/recipe.model';
 
 @Injectable({
   providedIn: 'root'

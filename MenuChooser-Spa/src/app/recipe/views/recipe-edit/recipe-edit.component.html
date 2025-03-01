@@ -1,0 +1,49 @@
+<div class="p-4">
+    <form [formGroup]="formGroup" (submit)="save()">
+        <div class="space-y-4 flex flex-col">
+            <div>
+                <p-floatlabel variant="on">
+                    <input id="name" type="text" class="w-full" pInputText formControlName="name">
+                    <label for="name">Name</label>
+                </p-floatlabel>
+            </div>
+            <div>
+                <p-floatlabel variant="on">
+                    <input id="producent" type="text" class="w-full" pInputText formControlName="duration">
+                    <label for="producent">Duration</label>
+                </p-floatlabel>
+            </div>
+            <div>
+                <p-table [value]="recipe().products" formArrayName="products">
+                    <ng-template #header>
+                        <tr>
+                            @for (column of productColumns; track column) {
+                            <th>{{column.caption}}</th>
+                            }
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-product let-columns="columns" let-editing="editing" let-rowIndex="rowIndex">
+                        {{product}}
+                        <tr [formGroup]="formGroup.controls.products.controls[rowIndex]">
+                            @for (column of columns; track column) {
+                            <td [pEditableColumn]="product[column.field]" pEditableColumnField="{{column.field}}">
+                                <p-cellEditor>
+                                    <ng-template #input>
+                                        <input pInputText type="text" formControlName="{{column.field}}">
+                                    </ng-template>
+                                    <ng-template #output>
+                                        {{product[column.field].value}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            }
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="flex items-end justify-end">
+                <p-button id="save" type="submit">Save</p-button>
+            </div>
+        </div>
+    </form>
+</div>

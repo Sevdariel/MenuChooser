@@ -12,6 +12,7 @@ import { TableModule } from 'primeng/table';
 import { tap } from 'rxjs';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IRecipe } from '../../models/recipe.model';
+import { RecipeEditComponent } from '../recipe-edit/recipe-edit.component';
 
 @Component({
   selector: 'mc-recipe-preview',
@@ -25,6 +26,7 @@ import { IRecipe } from '../../models/recipe.model';
     CommonModule,
     CardModule,
     ChipModule,
+    RecipeEditComponent,
   ],
   templateUrl: './recipe-preview.component.html',
   styleUrl: './recipe-preview.component.scss'
@@ -44,9 +46,10 @@ export class RecipePreviewComponent implements OnInit {
   public ngOnInit(): void {
     this.activatedRoute.data.pipe(
       tap(data => this.recipeSignal.set(data['recipe'])),
-      tap(() => console.log(this.recipe())),
       takeUntilDestroyed(this.destroyRef))
       .subscribe();
+
+    console.log('recipe', this.recipe())
   }
 
   public updateRecipe(updatedRecipe: IRecipe) {
