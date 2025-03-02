@@ -1,0 +1,92 @@
+<div class="p-4">
+    <form [formGroup]="formGroup" (submit)="save()">
+        <div class="space-y-4 flex flex-col">
+            <div>
+                <p-floatlabel variant="on">
+                    <input id="name" type="text" class="w-full" pInputText formControlName="name">
+                    <label for="name">Name</label>
+                </p-floatlabel>
+            </div>
+            <div>
+                <p-floatlabel variant="on">
+                    <input id="duration" type="text" class="w-full" pInputText formControlName="duration">
+                    <label for="duration">Duration</label>
+                </p-floatlabel>
+            </div>
+            <div>
+                <!-- <p-autocomplete formControlName="products" field="name" (completeMethod)="filterProducts($event)"></p-autocomplete> -->
+                <p-table tableStyleClass="table-fixed" [value]="formGroup.controls.products.controls"
+                    formArrayName="products" size="small">
+                    <ng-template #caption>
+                        <div class="flex flex-row justify-between">
+                            <span class="text-xl font-bold">Products</span>
+                        </div>
+                    </ng-template>
+                    <ng-template #header>
+                        <tr>
+                            @for (column of productColumns; track column) {
+                            <th>{{column.caption}}</th>
+                            }
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-product let-editing="editing" let-rowIndex="rowIndex">
+                        <tr formGroupName="{{rowIndex}}">
+                            @for (column of productColumns; track column) {
+                            <td [pEditableColumn]="product[column.field]" pEditableColumnField="{{column.field}}">
+                                <p-cellEditor>
+                                    <ng-template #input>
+                                        <input required pInputText pSize="small" type="text" class="py-0"
+                                            formControlName="{{column.field}}">
+                                    </ng-template>
+                                    <ng-template #output>
+                                        {{product.controls[column.field]?.value}}
+                                    </ng-template>
+                                </p-cellEditor>
+                            </td>
+                            }
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div>
+                <p-table [value]="formGroup.controls.steps.controls" formArrayName="steps">
+                    <ng-template #caption>
+                        <div class="flex flex-row justify-between">
+                            <span class="text-xl font-bold">Steps</span>
+                        </div>
+                    </ng-template>
+                    <ng-template #body let-step let-rowIndex="rowIndex">
+                        <tr formGroupName="{{rowIndex}}" [pReorderableRow]="rowIndex">
+                            <td>
+                                <div class="flex gap-4">
+                                    <div class="flex items-center">
+                                        <span class="pi pi-bars" pReorderableRowHandle></span>
+                                    </div>
+                                    <div class="flex flex-col gap-2 w-full">
+                                        <div>
+                                            <p-multiselect [options]="recipeProducts()" formControlName="products"
+                                                class="w-full" optionLabel="name" display="chip"
+                                                placeholder="Step products"></p-multiselect>
+                                        </div>
+                                        <div>
+                                            <p-floatLabel variant="on">
+                                                <textarea id="content-{{rowIndex}}" pTextarea rows="2" class="w-full"
+                                                    formControlName="content" [autoResize]="false"
+                                                    pSize="small"></textarea>
+                                                <label for="content-{{rowIndex}}">Content</label>
+                                            </p-floatLabel>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                </p-table>
+            </div>
+            <div class="flex items-end justify-end">
+                <p-button id="save" type="submit">Save</p-button>
+            </div>
+        </div>
+    </form>
+</div>
