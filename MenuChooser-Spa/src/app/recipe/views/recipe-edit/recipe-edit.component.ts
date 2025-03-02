@@ -1,16 +1,22 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, output } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, output } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RecipeService } from '../../services/recipe.service';
+import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { ButtonModule } from 'primeng/button';
+import { DataViewModule } from 'primeng/dataview';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { TableModule } from 'primeng/table';
+import { TextareaModule } from 'primeng/textarea';
+import { tap } from 'rxjs';
 import { AuthService } from '../../../core/authorization/auth.service';
 import { defaultRecipe } from '../../models/default-recipe.model';
+import { IStepDto, IUpdateRecipeDto } from '../../models/recipe-dto.model';
 import { IRecipe, RecipeFormType } from '../../models/recipe.model';
-import { IUpdateRecipeDto } from '../../models/recipe-dto.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { TableModule } from 'primeng/table';
+import { RecipeMapperService } from '../../services/recipe-mapper.service';
+import { RecipeService } from '../../services/recipe.service';
+import { IRecipeProduct, IStep } from './../../models/recipe.model';
 
 @Component({
   selector: 'mc-recipe-edit',
@@ -20,6 +26,11 @@ import { TableModule } from 'primeng/table';
     ReactiveFormsModule,
     InputTextModule,
     TableModule,
+    DataViewModule,
+    AutoCompleteModule,
+    TextareaModule,
+    FloatLabelModule,
+    MultiSelectModule,
   ],
   templateUrl: './recipe-edit.component.html',
   styleUrl: './recipe-edit.component.scss',
@@ -28,6 +39,7 @@ export class RecipeEditComponent {
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly recipeService = inject(RecipeService);
+  private readonly recipeMapperService = inject(RecipeMapperService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -35,6 +47,8 @@ export class RecipeEditComponent {
   public saved = output<IRecipe>();
 
   protected formGroup!: FormGroup<RecipeFormType>;
+  public recipeProducts = computed(() => this.formGroup.controls.products.value);
+
   protected readonly productColumns = [
     { field: 'name', caption: 'Name' },
     { field: 'quantity', caption: 'Quantity' },
@@ -45,22 +59,53 @@ export class RecipeEditComponent {
       name: new FormControl(this.recipe().name),
       duration: new FormControl(this.recipe().duration),
       products: this.formBuilder.array(this.recipe().products.map(product => this.formBuilder.group(product))),
-      steps: new FormControl(this.recipe().steps),
+      steps: this.recipeMapperService.mapStepsToFormArray(this.recipe().steps),
     });
+
+    this.formGroup.controls.products.valueChanges.pipe(tap(x => console.log('products', x))).subscribe();
+
+    const productsValues = this.formGroup.controls.products.getRawValue();
+    console.log('products', productsValues);
+    console.log('recipeProducts', this.recipeProducts());
+    console.log('recipeedit component ngoninit this.formGroup', this.formGroup)
   }
 
   public save() {
-    console.log('Recipe edit component save()');
-    // const updateRecipeDto: IUpdateRecipeDto = {
-    //   name: this.formGroup.controls.name.value!,
-    //   products: this.formGroup.controls.products.value!,
-    //   // steps: this.formGroup.controls.steps.value!,
-    //   updatedBy: this.authService.loggedUser()!.username,
-    // }
+    const formGroupRawValue = this.formGroup.getRawValue();
+    const updateRecipeDto: IUpdateRecipeDto = {
+      ...this.recipe(),
+      duration: this.formGroup.controls.duration.value!,
+      name: this.formGroup.controls.name.value!,
+      productIds: this.formGroup.controls.products.getRawValue().map(product => product.id!),
+      updatedBy: this.authService.loggedUser()?.username!,
+      steps: this.formGroup.controls.steps.getRawValue().map(({ products, ...step }) => <IStepDto>{
+        ...step,
+        productIds: products?.map(product => product.id),
+      }),
+    }
 
-    // this.recipeService.updateRecipe(updateRecipeDto).pipe(
-    //   tap(() => this.saved.emit(updateRecipeDto)),
-    //   takeUntilDestroyed(this.destroyRef))
-    //   .subscribe();
+    const resultRecipe: IRecipe = {
+      ...this.recipe(),
+      duration: formGroupRawValue.duration!,
+      name: formGroupRawValue.name!,
+      products: this.formGroup.controls.products.getRawValue().map(product => <IRecipeProduct>{
+        id: product.id,
+        name: product.name,
+      })!,
+      steps: this.formGroup.controls.steps.getRawValue().map(step => <IStep>{
+        content: step.content,
+        duration: step.duration,
+        order: step.order,
+        products: step.products?.map(product => <IRecipeProduct>{
+          id: product.id,
+          name: product.name,
+        })
+      })!,
+    }
+
+    this.recipeService.updateRecipe(updateRecipeDto).pipe(
+      tap(() => this.saved.emit(resultRecipe)),
+      takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 }

@@ -33,7 +33,7 @@ export interface IStepDto {
 export interface IUpdateRecipeDto {
     id: string;
     name: string;
-    products: string[];
+    productIds: string[];
     duration: number;
     steps: IStepDto[];
     updatedBy: string;
