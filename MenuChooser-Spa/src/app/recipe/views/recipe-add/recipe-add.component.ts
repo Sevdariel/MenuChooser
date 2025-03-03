@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { defaultRecipe } from '../../models/default-recipe.model';
+import { IRecipe, RecipeFormType } from '../../models/recipe.model';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -8,4 +11,12 @@ import { Component } from '@angular/core';
 })
 export class RecipeAddComponent {
 
+  private recipeSignal = signal<IRecipe>(defaultRecipe);
+  public recipe = this.recipeSignal.asReadonly();
+
+  public formGroup!: FormGroup<RecipeFormType>;
+
+  public create() {
+
+  }
 }

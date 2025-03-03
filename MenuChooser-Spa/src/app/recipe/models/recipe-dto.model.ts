@@ -38,3 +38,12 @@ export interface IUpdateRecipeDto {
     steps: IStepDto[];
     updatedBy: string;
 }
+
+export interface ICreateRecipeDto {
+    name: string;
+    duration: number;
+    productIds: string[];
+    steps: IStepDto[];
+    mealType: MealType;
+    createdBy: string;
+}
