@@ -1,15 +1,15 @@
-import { Component, ElementRef, inject, OnInit, QueryList, signal, ViewChild, ViewChildren } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { SvgIconComponent } from 'angular-svg-icon';
+import { ButtonModule } from 'primeng/button';
+import { FloatLabel } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IRecipe, RecipeFormType } from '../../models/recipe.model';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FloatLabel } from 'primeng/floatlabel';
-import { ButtonModule } from 'primeng/button';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
-import { InputTextModule } from 'primeng/inputtext';
-import { EditableColumn, TableModule, Table } from 'primeng/table';
-import { CommonModule } from '@angular/common';
-import { SvgIconComponent } from 'angular-svg-icon';
-import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -27,10 +27,6 @@ import { TooltipModule } from 'primeng/tooltip';
   styleUrl: './recipe-add.component.scss'
 })
 export class RecipeAddComponent implements OnInit {
-
-  @ViewChildren('productInput') productInputs!: QueryList<ElementRef>;
-  @ViewChildren('cellEditor') cellEditor!: QueryList<ElementRef>;
-  @ViewChild('dt') dt!: Table;
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly recipeMapperService = inject(RecipeMapperService);
@@ -56,27 +52,17 @@ export class RecipeAddComponent implements OnInit {
   public addProduct() {
     this.formGroup.controls.products.push(this.formBuilder.group({
       id: new FormControl(),
-      name: new FormControl(''),
+      name: new FormControl(),
     }));
 
     setTimeout(() => {
       const lastRowIndex = this.formGroup.controls.products.controls.length - 1;
-      const lastProduct = this.formGroup.controls.products.at(lastRowIndex);
-      
-      if (this.dt) {
-        console.log('Tabela znaleziona, próbuję inicjować edycję');
-        this.dt.initRowEdit(lastProduct);
-      } else {
-        console.log('Nie znaleziono referencji do tabeli');
-      }
-      
-      const selector = `tr[data-row-index="${lastRowIndex}"] td[data-field="name"]`;
-      const cell = document.querySelector(selector);
-      if (cell instanceof HTMLElement) {
-        console.log('Znaleziono komórkę po atrybutach danych, klikam');
-        cell.click();
-      }
-    }, 50);
+
+      const selector = `tr[data-row-index="${lastRowIndex}"] td.p-editable-column`;
+      const editableCell: HTMLElement = document.querySelector(selector)!;
+
+      editableCell.click();
+    }, 0);
   }
 
   public saveRecipe() {
