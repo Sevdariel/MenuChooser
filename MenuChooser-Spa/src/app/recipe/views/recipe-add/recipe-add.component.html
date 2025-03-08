@@ -32,11 +32,11 @@
                                 </tr>
                             </ng-template>
                             <ng-template #body let-product let-editing="editing" let-rowIndex="rowIndex">
-                                <tr formGroupName="{{rowIndex}}" class="min-h-10">
+                                <tr formGroupName="{{rowIndex}}" class="min-h-10" [pEditableRow]="product">
                                     @for (column of productColumns; track column) {
                                     <td [pEditableColumn]="product[column.field]"
-                                        pEditableColumnField="{{column.field}}">
-                                        <p-cellEditor>
+                                        pEditableColumnField="{{column.field}}" class="p-editable-column">
+                                        <p-cellEditor id="p-cellEditor-{{rowIndex}}" #cellEditor>
                                             <ng-template #input>
                                                 <p-floatLabel variant="on" class="w-full">
                                                     <input #productInput id="product-{{column.field}}-{{rowIndex}}" required pInputText pSize="small" type="text" class="py-0 w-full"
