@@ -23,6 +23,10 @@ export interface IRecipeProduct {
     name: string;
 }
 
+export interface IAddRecipeProduct {
+    product: IProduct;
+}
+
 export enum MealType {
     Breakfast = 0,
     Dinner,
@@ -48,4 +52,8 @@ export type RecipeStepsFormType = {
     content: FormControl<string | null>;
     duration: FormControl<number | null>;
     products: FormControl<IRecipeProduct[] | null>;
+}
+
+export type RecipeNewProductFormType = {
+    product: FormControl<IProduct>;
 }

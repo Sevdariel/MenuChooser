@@ -63,5 +63,12 @@ namespace Products.Service
 
             return await _productCollection.Find(filter).ToListAsync();
         }
+
+        public async Task<List<Product>> SearchProductsByPattern(string pattern)
+        {
+            var filter = Builders<Product>.Filter.Regex("name", new MongoDB.Bson.BsonRegularExpression(pattern, "i"));
+
+            return await _productCollection.Find(filter).ToListAsync();
+        }
     }
 }

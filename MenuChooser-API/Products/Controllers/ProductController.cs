@@ -61,5 +61,13 @@ namespace Products.Controllers
 
             return Ok("Product delete sucessfully");
         }
+
+        [HttpGet("items")]
+        public async Task<ActionResult<List<Product>>> SearchProductsByPattern([FromQuery] string searchPattern)
+        {
+            var result = await _productService.SearchProductsByPattern(searchPattern);
+
+            return Ok(result);
+        }
     }
 }

@@ -60,11 +60,20 @@
                                     <td [attr.colspan]="productColumns.length" class="border-none">
                                         <div class="flex justify-center max-w-full">
                                             <svg-icon src="assets\icons\plus-circle.svg" class="flex"
-                                                (click)="addProduct()" pTooltip="Add new product"
+                                                (click)="toggleAddProduct($event)" pTooltip="Add new product"
                                                 [svgStyle]="{'height.px': 40, 'width.px': 40, 'fill': '#b0b0b0'}"></svg-icon>
                                         </div>
                                     </td>
                                 </tr>
+                                <p-popover #addProductPopover>
+                                    <div class="flex" [formGroup]="addProductFormGroup">
+                                        <p-floatLabel variant="on" class="w-full">
+                                            <p-autocomplete formControlName="product" [suggestions]="suggestedProducts$ | async" (completeMethod)="filterProducts($event)" field="name"></p-autocomplete>
+                                            <label for="add-product-input">Name</label>
+                                        </p-floatLabel>
+                                    </div>
+                                    <p-button (click)="addNewProduct()">Save</p-button>
+                                </p-popover>
 
                             </ng-template>
 
