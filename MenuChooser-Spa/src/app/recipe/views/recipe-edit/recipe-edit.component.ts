@@ -61,13 +61,6 @@ export class RecipeEditComponent {
       products: this.formBuilder.array(this.recipe().products.map(product => this.formBuilder.group(product))),
       steps: this.recipeMapperService.mapStepsToFormArray(this.recipe().steps),
     });
-
-    this.formGroup.controls.products.valueChanges.pipe(tap(x => console.log('products', x))).subscribe();
-
-    const productsValues = this.formGroup.controls.products.getRawValue();
-    console.log('products', productsValues);
-    console.log('recipeProducts', this.recipeProducts());
-    console.log('recipeedit component ngoninit this.formGroup', this.formGroup)
   }
 
   public save() {

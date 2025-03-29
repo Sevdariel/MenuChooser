@@ -53,7 +53,3 @@ export type RecipeStepsFormType = {
     duration: FormControl<number | null>;
     products: FormControl<IRecipeProduct[] | null>;
 }
-
-export type RecipeNewProductFormType = {
-    product: FormControl<IProduct>;
-}
