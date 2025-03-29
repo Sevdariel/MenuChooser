@@ -68,9 +68,9 @@
                                 <p-popover #addProductPopover>
                                     <div class="flex flex-col gap-2 ">
                                         <p-floatLabel variant="on" class="w-full max-w-3xs" style="max-width: 250px;">
-                                            <p-autocomplete [formControl]="productsFormControl" class="multiple-autocomplete"
-                                                [suggestions]="suggestedProducts$ | async" size="small" multiple
-                                                emptyMessage="No products available"
+                                            <p-autocomplete [formControl]="productsFormControl"
+                                                class="multiple-autocomplete" [suggestions]="suggestedProducts$ | async"
+                                                size="small" multiple emptyMessage="No products available"
                                                 (completeMethod)="filterProducts($event)" field="name"></p-autocomplete>
                                             <label for="add-product-input">Name</label>
                                         </p-floatLabel>
@@ -126,7 +126,9 @@
                                     </td>
                                 </tr>
                                 <p-popover #addStepPopover>
-                                    <div class="flex flex-col gap-2 w-60" [formGroup]="recipeStepFormGroup">
+                                    <div class="flex flex-col gap-2"
+                                        [ngStyle]="{'max-width': '400px', 'width': '400px'}"
+                                        [formGroup]="recipeStepFormGroup">
                                         <p-floatLabel variant="on" class="w-full">
                                             <p-multiselect [options]="recipeProducts()" formControlName="products"
                                                 class="w-full" optionLabel="name" display="chip"></p-multiselect>
