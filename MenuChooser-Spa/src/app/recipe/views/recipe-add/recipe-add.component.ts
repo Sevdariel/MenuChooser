@@ -1,23 +1,23 @@
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal, ViewChild, DestroyRef } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { TableModule } from 'primeng/table';
+import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, of, tap } from 'rxjs';
+import { combineLatest, map, Observable, of, tap } from 'rxjs';
+import { IProduct } from '../../../product/models/product.model';
 import { ProductService } from '../../../product/services/product.service';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IAddRecipeProduct, IRecipe, IRecipeProduct, RecipeFormType, RecipeProductFormType, RecipeStepsFormType } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
-import { TextareaModule } from 'primeng/textarea';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { IProduct } from '../../../product/models/product.model';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -81,7 +81,11 @@ export class RecipeAddComponent implements OnInit {
     this.formGroup.controls.products.valueChanges
       .pipe(
         takeUntilDestroyed(this.destroyRef),
-        tap(products => this.recipeProducts.set(products)))
+        map(partialProducts => partialProducts.map(partialProduct => <IRecipeProduct>{
+          id: partialProduct.id,
+          name: partialProduct.name,
+        })),
+        tap((products: IRecipeProduct[]) => this.recipeProducts.set(products)))
       .subscribe();
   }
 
