@@ -5,19 +5,22 @@ import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule }
 import { SvgIconComponent } from 'angular-svg-icon';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from "primeng/drawer";
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { SidebarModule } from 'primeng/sidebar';
 import { TableModule } from 'primeng/table';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
-import { combineLatest, map, Observable, of, tap } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { IProduct } from '../../../product/models/product.model';
 import { ProductService } from '../../../product/services/product.service';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IAddRecipeProduct, IRecipe, IRecipeProduct, RecipeFormType, RecipeProductFormType, RecipeStepsFormType } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
+import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
 
 @Component({
   selector: 'mc-recipe-add',
@@ -25,17 +28,20 @@ import { RecipeMapperService } from '../../services/recipe-mapper.service';
     AutoCompleteModule,
     ButtonModule,
     CommonModule,
+    DrawerModule,
     InputTextModule,
     FloatLabel,
     FormsModule,
     MultiSelectModule,
     PopoverModule,
     ReactiveFormsModule,
+    RecipeProductComponent,
+    SidebarModule,
     TableModule,
     TextareaModule,
     TooltipModule,
     SvgIconComponent,
-  ],
+],
   templateUrl: './recipe-add.component.html',
   styleUrl: './recipe-add.component.scss'
 })
@@ -55,6 +61,8 @@ export class RecipeAddComponent implements OnInit {
   public newProduct = signal<IAddRecipeProduct | null>(null);
   public suggestedProducts$: Observable<any> = of();
   public recipeProducts = signal<IRecipeProduct[]>([]);
+
+  public toggleProductPanel = signal(false);
 
   protected readonly productColumns = [
     { field: 'name', caption: 'Name' },

@@ -26,7 +26,7 @@ export class ProductComponent implements OnInit {
 
   private productSignal = signal<IProduct>(defaultProduct);
   public product = this.productSignal.asReadonly();
-  public togglePanel = false;
+  public togglePanel = signal(false);
 
   public ngOnInit(): void {
     this.activatedRoute.data.pipe(
@@ -37,6 +37,6 @@ export class ProductComponent implements OnInit {
 
   public updateProduct(updatedProduct: IUpdateProductDto) {
     this.productSignal.update(() => updatedProduct);
-    this.togglePanel = false;
+    this.togglePanel.set(false);
   }
 }

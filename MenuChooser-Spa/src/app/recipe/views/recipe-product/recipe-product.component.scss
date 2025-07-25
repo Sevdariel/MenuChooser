@@ -1,0 +1,54 @@
+/* Container styles */
+:host {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Form field spacing */
+.field {
+  margin-bottom: 1rem;
+}
+
+/* Button container */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  :host {
+    padding: 0 1rem;
+  }
+  
+  .flex {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  button {
+    width: 100%;
+  }
+}
+
+/* PrimeNG overrides */
+:host ::ng-deep {
+  .p-autocomplete {
+    width: 100%;
+  }
+  
+  .p-inputnumber {
+    width: 100%;
+  }
+  
+  .p-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+}
