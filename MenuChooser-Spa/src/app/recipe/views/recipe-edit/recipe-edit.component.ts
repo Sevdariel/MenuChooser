@@ -58,47 +58,47 @@ export class RecipeEditComponent {
     this.formGroup = this.formBuilder.group({
       name: new FormControl(this.recipe().name),
       duration: new FormControl(this.recipe().duration),
-      products: this.formBuilder.array(this.recipe().products.map(product => this.formBuilder.group(product))),
+      products: new FormControl(this.recipe().products),
       steps: this.recipeMapperService.mapStepsToFormArray(this.recipe().steps),
     });
   }
 
   public save() {
-    const formGroupRawValue = this.formGroup.getRawValue();
-    const updateRecipeDto: IUpdateRecipeDto = {
-      ...this.recipe(),
-      duration: this.formGroup.controls.duration.value!,
-      name: this.formGroup.controls.name.value!,
-      productIds: this.formGroup.controls.products.getRawValue().map(product => product.id!),
-      updatedBy: this.authService.loggedUser()?.username!,
-      steps: this.formGroup.controls.steps.getRawValue().map(({ products, ...step }) => <IStepDto>{
-        ...step,
-        productIds: products?.map(product => product.id),
-      }),
-    }
+    // const formGroupRawValue = this.formGroup.getRawValue();
+    // const updateRecipeDto: IUpdateRecipeDto = {
+    //   ...this.recipe(),
+    //   duration: this.formGroup.controls.duration.value!,
+    //   name: this.formGroup.controls.name.value!,
+    //   productIds: this.formGroup.controls.products.getRawValue().map(product => product.id!),
+    //   updatedBy: this.authService.loggedUser()?.username!,
+    //   steps: this.formGroup.controls.steps.getRawValue().map(({ products, ...step }) => <IStepDto>{
+    //     ...step,
+    //     productIds: products?.map(product => product.id),
+    //   }),
+    // }
 
-    const resultRecipe: IRecipe = {
-      ...this.recipe(),
-      duration: formGroupRawValue.duration!,
-      name: formGroupRawValue.name!,
-      products: this.formGroup.controls.products.getRawValue().map(product => <IRecipeProduct>{
-        id: product.id,
-        name: product.name,
-      })!,
-      steps: this.formGroup.controls.steps.getRawValue().map(step => <IStep>{
-        content: step.content,
-        duration: step.duration,
-        order: step.order,
-        products: step.products?.map(product => <IRecipeProduct>{
-          id: product.id,
-          name: product.name,
-        })
-      })!,
-    }
+    // const resultRecipe: IRecipe = {
+    //   ...this.recipe(),
+    //   duration: formGroupRawValue.duration!,
+    //   name: formGroupRawValue.name!,
+    //   products: this.formGroup.controls.products.getRawValue().map(product => <IRecipeProduct>{
+    //     id: product.id,
+    //     name: product.name,
+    //   })!,
+    //   steps: this.formGroup.controls.steps.getRawValue().map(step => <IStep>{
+    //     content: step.content,
+    //     duration: step.duration,
+    //     order: step.order,
+    //     products: step.products?.map(product => <IRecipeProduct>{
+    //       id: product.id,
+    //       name: product.name,
+    //     })
+    //   })!,
+    // }
 
-    this.recipeService.updateRecipe(updateRecipeDto).pipe(
-      tap(() => this.saved.emit(resultRecipe)),
-      takeUntilDestroyed(this.destroyRef))
-      .subscribe();
+    // this.recipeService.updateRecipe(updateRecipeDto).pipe(
+    //   tap(() => this.saved.emit(resultRecipe)),
+    //   takeUntilDestroyed(this.destroyRef))
+    //   .subscribe();
   }
 }

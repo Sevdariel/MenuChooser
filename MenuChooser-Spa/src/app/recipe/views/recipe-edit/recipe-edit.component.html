@@ -1,4 +1,4 @@
-<div class="p-4">
+<!-- <div class="p-4">
     <form [formGroup]="formGroup" (submit)="save()">
         <div class="space-y-4 flex flex-col">
             <div>
@@ -14,9 +14,9 @@
                 </p-floatlabel>
             </div>
             <div>
-                <!-- <p-autocomplete formControlName="products" field="name" (completeMethod)="filterProducts($event)"></p-autocomplete> -->
-                <p-table tableStyleClass="table-fixed" [value]="formGroup.controls.products.controls"
-                    formArrayName="products" size="small">
+                <p-autocomplete formControlName="products" field="name" (completeMethod)="filterProducts($event)"></p-autocomplete>
+                <p-table tableStyleClass="table-fixed"
+                    size="small">
                     <ng-template #caption>
                         <div class="flex flex-row justify-between">
                             <span class="text-xl font-bold">Products</span>
@@ -89,4 +89,4 @@
             </div>
         </div>
     </form>
-</div>
+</div> -->

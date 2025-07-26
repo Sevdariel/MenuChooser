@@ -1,3 +1,4 @@
+import { IProduct } from "../../product/models/product.model";
 import { MealType } from "./recipe.model";
 
 export interface IRecipeListItem {
@@ -19,8 +20,8 @@ export interface IRecipeDto {
 }
 
 export interface IRecipeProductDto {
-    id: string;
-    name: string;
+    product: IProduct;
+    quantity: number;
 }
 
 export interface IStepDto {

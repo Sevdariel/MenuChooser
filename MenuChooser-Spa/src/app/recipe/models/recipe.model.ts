@@ -14,17 +14,23 @@ export interface IRecipe {
 export interface IStep {
     order: number;
     content: string;
-    products: IRecipeProduct[];
+    products: IStepProduct[];
     duration: number;
 }
 
 export interface IRecipeProduct {
-    id: string;
-    name: string;
+    product: IProduct;
+    quantity: number;
 }
 
-export interface IAddRecipeProduct {
-    product: IProduct;
+export interface IRecipeTableProduct {
+    name: string;
+    quantity: number;
+}
+
+export interface IStepProduct {
+    id: string;
+    name: string;
 }
 
 export enum MealType {
@@ -37,7 +43,7 @@ export enum MealType {
 
 export type RecipeFormType = {
     name: FormControl<string | null>;
-    products: FormArray<FormGroup<RecipeProductFormType>>;
+    products: FormControl<IRecipeProduct[] | null>;
     steps: FormArray<FormGroup<RecipeStepsFormType>>;
     duration: FormControl<number | null>;
 }

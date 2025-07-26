@@ -17,8 +17,7 @@
                         </p-floatlabel>
                     </div>
                     <div>
-                        <p-table tableStyleClass="table-fixed" [value]="formGroup.controls.products.controls"
-                            formArrayName="products" size="small">
+                        <p-table tableStyleClass="table-fixed" size="small" [value]="this.recipe().products">
                             <ng-template #caption>
                                 <div class="flex flex-row justify-between">
                                     <span class="text-xl font-bold">Products</span>
@@ -33,18 +32,15 @@
                                 </tr>
                             </ng-template>
                             <ng-template #body let-product let-rowIndex="rowIndex">
-                                <tr formGroupName="{{rowIndex}}" class="min-h-10">
+                                <tr class="min-h-10">
                                     @for (column of productColumns; track column) {
                                     <td class="flex-grow">
-                                        {{product.controls[column.field]?.value}}
+                                        {{displayValue(product, column.field)}}
                                     </td>
                                     }
                                     <td class="w-12 flex-shrink-0">
-                                        <p-button 
-                                            type="button" 
-                                            icon="pi pi-pencil" 
-                                            variant="text"
-                                            (click)="toggleProductPanel.set(true)"></p-button>
+                                        <p-button type="button" icon="pi pi-pencil" variant="text"
+                                            (click)="openRecipeProductPreview(product)"></p-button>
                                     </td>
                                 </tr>
                             </ng-template>
@@ -53,25 +49,11 @@
                                     <td [attr.colspan]="productColumns.length + 1" class="border-none">
                                         <div class="flex justify-center max-w-full">
                                             <svg-icon src="assets\icons\plus-circle.svg" class="flex"
-                                                (click)="toggleAddProduct($event)" pTooltip="Add new product"
+                                                (click)="openRecipeProductPreview(null)" pTooltip="Add new product"
                                                 [svgStyle]="{'height.px': 40, 'width.px': 40, 'fill': '#b0b0b0'}"></svg-icon>
                                         </div>
                                     </td>
                                 </tr>
-                                <p-popover #addProductPopover>
-                                    <div class="flex flex-col gap-2 ">
-                                        <p-floatLabel variant="on" class="w-full max-w-3xs" style="max-width: 250px;">
-                                            <p-autocomplete [formControl]="productsFormControl"
-                                                class="multiple-autocomplete" [suggestions]="suggestedProducts$ | async"
-                                                size="small" multiple emptyMessage="No products available"
-                                                (completeMethod)="filterProducts($event)" field="name"></p-autocomplete>
-                                            <label for="add-product-input">Name</label>
-                                        </p-floatLabel>
-                                        <div class="flex justify-end">
-                                            <p-button (click)="addNewProduct()">Save</p-button>
-                                        </div>
-                                    </div>
-                                </p-popover>
                             </ng-template>
                         </p-table>
                     </div>
@@ -118,7 +100,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <p-popover #addStepPopover>
+                                <!-- <p-popover #addStepPopover>
                                     <div class="flex flex-col gap-2"
                                         [ngStyle]="{'max-width': '400px', 'width': '400px'}"
                                         [formGroup]="recipeStepFormGroup">
@@ -141,7 +123,7 @@
                                             <p-button (click)="addNewStep()">Save</p-button>
                                         </div>
                                     </div>
-                                </p-popover>
+                                </p-popover> -->
                             </ng-template>
                         </p-table>
                     </div>
@@ -154,21 +136,7 @@
     </div>
 </div>
 
-<!-- Edit Product Sidebar -->
-<!-- <p-sidebar [(visible)]="displaySidebar" position="right" [style]="{width: '500px'}" [modal]="true" [dismissible]="true" (onHide)="onSidebarHide()">
-    <ng-template pTemplate="header">
-        <div class="flex justify-content-between align-items-center w-full">
-            <h2 class="text-xl font-bold m-0">{{editingProductIndex !== null ? 'Edit' : 'Add'}} Product</h2>
-        </div>
-    </ng-template>
-    
-    <mc-product-edit 
-        *ngIf="displaySidebar"
-        [product]="editingProduct!"
-        (cancel)="onSidebarHide()">
-    </mc-product-edit>
-</p-sidebar> -->
-
-<p-drawer header="Right drawer" [(visible)]="toggleProductPanel" position="right" dismissible="false" styleClass="w-full md:w-80 lg:w-[30rem]">
-    <mc-recipe-product></mc-recipe-product>
+<p-drawer header="Right drawer" [(visible)]="toggleProductPanel" position="right" dismissible="true"
+    styleClass="w-full md:w-80 lg:w-[30rem]">
+    <mc-recipe-product [product]="selectedProduct()" (cancel)="toggleProductPanel.set(false)" (save)="onRecipeProductSave($event)"></mc-recipe-product>
 </p-drawer>

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { IRecipeDto, IStepDto } from '../models/recipe-dto.model';
-import { IRecipe, IStep, RecipeStepsFormType } from '../models/recipe.model';
+import { IRecipe, IRecipeProduct, IStep, RecipeStepsFormType } from '../models/recipe.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class RecipeMapperService {
         content: stepDto.content,
         duration: stepDto.duration,
         order: stepDto.order,
-        products: stepDto.productIds ? stepDto.productIds?.map(productId => recipeDto.products.find(product => product.id === productId)) : [],
+        products: stepDto.productIds ? stepDto.productIds.map(productId => recipeDto.products.find(recipeProduct => recipeProduct.product.id === productId)?.product) : [],
       }),
       updatedBy: recipeDto.updatedBy,
     }
@@ -32,7 +32,10 @@ export class RecipeMapperService {
         order: new FormControl(step.order),
         content: new FormControl(step.content),
         duration: new FormControl(step.duration),
-        products: new FormControl(step.products),
+        products: new FormControl(step.products.map(product => <IRecipeProduct>{
+          product: product,
+          quantity: 1
+        })),
       })
     }))
   }
