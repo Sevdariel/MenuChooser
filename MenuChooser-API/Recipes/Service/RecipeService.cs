@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
 using Database.Data;
-using Microsoft.AspNetCore.Http.HttpResults;
 using MongoDB.Driver;
-using Products.Dto;
-using Products.Entities;
 using Recipes.Dto;
 using Recipes.Entities;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Recipes.Service
@@ -52,7 +48,7 @@ namespace Recipes.Service
                     updateDefinitions.Add(Builders<Recipe>.Update.Set(prop.Name, newValue));
             }
 
-            if (!updateDefinitions.Any()) return false;
+            if (updateDefinitions.Count == 0) return false;
 
             var update = Builders<Recipe>.Update.Combine(updateDefinitions);
 

@@ -10,18 +10,11 @@ namespace Recipes.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [AllowAnonymous]
-    public class RecipeController : ControllerBase
+    public class RecipeController(RecipeService recipeService, IMapper mapper, ProductService productService) : ControllerBase
     {
-        private readonly RecipeService _recipeService;
-        private readonly IMapper _mapper;
-        private readonly ProductService _productService;
-
-        public RecipeController(RecipeService recipeService, IMapper mapper, ProductService productService)
-        {
-            _recipeService = recipeService;
-            _mapper = mapper;
-            _productService = productService;
-        }
+        private readonly RecipeService _recipeService = recipeService;
+        private readonly IMapper _mapper = mapper;
+        private readonly ProductService _productService = productService;
 
         [HttpPost]
         [AllowAnonymous]
