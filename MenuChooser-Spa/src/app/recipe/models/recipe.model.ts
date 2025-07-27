@@ -14,23 +14,13 @@ export interface IRecipe {
 export interface IStep {
     order: number;
     content: string;
-    products: IStepProduct[];
+    products: IRecipeProduct[];
     duration: number;
 }
 
 export interface IRecipeProduct {
     product: IProduct;
     quantity: number;
-}
-
-export interface IRecipeTableProduct {
-    name: string;
-    quantity: number;
-}
-
-export interface IStepProduct {
-    id: string;
-    name: string;
 }
 
 export enum MealType {

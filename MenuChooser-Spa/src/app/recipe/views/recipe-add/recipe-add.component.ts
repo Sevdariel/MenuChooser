@@ -1,42 +1,69 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { DataViewModule } from 'primeng/dataview';
+import { DialogModule } from 'primeng/dialog';
+import { DividerModule } from 'primeng/divider';
+import { DragDropModule } from 'primeng/dragdrop';
 import { DrawerModule } from "primeng/drawer";
 import { FloatLabel } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { OrderListModule } from 'primeng/orderlist';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { SidebarModule } from 'primeng/sidebar';
 import { TableModule } from 'primeng/table';
+import { TabViewModule } from 'primeng/tabview';
+import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IRecipe, IRecipeProduct, RecipeFormType, RecipeStepsFormType } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
+import { StepComponent } from '../../step/step.component';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
+import { IStep } from '../../models/recipe.model';
 
 @Component({
   selector: 'mc-recipe-add',
   imports: [
     AutoCompleteModule,
     ButtonModule,
+    CardModule,
     CommonModule,
+    DataViewModule,
+    DialogModule,
+    DividerModule,
+    DragDropModule,
     DrawerModule,
-    InputTextModule,
     FloatLabel,
     FormsModule,
+    InputNumberModule,
+    InputTextModule,
     MultiSelectModule,
+    OrderListModule,
+    OverlayPanelModule,
     PopoverModule,
     ReactiveFormsModule,
     RecipeProductComponent,
+    SelectButtonModule,
     SidebarModule,
+    StepComponent,
     TableModule,
+    TabViewModule,
+    TagModule,
     TextareaModule,
+    ToggleButtonModule,
     TooltipModule,
     SvgIconComponent,
   ],
@@ -63,12 +90,44 @@ export class RecipeAddComponent implements OnInit {
   ];
 
   public formGroup!: FormGroup<RecipeFormType>;
-  public recipeStepFormGroup: FormGroup<RecipeStepsFormType> = new FormGroup({
-    content: new FormControl(),
-    duration: new FormControl(),
-    order: new FormControl(),
-    products: new FormControl(),
+  public newStepForm = this.formBuilder.group({
+    content: new FormControl('', { nonNullable: true }),
+    duration: new FormControl(0, { nonNullable: true }),
+    order: new FormControl(0, { nonNullable: true }),
+    products: new FormControl<IRecipeProduct[]>([], { nonNullable: true }),
   });
+  
+  public showAddStepDialog = false;
+  public draggedStepIndex: number | null = null;
+  
+  // Getter for recipe products
+  public recipeProducts() {
+    return this.recipe().products;
+  }
+
+  public onStepDragStart(index: number) {
+    this.draggedStepIndex = index;
+  }
+
+  public onStepDragEnd() {
+    this.draggedStepIndex = null;
+  }
+
+  public onStepDrop(event: any, dropIndex: number) {
+    if (this.draggedStepIndex !== null) {
+      const steps = this.formGroup.controls.steps;
+      const movedStep = steps.at(this.draggedStepIndex);
+      steps.removeAt(this.draggedStepIndex);
+      steps.insert(dropIndex, movedStep);
+      
+      // Update order of all steps
+      steps.controls.forEach((step, idx) => {
+        step.patchValue({ order: idx });
+      });
+      
+      this.draggedStepIndex = null;
+    }
+  }
 
   constructor() {
     effect(() => {
@@ -112,12 +171,53 @@ export class RecipeAddComponent implements OnInit {
   }
 
   public addNewStep() {
-    // this.formGroup.controls.products.push(this.formBuilder.group(recipeProduct));
+    const steps = this.formGroup.controls.steps;
+    const newStep: IStep = {
+      content: this.newStepForm.controls.content.value,
+      duration: this.newStepForm.controls.duration.value,
+      order: steps.length,
+      products: this.newStepForm.controls.products.value || []
+    };
+    
+    // steps.push(this.recipeMapperService.mapStepToFormGroup(newStep));
+    this.newStepForm.reset({
+      content: '',
+      duration: 0,
+      order: steps.length,
+      products: []
+    });
+    this.showAddStepDialog = false;
+  }
+  
+  public removeStep(index: number) {
+    const steps = this.formGroup.controls.steps;
+    steps.removeAt(index);
+    // Update order of remaining steps
+    steps.controls.forEach((step, idx) => {
+      step.patchValue({ order: idx });
+    });
+  }
+  
+  public onStepReorder(event: any) {
+    // Get the reordered array
+    const reorderedItems = event.items;
+    const steps = this.formGroup.controls.steps;
+    
+    // Clear the form array
+    while (steps.length) {
+      steps.removeAt(0);
+    }
+    
+    // Add the reordered items back with updated order
+    reorderedItems.forEach((item: any, index: number) => {
+      const step = item.data;
+      step.patchValue({ order: index });
+      steps.push(step);
+    });
   }
 
   public saveRecipe() {
 
   }
-
 
 }

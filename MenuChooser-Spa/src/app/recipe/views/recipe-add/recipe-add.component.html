@@ -58,74 +58,119 @@
                         </p-table>
                     </div>
                     <div>
-                        <p-table [value]="formGroup.controls.steps.controls" formArrayName="steps">
-                            <ng-template #caption>
-                                <div class="flex flex-row justify-between">
-                                    <span class="text-xl font-bold">Steps</span>
-                                </div>
-                            </ng-template>
-                            <ng-template #body let-step let-rowIndex="rowIndex">
-                                <tr formGroupName="{{rowIndex}}" [pReorderableRow]="rowIndex">
-                                    <td>
-                                        <div class="flex gap-4">
-                                            <div class="flex items-center">
-                                                <span class="pi pi-bars" pReorderableRowHandle></span>
-                                            </div>
-                                            <div class="flex flex-col gap-2 w-full">
-                                                <div>
-                                                    <!-- <p-multiselect [options]="recipeProducts()"
-                                                        formControlName="products" class="w-full" optionLabel="name"
-                                                        display="chip" placeholder="Step products"></p-multiselect> -->
-                                                </div>
-                                                <div>
-                                                    <p-floatLabel variant="on">
-                                                        <!-- <textarea id="content-{{rowIndex}}" pTextarea rows="2"
-                                                            class="w-full" formControlName="content"
-                                                            [autoResize]="false" pSize="small"></textarea> -->
-                                                        <label for="content-{{rowIndex}}">Content</label>
-                                                    </p-floatLabel>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                            <ng-template #footer class="flex justify-center">
-                                <tr>
-                                    <td class="border-none">
-                                        <div class="flex justify-center max-w-full">
-                                            <svg-icon src="assets\icons\plus-circle.svg" class="flex"
-                                                (click)="toggleAddStep($event)" pTooltip="Add new step"
-                                                [svgStyle]="{'height.px': 40, 'width.px': 40, 'fill': '#b0b0b0'}"></svg-icon>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <!-- <p-popover #addStepPopover>
-                                    <div class="flex flex-col gap-2"
-                                        [ngStyle]="{'max-width': '400px', 'width': '400px'}"
-                                        [formGroup]="recipeStepFormGroup">
-                                        <p-floatLabel variant="on" class="w-full">
-                                            <p-multiselect [options]="recipeProducts()" formControlName="products"
-                                                class="w-full" optionLabel="name" display="chip"></p-multiselect>
-                                            <label for="add-product-input">Products</label>
-                                        </p-floatLabel>
-                                        <p-floatLabel variant="on" class="w-full">
-                                            <textarea id="add-step-content" pTextarea rows="2" class="w-full"
-                                                formControlName="content" [autoResize]="false" pSize="small"></textarea>
-                                            <label for="add-step-content">Content</label>
-                                        </p-floatLabel>
-                                        <p-floatlabel variant="on" class="w-full">
-                                            <input id="duration" type="text" class="w-full" pInputText
-                                                formControlName="duration">
-                                            <label for="duration">Duration</label>
-                                        </p-floatlabel>
-                                        <div class="flex justify-end">
-                                            <p-button (click)="addNewStep()">Save</p-button>
-                                        </div>
-                                    </div>
-                                </p-popover> -->
-                            </ng-template>
-                        </p-table>
+                        <div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2 class="text-2xl font-bold">Steps</h2>
+        <p-button 
+            icon="pi pi-plus" 
+            label="Add Step" 
+            (onClick)="showAddStepDialog = true"
+            size="small">
+        </p-button>
+    </div>
+
+    <div class="space-y-4">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-bold">Steps</h2>
+            <p-button 
+                icon="pi pi-plus" 
+                label="Add Step" 
+                size="small"
+                (click)="showAddStepDialog = true">
+            </p-button>
+        </div>
+        
+        <p-dataView 
+            [value]="formGroup.controls.steps.controls" 
+            dataKey="order"
+            [sortField]="'order'"
+            [sortOrder]="1">
+            
+            <ng-template let-step let-i="index" pTemplate="listItem">
+                <div class="col-12 p-2" 
+                    pDraggable="steps" 
+                    pDroppable="steps"
+                    (onDragStart)="onStepDragStart(i)"
+                    (onDragEnd)="onStepDragEnd()"
+                    (onDrop)="onStepDrop($event, i)" 
+                    [ngClass]="{'border-1 border-primary-500 border-round': i === draggedStepIndex}">
+                    <mc-step 
+                        [stepFormGroup]="step"
+                        [availableProducts]="recipeProducts()"
+                        (remove)="removeStep(i)">
+                    </mc-step>
+                </div>
+            </ng-template>
+        </p-dataView>
+    </div>
+</div>
+
+<!-- Add Step Dialog -->
+<p-dialog 
+    header="Add New Step" 
+    [(visible)]="showAddStepDialog"
+    [modal]="true" 
+    [style]="{ width: '50vw' }"
+    [draggable]="false" 
+    [resizable]="false">
+    
+    <div class="p-fluid">
+        <div class="field">
+            <label for="stepContent">Content</label>
+            <textarea 
+                id="stepContent"
+                pInputTextarea
+                rows="3" 
+                class="w-full" 
+                [formControl]="newStepForm.controls.content">
+            </textarea>
+        </div>
+
+        <div class="field">
+            <label for="stepDuration">Duration (minutes)</label>
+            <input 
+                id="stepDuration" 
+                type="number" 
+                pInputText 
+                [formControl]="newStepForm.controls.duration"
+                min="0">
+        </div>
+
+        <div class="field">
+            <label for="stepProducts">Products</label>
+            <p-multiSelect 
+                id="stepProducts"
+                [options]="recipeProducts()"
+                [formControl]="newStepForm.controls.products"
+                optionLabel="name"
+                display="chip"
+                class="w-full">
+            </p-multiSelect>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <button 
+            pButton 
+            pRipple 
+            type="button" 
+            label="Cancel" 
+            icon="pi pi-times" 
+            class="p-button-text"
+            (click)="showAddStepDialog = false">
+        </button>
+        <button 
+            pButton 
+            pRipple 
+            type="button" 
+            label="Add" 
+            icon="pi pi-check" 
+            class="p-button-text"
+            (click)="addNewStep()"
+            [disabled]="newStepForm.invalid">
+        </button>
+    </ng-template>
+</p-dialog>
                     </div>
                     <div class="flex items-end">
                         <p-button id="save" type="submit">Save</p-button>
