@@ -18,6 +18,7 @@ import { defaultRecipe } from '../../models/default-recipe.model';
 import { IRecipe, IRecipeProduct, RecipeFormType, RecipeStepsFormType } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
+import { upsertByPath } from '../../../shared/helpers/upsert-item';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -88,32 +89,29 @@ export class RecipeAddComponent implements OnInit {
 
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
     const flat = flattenObject(recipeProduct);
-    console.log('flat', flat)
     return flat[field];
   }
 
   public toggleAddStep(event: any) {
-    console.log('toggleaddstep this.formGroup.controls.products.getRawValue()', this.formGroup.controls.products.getRawValue())
     this.addStepPopover.toggle(event);
   }
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {
-    this.toggleProductPanel.set(true);
     this.selectedProduct.set(recipeProduct);
+    this.toggleProductPanel.set(true);
   }
 
   public onRecipeProductSave(recipeProduct: IRecipeProduct) {
     this.recipeSignal.update(recipe => ({
       ...recipe,
-      products: [...recipe.products, recipeProduct]
-    }))
+      products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
+    }));
 
+    this.selectedProduct.set(null); 
     this.toggleProductPanel.set(false);
-    this.selectedProduct.set(null);
   }
 
   public addNewStep() {
-    console.log('addNewStep recipeProduct', this.formGroup.controls.products.getRawValue());
     // this.formGroup.controls.products.push(this.formBuilder.group(recipeProduct));
   }
 

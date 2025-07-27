@@ -138,5 +138,7 @@
 
 <p-drawer header="Right drawer" [(visible)]="toggleProductPanel" position="right" dismissible="true"
     styleClass="w-full md:w-80 lg:w-[30rem]">
-    <mc-recipe-product [product]="selectedProduct()" (cancel)="toggleProductPanel.set(false)" (save)="onRecipeProductSave($event)"></mc-recipe-product>
+    <ng-container *ngIf="toggleProductPanel()">
+        <mc-recipe-product [product]="selectedProduct()" (cancel)="toggleProductPanel.set(false)" (save)="onRecipeProductSave($event)"></mc-recipe-product>
+    </ng-container>
 </p-drawer>
