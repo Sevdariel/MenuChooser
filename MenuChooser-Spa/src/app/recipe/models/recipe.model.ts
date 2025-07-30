@@ -34,7 +34,7 @@ export enum MealType {
 export type RecipeFormType = {
     name: FormControl<string | null>;
     products: FormControl<IRecipeProduct[] | null>;
-    steps: FormArray<FormGroup<RecipeStepsFormType>>;
+    steps: FormControl<IStep[] | null>;
     duration: FormControl<number | null>;
 }
 

@@ -21,7 +21,7 @@
                             <ng-template #caption>
                                 <div class="flex flex-row justify-between">
                                     <span class="text-xl font-bold">Products</span>
-                                    <p-button icon="pi pi-plus" label="Add Product" size="small"
+                                    <p-button icon="pi pi-plus" label="Add product" size="small"
                                         (click)="openRecipeProductPreview(null)"></p-button>
                                 </div>
                             </ng-template>
@@ -50,22 +50,22 @@
                     </div>
                     <div>
                         <div class="card">
-                            <div class="flex justify-content-between align-items-center mb-4">
-                                <h2 class="text-2xl font-bold">Steps</h2>
-                                <p-button icon="pi pi-plus" label="Add Step" (onClick)="showAddStepDialog = true"
+                            <div class="flex justify-between">
+                                <h2 class="text-xl font-bold">Steps</h2>
+                                <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
                                     size="small">
                                 </p-button>
                             </div>
 
                             <div class="space-y-4">
-                                <div class="flex justify-between items-center">
+                                <!-- <div class="flex justify-between items-center">
                                     <h2 class="text-xl font-bold">Steps</h2>
                                     <p-button icon="pi pi-plus" label="Add Step" size="small"
                                         (click)="showAddStepDialog = true">
                                     </p-button>
-                                </div>
+                                </div> -->
 
-                                <p-dataView [value]="formGroup.controls.steps.controls" dataKey="order"
+                                <!-- <p-dataView [value]="formGroup.controls.steps.value" dataKey="order"
                                     [sortField]="'order'" [sortOrder]="1">
 
                                     <ng-template let-step let-i="index" pTemplate="listItem">
@@ -78,46 +78,9 @@
                                             </mc-step>
                                         </div>
                                     </ng-template>
-                                </p-dataView>
+                                </p-dataView> -->
                             </div>
                         </div>
-
-                        <!-- Add Step Dialog -->
-                        <p-dialog header="Add New Step" [(visible)]="showAddStepDialog" [modal]="true"
-                            [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
-
-                            <div class="p-fluid">
-                                <div class="field">
-                                    <label for="stepContent">Content</label>
-                                    <textarea id="stepContent" pInputTextarea rows="3" class="w-full"
-                                        [formControl]="newStepForm.controls.content">
-            </textarea>
-                                </div>
-
-                                <div class="field">
-                                    <label for="stepDuration">Duration (minutes)</label>
-                                    <input id="stepDuration" type="number" pInputText
-                                        [formControl]="newStepForm.controls.duration" min="0">
-                                </div>
-
-                                <div class="field">
-                                    <label for="stepProducts">Products</label>
-                                    <p-multiSelect id="stepProducts" [options]="recipeProducts()"
-                                        [formControl]="newStepForm.controls.products" optionLabel="name" display="chip"
-                                        class="w-full">
-                                    </p-multiSelect>
-                                </div>
-                            </div>
-
-                            <ng-template pTemplate="footer">
-                                <button pButton pRipple type="button" label="Cancel" icon="pi pi-times"
-                                    class="p-button-text" (click)="showAddStepDialog = false">
-                                </button>
-                                <button pButton pRipple type="button" label="Add" icon="pi pi-check"
-                                    class="p-button-text" (click)="addNewStep()" [disabled]="newStepForm.invalid">
-                                </button>
-                            </ng-template>
-                        </p-dialog>
                     </div>
                     <div class="flex items-end">
                         <p-button id="save" type="submit">Save</p-button>
@@ -128,10 +91,15 @@
     </div>
 </div>
 
-<p-drawer header="Right drawer" [(visible)]="toggleProductPanel" position="right" dismissible="true"
+<p-drawer [header]="drawerHeader()" [(visible)]="togglePanel" position="right" dismissible="true"
     styleClass="w-full md:w-80 lg:w-[30rem]">
     <ng-container *ngIf="toggleProductPanel()">
-        <mc-recipe-product [product]="selectedProduct()" (cancel)="toggleProductPanel.set(false)"
+        <mc-recipe-product [product]="selectedProduct()" (cancel)="togglePanel.set(false)"
             (save)="onRecipeProductSave($event)"></mc-recipe-product>
+    </ng-container>
+    <ng-container *ngIf="toggleStepPanel()">
+        <mc-step [step]="selectedStep()" [availableProducts]="recipeProducts()" (cancel)="onStepCancel()"
+            (save)="onStepSave($event)">
+        </mc-step>
     </ng-container>
 </p-drawer>

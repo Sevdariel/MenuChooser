@@ -1,0 +1,111 @@
+@import "src/styles/variables";
+
+.step-form-container {
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 800px;
+  margin: 0 auto;
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: $primary-color;
+    font-weight: 500;
+  }
+}
+
+.step-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-weight: 500;
+    color: $text-color;
+  }
+
+  .p-inputtext,
+  .p-inputnumber,
+  .p-multiselect,
+  textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: $primary-color;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.2);
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: $error-color;
+      
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba($error-color, 0.2);
+      }
+    }
+  }
+
+  textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .p-error {
+    color: $error-color;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid $border-color;
+}
+
+.product-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  
+  .product-quantity {
+    color: $text-secondary;
+    font-size: 0.9em;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .step-form-container {
+    padding: 1rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}

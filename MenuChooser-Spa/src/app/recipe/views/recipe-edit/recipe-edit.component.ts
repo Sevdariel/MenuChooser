@@ -1,7 +1,6 @@
 import { Component, computed, DestroyRef, inject, input, output } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -9,14 +8,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TableModule } from 'primeng/table';
 import { TextareaModule } from 'primeng/textarea';
-import { tap } from 'rxjs';
 import { AuthService } from '../../../core/authorization/auth.service';
 import { defaultRecipe } from '../../models/default-recipe.model';
-import { IStepDto, IUpdateRecipeDto } from '../../models/recipe-dto.model';
-import { IRecipe, RecipeFormType } from '../../models/recipe.model';
+import { IRecipe, IStep, RecipeFormType } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeService } from '../../services/recipe.service';
-import { IRecipeProduct, IStep } from './../../models/recipe.model';
 
 @Component({
   selector: 'mc-recipe-edit',
@@ -59,7 +55,7 @@ export class RecipeEditComponent {
       name: new FormControl(this.recipe().name),
       duration: new FormControl(this.recipe().duration),
       products: new FormControl(this.recipe().products),
-      steps: this.recipeMapperService.mapStepsToFormArray(this.recipe().steps),
+      steps: new FormControl<IStep[]>(this.recipe().steps),
     });
   }
 

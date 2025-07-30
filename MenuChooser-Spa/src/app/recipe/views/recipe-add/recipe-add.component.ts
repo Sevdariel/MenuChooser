@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit, signal, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SvgIconComponent } from 'angular-svg-icon';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -26,13 +25,12 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
+import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipe } from '../../models/default-recipe.model';
-import { IRecipe, IRecipeProduct, RecipeFormType, RecipeStepsFormType } from '../../models/recipe.model';
+import { IRecipe, IRecipeProduct, IStep, RecipeFormType } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
-import { StepComponent } from '../../step/step.component';
-import { upsertByPath } from '../../../shared/helpers/upsert-item';
-import { IStep } from '../../models/recipe.model';
+import { StepComponent } from '../step/step.component';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -58,14 +56,13 @@ import { IStep } from '../../models/recipe.model';
     RecipeProductComponent,
     SelectButtonModule,
     SidebarModule,
-    StepComponent,
     TableModule,
     TabViewModule,
     TagModule,
     TextareaModule,
     ToggleButtonModule,
     TooltipModule,
-    SvgIconComponent,
+    StepComponent,
   ],
   templateUrl: './recipe-add.component.html',
   styleUrl: './recipe-add.component.scss'
@@ -81,8 +78,11 @@ export class RecipeAddComponent implements OnInit {
   public recipe = this.recipeSignal.asReadonly();
 
   public selectedProduct = signal<IRecipeProduct | null>(null);
+  public selectedStep = signal<IStep | null>(null);
 
+  public togglePanel = signal<boolean>(false);
   public toggleProductPanel = signal<boolean>(false);
+  public toggleStepPanel = signal<boolean>(false);
 
   protected readonly productColumns = [
     { field: 'name', caption: 'Name' },
@@ -90,43 +90,13 @@ export class RecipeAddComponent implements OnInit {
   ];
 
   public formGroup!: FormGroup<RecipeFormType>;
-  public newStepForm = this.formBuilder.group({
-    content: new FormControl('', { nonNullable: true }),
-    duration: new FormControl(0, { nonNullable: true }),
-    order: new FormControl(0, { nonNullable: true }),
-    products: new FormControl<IRecipeProduct[]>([], { nonNullable: true }),
-  });
-  
+
   public showAddStepDialog = false;
   public draggedStepIndex: number | null = null;
-  
+
   // Getter for recipe products
   public recipeProducts() {
     return this.recipe().products;
-  }
-
-  public onStepDragStart(index: number) {
-    this.draggedStepIndex = index;
-  }
-
-  public onStepDragEnd() {
-    this.draggedStepIndex = null;
-  }
-
-  public onStepDrop(event: any, dropIndex: number) {
-    if (this.draggedStepIndex !== null) {
-      const steps = this.formGroup.controls.steps;
-      const movedStep = steps.at(this.draggedStepIndex);
-      steps.removeAt(this.draggedStepIndex);
-      steps.insert(dropIndex, movedStep);
-      
-      // Update order of all steps
-      steps.controls.forEach((step, idx) => {
-        step.patchValue({ order: idx });
-      });
-      
-      this.draggedStepIndex = null;
-    }
   }
 
   constructor() {
@@ -142,7 +112,7 @@ export class RecipeAddComponent implements OnInit {
       duration: new FormControl(this.recipeSignal().duration),
       name: new FormControl(this.recipeSignal().name),
       products: new FormControl<IRecipeProduct[]>(this.recipeSignal().products),
-      steps: this.recipeMapperService.mapStepsToFormArray(this.recipeSignal().steps),
+      steps: new FormControl<IStep[]>(this.recipeSignal().steps),
     });
   }
 
@@ -157,7 +127,14 @@ export class RecipeAddComponent implements OnInit {
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {
     this.selectedProduct.set(recipeProduct);
+    this.togglePanel.set(true);
     this.toggleProductPanel.set(true);
+  }
+
+  public openStepPreview(step: IStep | null) {
+    this.selectedStep.set(step);
+    this.togglePanel.set(true);
+    this.toggleStepPanel.set(true);
   }
 
   public onRecipeProductSave(recipeProduct: IRecipeProduct) {
@@ -166,54 +143,89 @@ export class RecipeAddComponent implements OnInit {
       products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
     }));
 
-    this.selectedProduct.set(null); 
+    this.selectedProduct.set(null);
+    this.togglePanel.set(false);
     this.toggleProductPanel.set(false);
   }
 
+  public drawerHeader() {
+    return this.toggleProductPanel() ? this.selectedProduct() ? 'Edit Product' : 'Add Product' : this.selectedStep() ? 'Edit Step' : 'Add Step';
+  }
+
+  public onStepSave(step: IStep) {
+    this.recipeSignal.update(recipe => {
+      const steps = [...recipe.steps];
+      const existingIndex = steps.findIndex(s => s.order === step.order);
+
+      if (existingIndex >= 0) {
+        // Update existing step
+        steps[existingIndex] = step;
+      } else {
+        // Add new step
+        steps.push(step);
+      }
+
+      return {
+        ...recipe,
+        steps: [...steps]
+      };
+    });
+
+    this.selectedStep.set(null);
+    this.togglePanel.set(false);
+    this.toggleStepPanel.set(false);
+  }
+
+  public onStepCancel() {
+    this.selectedStep.set(null);
+    this.togglePanel.set(false);
+    this.toggleStepPanel.set(false);
+  }
+
   public addNewStep() {
-    const steps = this.formGroup.controls.steps;
-    const newStep: IStep = {
-      content: this.newStepForm.controls.content.value,
-      duration: this.newStepForm.controls.duration.value,
-      order: steps.length,
-      products: this.newStepForm.controls.products.value || []
-    };
-    
-    // steps.push(this.recipeMapperService.mapStepToFormGroup(newStep));
-    this.newStepForm.reset({
-      content: '',
-      duration: 0,
-      order: steps.length,
-      products: []
-    });
-    this.showAddStepDialog = false;
+    // const steps = this.formGroup.controls.steps;
+    // const newStep: IStep = {
+    //   content: this.newStepForm.controls.content.value,
+    //   duration: this.newStepForm.controls.duration.value,
+    //   order: steps.value.length,
+    //   products: this.newStepForm.controls.products.value || []
+    // };
+
+    // // steps.push(this.recipeMapperService.mapStepToFormGroup(newStep));
+    // this.newStepForm.reset({
+    //   content: '',
+    //   duration: 0,
+    //   order: steps.length,
+    //   products: []
+    // });
+    // this.showAddStepDialog = false;
   }
-  
+
   public removeStep(index: number) {
-    const steps = this.formGroup.controls.steps;
-    steps.removeAt(index);
-    // Update order of remaining steps
-    steps.controls.forEach((step, idx) => {
-      step.patchValue({ order: idx });
-    });
+    // const steps = this.formGroup.controls.steps;
+    // steps.removeAt(index);
+    // // Update order of remaining steps
+    // steps.controls.forEach((step, idx) => {
+    //   step.patchValue({ order: idx });
+    // });
   }
-  
+
   public onStepReorder(event: any) {
-    // Get the reordered array
-    const reorderedItems = event.items;
-    const steps = this.formGroup.controls.steps;
-    
-    // Clear the form array
-    while (steps.length) {
-      steps.removeAt(0);
-    }
-    
-    // Add the reordered items back with updated order
-    reorderedItems.forEach((item: any, index: number) => {
-      const step = item.data;
-      step.patchValue({ order: index });
-      steps.push(step);
-    });
+    // // Get the reordered array
+    // const reorderedItems = event.items;
+    // const steps = this.formGroup.controls.steps;
+
+    // // Clear the form array
+    // while (steps.length) {
+    //   steps.removeAt(0);
+    // }
+
+    // // Add the reordered items back with updated order
+    // reorderedItems.forEach((item: any, index: number) => {
+    //   const step = item.data;
+    //   step.patchValue({ order: index });
+    //   steps.push(step);
+    // });
   }
 
   public saveRecipe() {
