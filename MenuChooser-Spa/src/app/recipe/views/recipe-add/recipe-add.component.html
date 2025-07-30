@@ -21,6 +21,8 @@
                             <ng-template #caption>
                                 <div class="flex flex-row justify-between">
                                     <span class="text-xl font-bold">Products</span>
+                                    <p-button icon="pi pi-plus" label="Add Product" size="small"
+                                        (click)="openRecipeProductPreview(null)"></p-button>
                                 </div>
                             </ng-template>
                             <ng-template #header>
@@ -44,133 +46,78 @@
                                     </td>
                                 </tr>
                             </ng-template>
-                            <ng-template #footer class="flex justify-center">
-                                <tr>
-                                    <td [attr.colspan]="productColumns.length + 1" class="border-none">
-                                        <div class="flex justify-center max-w-full">
-                                            <svg-icon src="assets\icons\plus-circle.svg" class="flex"
-                                                (click)="openRecipeProductPreview(null)" pTooltip="Add new product"
-                                                [svgStyle]="{'height.px': 40, 'width.px': 40, 'fill': '#b0b0b0'}"></svg-icon>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </ng-template>
                         </p-table>
                     </div>
                     <div>
                         <div class="card">
-    <div class="flex justify-content-between align-items-center mb-4">
-        <h2 class="text-2xl font-bold">Steps</h2>
-        <p-button 
-            icon="pi pi-plus" 
-            label="Add Step" 
-            (onClick)="showAddStepDialog = true"
-            size="small">
-        </p-button>
-    </div>
+                            <div class="flex justify-content-between align-items-center mb-4">
+                                <h2 class="text-2xl font-bold">Steps</h2>
+                                <p-button icon="pi pi-plus" label="Add Step" (onClick)="showAddStepDialog = true"
+                                    size="small">
+                                </p-button>
+                            </div>
 
-    <div class="space-y-4">
-        <div class="flex justify-between items-center">
-            <h2 class="text-xl font-bold">Steps</h2>
-            <p-button 
-                icon="pi pi-plus" 
-                label="Add Step" 
-                size="small"
-                (click)="showAddStepDialog = true">
-            </p-button>
-        </div>
-        
-        <p-dataView 
-            [value]="formGroup.controls.steps.controls" 
-            dataKey="order"
-            [sortField]="'order'"
-            [sortOrder]="1">
-            
-            <ng-template let-step let-i="index" pTemplate="listItem">
-                <div class="col-12 p-2" 
-                    pDraggable="steps" 
-                    pDroppable="steps"
-                    (onDragStart)="onStepDragStart(i)"
-                    (onDragEnd)="onStepDragEnd()"
-                    (onDrop)="onStepDrop($event, i)" 
-                    [ngClass]="{'border-1 border-primary-500 border-round': i === draggedStepIndex}">
-                    <mc-step 
-                        [stepFormGroup]="step"
-                        [availableProducts]="recipeProducts()"
-                        (remove)="removeStep(i)">
-                    </mc-step>
-                </div>
-            </ng-template>
-        </p-dataView>
-    </div>
-</div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <h2 class="text-xl font-bold">Steps</h2>
+                                    <p-button icon="pi pi-plus" label="Add Step" size="small"
+                                        (click)="showAddStepDialog = true">
+                                    </p-button>
+                                </div>
 
-<!-- Add Step Dialog -->
-<p-dialog 
-    header="Add New Step" 
-    [(visible)]="showAddStepDialog"
-    [modal]="true" 
-    [style]="{ width: '50vw' }"
-    [draggable]="false" 
-    [resizable]="false">
-    
-    <div class="p-fluid">
-        <div class="field">
-            <label for="stepContent">Content</label>
-            <textarea 
-                id="stepContent"
-                pInputTextarea
-                rows="3" 
-                class="w-full" 
-                [formControl]="newStepForm.controls.content">
+                                <p-dataView [value]="formGroup.controls.steps.controls" dataKey="order"
+                                    [sortField]="'order'" [sortOrder]="1">
+
+                                    <ng-template let-step let-i="index" pTemplate="listItem">
+                                        <div class="col-12 p-2" pDraggable="steps" pDroppable="steps"
+                                            (onDragStart)="onStepDragStart(i)" (onDragEnd)="onStepDragEnd()"
+                                            (onDrop)="onStepDrop($event, i)"
+                                            [ngClass]="{'border-1 border-primary-500 border-round': i === draggedStepIndex}">
+                                            <mc-step [stepFormGroup]="step" [availableProducts]="recipeProducts()"
+                                                (remove)="removeStep(i)">
+                                            </mc-step>
+                                        </div>
+                                    </ng-template>
+                                </p-dataView>
+                            </div>
+                        </div>
+
+                        <!-- Add Step Dialog -->
+                        <p-dialog header="Add New Step" [(visible)]="showAddStepDialog" [modal]="true"
+                            [style]="{ width: '50vw' }" [draggable]="false" [resizable]="false">
+
+                            <div class="p-fluid">
+                                <div class="field">
+                                    <label for="stepContent">Content</label>
+                                    <textarea id="stepContent" pInputTextarea rows="3" class="w-full"
+                                        [formControl]="newStepForm.controls.content">
             </textarea>
-        </div>
+                                </div>
 
-        <div class="field">
-            <label for="stepDuration">Duration (minutes)</label>
-            <input 
-                id="stepDuration" 
-                type="number" 
-                pInputText 
-                [formControl]="newStepForm.controls.duration"
-                min="0">
-        </div>
+                                <div class="field">
+                                    <label for="stepDuration">Duration (minutes)</label>
+                                    <input id="stepDuration" type="number" pInputText
+                                        [formControl]="newStepForm.controls.duration" min="0">
+                                </div>
 
-        <div class="field">
-            <label for="stepProducts">Products</label>
-            <p-multiSelect 
-                id="stepProducts"
-                [options]="recipeProducts()"
-                [formControl]="newStepForm.controls.products"
-                optionLabel="name"
-                display="chip"
-                class="w-full">
-            </p-multiSelect>
-        </div>
-    </div>
+                                <div class="field">
+                                    <label for="stepProducts">Products</label>
+                                    <p-multiSelect id="stepProducts" [options]="recipeProducts()"
+                                        [formControl]="newStepForm.controls.products" optionLabel="name" display="chip"
+                                        class="w-full">
+                                    </p-multiSelect>
+                                </div>
+                            </div>
 
-    <ng-template pTemplate="footer">
-        <button 
-            pButton 
-            pRipple 
-            type="button" 
-            label="Cancel" 
-            icon="pi pi-times" 
-            class="p-button-text"
-            (click)="showAddStepDialog = false">
-        </button>
-        <button 
-            pButton 
-            pRipple 
-            type="button" 
-            label="Add" 
-            icon="pi pi-check" 
-            class="p-button-text"
-            (click)="addNewStep()"
-            [disabled]="newStepForm.invalid">
-        </button>
-    </ng-template>
-</p-dialog>
+                            <ng-template pTemplate="footer">
+                                <button pButton pRipple type="button" label="Cancel" icon="pi pi-times"
+                                    class="p-button-text" (click)="showAddStepDialog = false">
+                                </button>
+                                <button pButton pRipple type="button" label="Add" icon="pi pi-check"
+                                    class="p-button-text" (click)="addNewStep()" [disabled]="newStepForm.invalid">
+                                </button>
+                            </ng-template>
+                        </p-dialog>
                     </div>
                     <div class="flex items-end">
                         <p-button id="save" type="submit">Save</p-button>
@@ -184,6 +131,7 @@
 <p-drawer header="Right drawer" [(visible)]="toggleProductPanel" position="right" dismissible="true"
     styleClass="w-full md:w-80 lg:w-[30rem]">
     <ng-container *ngIf="toggleProductPanel()">
-        <mc-recipe-product [product]="selectedProduct()" (cancel)="toggleProductPanel.set(false)" (save)="onRecipeProductSave($event)"></mc-recipe-product>
+        <mc-recipe-product [product]="selectedProduct()" (cancel)="toggleProductPanel.set(false)"
+            (save)="onRecipeProductSave($event)"></mc-recipe-product>
     </ng-container>
 </p-drawer>
