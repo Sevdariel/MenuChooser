@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { Component, EventEmitter, inject, Input, OnInit, Output, signal, computed, effect, input } from '@angular/core';
+import { ReactiveFormsModule, FormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextarea } from 'primeng/inputtextarea';
@@ -26,45 +26,63 @@ import { IProduct } from '../../../product/models/product.model';
   styleUrl: './step.component.scss'
 })
 export class StepComponent implements OnInit {
-  private readonly formBuilder = inject(FormBuilder);
+  public availableProducts = input<IRecipeProduct[]>();
 
-  private _availableProducts: IRecipeProduct[] = [];
-  
-  @Input() set availableProducts(products: IRecipeProduct[]) {
-    this._availableProducts = products || [];
-    this.filterProducts();
-  }
-  
-  get availableProducts(): IRecipeProduct[] {
-    return this._availableProducts;
-  }
-  
-  @Input() step: IStep | null = null;
-  @Output() save = new EventEmitter<IStep>();
-  @Output() cancel = new EventEmitter<void>();
-
-  public stepForm!: FormGroup;
-  public selectedProducts = signal<IRecipeProduct[]>([]);
-
-  public ngOnInit(): void {
-    this.initializeForm();
-    if (this.step) {
-      this.patchFormValues();
+  @Input() set step(step: IStep | null) {
+    if (step) {
+      this.order.set(step.order);
+      this.content.set(step.content);
+      this.duration.set(step.duration);
+      this.products.set(step.products || []);
     }
   }
 
+  @Output() save = new EventEmitter<IStep>();
+  @Output() cancel = new EventEmitter<void>();
+
+  // Form controls using signals with initial values
+  public order = signal<number | null>(null);
+  public content = signal<string>('');
+  public duration = signal<number | null>(null);
+  public products = signal<IRecipeProduct[]>([]);
+
+  // Form validation state
+  public isFormValid = computed(() =>
+    this.order() !== null &&
+    this.content().trim().length > 0 &&
+    this.duration() !== null
+  );
+
+  // Track form dirty state
+  public isDirty = signal(false);
+
+  public ngOnInit(): void {
+    // Setup effect to track form changes
+    effect(() => {
+      const currentProducts = this.products();
+      const availableProductIds = new Set(this.availableProducts()?.map(p => p.product.id));
+
+      // Filter out any products that aren't in the available products list
+      const validProducts = currentProducts.filter(p =>
+        p.product && availableProductIds.has(p.product.id)
+      );
+
+      if (validProducts.length !== currentProducts.length) {
+        this.products.set(validProducts);
+      }
+    });
+  }
+
   public onSubmit(): void {
-    if (this.stepForm.valid) {
-      const formValue = this.stepForm.getRawValue();
+    if (this.isFormValid()) {
       const step: IStep = {
-        order: formValue.order,
-        content: formValue.content,
-        duration: formValue.duration,
-        products: formValue.products
+        order: this.order()!,
+        content: this.content(),
+        duration: this.duration()!,
+        products: this.products()
       };
       this.save.emit(step);
-    } else {
-      this.stepForm.markAllAsTouched();
+      this.isDirty.set(false);
     }
   }
 
@@ -72,50 +90,26 @@ export class StepComponent implements OnInit {
     this.cancel.emit();
   }
 
-  private initializeForm(): void {
-    this.stepForm = this.formBuilder.group({
-      order: [null, [Validators.required, Validators.min(1)]],
-      content: ['', Validators.required],
-      duration: [null, [Validators.required, Validators.min(1)]],
-      products: [[]]
-    });
-  }
-
-  private patchFormValues(): void {
-    if (!this.step) return;
-
-    this.stepForm.patchValue({
-      order: this.step.order,
-      content: this.step.content,
-      duration: this.step.duration,
-      products: this.step.products || []
-    });
-    this.selectedProducts.set(this.step.products || []);
-  }
-
   public onProductSelectionChange(products: IRecipeProduct[]): void {
-    // Filter out any products that aren't in the available products list
-    const validProducts = products.filter((p: IRecipeProduct) => 
-      this.availableProducts.some((ap: IRecipeProduct) => ap.product.id === p.product.id)
-    );
-    
-    this.stepForm.patchValue({
-      products: validProducts
-    });
+    this.products.set(products);
+    this.isDirty.set(true);
   }
-  
-  private filterProducts(): void {
-    if (this.stepForm) {
-      const currentProducts = this.stepForm.get('products')?.value || [];
-      const filteredProducts = currentProducts.filter((p: IRecipeProduct) => 
-        this.availableProducts.some((ap: IRecipeProduct) => ap.product.id === p.product.id)
-      );
-      
-      if (filteredProducts.length !== currentProducts.length) {
-        this.stepForm.patchValue({
-          products: filteredProducts
-        });
-      }
-    }
+
+  // Helper methods to update form values and track dirty state
+  public updateOrder(value: number | null): void {
+    const numValue = value !== null ? Number(value) : null;
+    this.order.set(numValue);
+    this.isDirty.set(true);
+  }
+
+  public updateContent(value: string): void {
+    this.content.set(value || '');
+    this.isDirty.set(true);
+  }
+
+  public updateDuration(value: number | null): void {
+    const numValue = value !== null ? Number(value) : null;
+    this.duration.set(numValue);
+    this.isDirty.set(true);
   }
 }

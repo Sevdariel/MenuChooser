@@ -53,7 +53,7 @@
                             <div class="flex justify-between">
                                 <h2 class="text-xl font-bold">Steps</h2>
                                 <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
-                                    size="small">
+                                    [disabled]="recipe().products.length === 0" size="small">
                                 </p-button>
                             </div>
 
@@ -98,7 +98,7 @@
             (save)="onRecipeProductSave($event)"></mc-recipe-product>
     </ng-container>
     <ng-container *ngIf="drawerService.contentVisible() === drawerContent.Step">
-        <mc-step [step]="selectedStep()" [availableProducts]="recipeProducts()"
+        <mc-step [step]="selectedStep()" [availableProducts]="recipe().products"
             (cancel)="drawerService.toggleDrawerPannel(drawerContent.None)" (save)="onStepSave($event)">
         </mc-step>
     </ng-container>

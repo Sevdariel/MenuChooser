@@ -98,15 +98,11 @@ export class RecipeAddComponent implements OnInit {
   public showAddStepDialog = false;
   public draggedStepIndex: number | null = null;
 
-  // Getter for recipe products
-  public recipeProducts() {
-    return this.recipe().products;
-  }
-
   constructor() {
     effect(() => {
       this.formGroup.patchValue({
         products: this.recipeSignal().products,
+        steps: this.recipeSignal().steps,
       })
     })
   }
@@ -146,12 +142,18 @@ export class RecipeAddComponent implements OnInit {
     }));
 
     this.selectedProduct.set(null);
-    this.togglePanel.set(false);
-    this.toggleProductPanel.set(false);
+    this.drawerService.toggleDrawerPannel(DrawerContent.None);
   }
 
   public drawerHeader() {
-    return this.toggleProductPanel() ? this.selectedProduct() ? 'Edit Product' : 'Add Product' : this.selectedStep() ? 'Edit Step' : 'Add Step';
+    switch (this.drawerService.contentVisible()) {
+      case DrawerContent.RecipeProduct:
+        return this.selectedProduct() ? 'Edit Product' : 'Add Product';
+      case DrawerContent.Step:
+        return this.selectedStep() ? 'Edit Step' : 'Add Step';
+      default:
+        return '';
+    }
   }
 
   public onStepSave(step: IStep) {
@@ -174,8 +176,7 @@ export class RecipeAddComponent implements OnInit {
     });
 
     this.selectedStep.set(null);
-    this.togglePanel.set(false);
-    this.toggleStepPanel.set(false);
+    this.drawerService.toggleDrawerPannel(DrawerContent.None);
   }
 
   public onStepCancel() {
