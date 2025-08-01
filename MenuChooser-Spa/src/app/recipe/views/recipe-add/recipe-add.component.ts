@@ -31,6 +31,8 @@ import { IRecipe, IRecipeProduct, IStep, RecipeFormType } from '../../models/rec
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
 import { StepComponent } from '../step/step.component';
+import { DrawerService } from '../../../shared/drawer/drawer.service';
+import { DrawerContent } from '../../../shared/drawer/drawer.model';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -71,6 +73,7 @@ export class RecipeAddComponent implements OnInit {
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly recipeMapperService = inject(RecipeMapperService);
+  public readonly drawerService = inject(DrawerService);
 
   @ViewChild('addStepPopover') protected addStepPopover!: Popover;
 
@@ -88,6 +91,7 @@ export class RecipeAddComponent implements OnInit {
     { field: 'name', caption: 'Name' },
     { field: 'quantity', caption: 'Quantity' },
   ];
+  protected drawerContent = DrawerContent;
 
   public formGroup!: FormGroup<RecipeFormType>;
 
@@ -127,14 +131,12 @@ export class RecipeAddComponent implements OnInit {
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {
     this.selectedProduct.set(recipeProduct);
-    this.togglePanel.set(true);
-    this.toggleProductPanel.set(true);
+    this.drawerService.toggleDrawerPannel(DrawerContent.RecipeProduct);
   }
 
   public openStepPreview(step: IStep | null) {
     this.selectedStep.set(step);
-    this.togglePanel.set(true);
-    this.toggleStepPanel.set(true);
+    this.drawerService.toggleDrawerPannel(DrawerContent.Step);
   }
 
   public onRecipeProductSave(recipeProduct: IRecipeProduct) {

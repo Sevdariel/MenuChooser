@@ -91,15 +91,15 @@
     </div>
 </div>
 
-<p-drawer [header]="drawerHeader()" [(visible)]="togglePanel" position="right" dismissible="true"
+<p-drawer [header]="drawerHeader()" [(visible)]="drawerService.drawerVisible" position="right" dismissible="true"
     styleClass="w-full md:w-80 lg:w-[30rem]">
-    <ng-container *ngIf="toggleProductPanel()">
-        <mc-recipe-product [product]="selectedProduct()" (cancel)="togglePanel.set(false)"
+    <ng-container *ngIf="drawerService.contentVisible() === drawerContent.RecipeProduct">
+        <mc-recipe-product [product]="selectedProduct()" (cancel)="drawerService.toggleDrawerPannel(drawerContent.None)"
             (save)="onRecipeProductSave($event)"></mc-recipe-product>
     </ng-container>
-    <ng-container *ngIf="toggleStepPanel()">
-        <mc-step [step]="selectedStep()" [availableProducts]="recipeProducts()" (cancel)="onStepCancel()"
-            (save)="onStepSave($event)">
+    <ng-container *ngIf="drawerService.contentVisible() === drawerContent.Step">
+        <mc-step [step]="selectedStep()" [availableProducts]="recipeProducts()"
+            (cancel)="drawerService.toggleDrawerPannel(drawerContent.None)" (save)="onStepSave($event)">
         </mc-step>
     </ng-container>
 </p-drawer>
