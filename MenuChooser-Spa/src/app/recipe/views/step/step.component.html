@@ -1,101 +1,40 @@
-<div class="step-form-container">
-  <h2>{{ (order() !== null) ? 'Edit Step' : 'Add New Step' }}</h2>
-  
-  <form (ngSubmit)="onSubmit()" class="step-form">
-    <div class="form-group">
-      <label for="order">Step Number</label>
-      <p-inputNumber
-        id="order"
-        [showButtons]="true"
-        [min]="1"
-        [required]="true"
-        [ngModel]="order()"
-        (ngModelChange)="updateOrder($event)"
-        [name]="'order'"
-        [class.ng-invalid]="!order()"
-      ></p-inputNumber>
-      <small class="p-error" *ngIf="!order()">
-        Please enter a valid step number
-      </small>
-    </div>
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="step-form">
+  <div class="form-group">
+    <label for="order">Step Number</label>
+    <p-inputNumber id="order" [showButtons]="true" [min]="1" [required]="true" formControlName="order" [name]="'order'"
+      [class.ng-invalid]="!formGroup.get('order')?.valid"></p-inputNumber>
+  </div>
 
-    <div class="form-group">
-      <label for="content">Instructions</label>
-      <textarea
-        pInputTextarea
-        id="content"
-        [ngModel]="content()"
-        (ngModelChange)="updateContent($event)"
-        [name]="'content'"
-        rows="5"
-        pAutoResize="true"
-        required
-        class="w-full"
-        [ngClass]="{'ng-invalid': !content()}"
-      ></textarea>
-      <small class="p-error" *ngIf="!content()">
-        Please enter step instructions
-      </small>
-    </div>
+  <div class="form-group">
+    <label for="content">Instructions</label>
+    <textarea pInputTextarea id="content" formControlName="content" [name]="'content'" rows="5" pAutoResize="true"
+      required class="w-full" [ngClass]="{'ng-invalid': !formGroup.get('content')?.valid}"></textarea>
+  </div>
 
-    <div class="form-group">
-      <label for="duration">Duration (minutes)</label>
-      <p-inputNumber
-        id="duration"
-        [ngModel]="duration()"
-        (ngModelChange)="updateDuration($event)"
-        [name]="'duration'"
-        [showButtons]="true"
-        [min]="1"
-        [required]="true"
-        [class.ng-invalid]="!duration()"
-      ></p-inputNumber>
-      <small class="p-error" *ngIf="!duration()">
-        Please enter a valid duration
-      </small>
-    </div>
+  <div class="form-group">
+    <label for="duration">Duration (minutes)</label>
+    <p-inputNumber id="duration" formControlName="duration" [name]="'duration'" [showButtons]="true" [min]="1"
+      [required]="true" [class.ng-invalid]="!formGroup.get('duration')?.valid"></p-inputNumber>
+  </div>
 
-    <div class="form-group">
-      <label>Products Used in This Step</label>
-      <p-multiSelect
-        [options]="availableProducts()"
-        [ngModel]="products()"
-        (ngModelChange)="onProductSelectionChange($event)"
-        [name]="'products'"
-        optionLabel="product.name"
-        [showToggleAll]="false"
-        [filter]="true"
-        filterBy="product.name"
-        placeholder="Select products"
-        [showHeader]="false"
-        [selectionLimit]="availableProducts.length"
-        [panelStyle]="{'max-height': '200px'}"
-      >
-        <ng-template let-product pTemplate="item">
-          <div class="product-item">
-            <div>{{ product.product.name }}</div>
-            <div class="product-quantity">{{ product.quantity }} {{ product.product.unit }}</div>
-          </div>
-        </ng-template>
-      </p-multiSelect>
-    </div>
+  <div class="form-group">
+    <label>Products Used in This Step</label>
+    <p-multiSelect [options]="availableProducts()" formControlName="products" [name]="'products'"
+      optionLabel="product.name" [showToggleAll]="false" [filter]="true" filterBy="product.name"
+      placeholder="Select products" [showHeader]="false" [selectionLimit]="availableProducts.length"
+      [panelStyle]="{'max-height': '200px'}">
+      <ng-template let-product pTemplate="item">
+        <div class="product-item">
+          <div>{{ product.product.name }}</div>
+          <div class="product-quantity">{{ product.quantity }} {{ product.product.unit }}</div>
+        </div>
+      </ng-template>
+    </p-multiSelect>
+  </div>
 
-    <div class="form-actions">
-      <button
-        pButton
-        type="button"
-        label="Cancel"
-        icon="pi pi-times"
-        class="p-button-text"
-        (click)="onCancel()"
-      ></button>
-      <button
-        pButton
-        type="submit"
-        [label]="order() !== null ? 'Update' : 'Add'"
-        icon="pi pi-check"
-        [disabled]="!isFormValid()"
-      ></button>
-    </div>
-  </form>
-</div>
+  <div class="form-actions">
+    <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text"></button>
+    <button pButton type="submit" [label]="step()?.order !== null ? 'Update' : 'Add'" icon="pi pi-check"
+      [disabled]="!formGroup.valid"></button>
+  </div>
+</form>

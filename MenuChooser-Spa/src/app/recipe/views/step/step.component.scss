@@ -1,20 +1,3 @@
-
-.step-form-container {
-  padding: 1.5rem;
-  background-color: white;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 0 auto;
-
-  h2 {
-    margin-top: 0;
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-weight: 500;
-  }
-}
-
 .step-form {
   display: flex;
   flex-direction: column;
@@ -54,7 +37,7 @@
 
     &.ng-invalid.ng-touched {
       border-color: #333;
-      
+
       &:focus {
         box-shadow: 0 0 0 0.2rem rgba(#333, 0.2);
       }
@@ -87,7 +70,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0;
-  
+
   .product-quantity {
     color: #333;
     font-size: 0.9em;
@@ -99,10 +82,10 @@
   .step-form-container {
     padding: 1rem;
   }
-  
+
   .form-actions {
     flex-direction: column;
-    
+
     button {
       width: 100%;
     }

@@ -53,8 +53,12 @@
                             <div class="flex justify-between">
                                 <h2 class="text-xl font-bold">Steps</h2>
                                 <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
-                                    [disabled]="recipe().products.length === 0" size="small">
+                                    size="small">
                                 </p-button>
+                                <!-- Temporary disabled for development
+                                <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
+                                    [disabled]="recipe().products.length === 0" size="small">
+                                </p-button> -->
                             </div>
 
                             <div class="space-y-4">
