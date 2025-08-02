@@ -6,6 +6,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { IRecipeProduct, IStep } from '../../models/recipe.model';
+import { TextareaModule } from 'primeng/textarea';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'mc-step',
@@ -17,7 +19,9 @@ import { IRecipeProduct, IStep } from '../../models/recipe.model';
     InputNumberModule,
     InputTextModule,
     ButtonModule,
-    MultiSelectModule
+    MultiSelectModule,
+    TextareaModule,
+    FloatLabelModule
   ],
   templateUrl: './step.component.html',
   styleUrl: './step.component.scss'

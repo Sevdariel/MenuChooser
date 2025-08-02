@@ -1,7 +1,7 @@
 .step-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .form-group {
@@ -12,41 +12,6 @@
   label {
     font-weight: 500;
     color: #333;
-  }
-
-  .p-inputtext,
-  .p-inputnumber,
-  .p-multiselect,
-  textarea {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-
-    &:hover {
-      border-color: #333;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: #333;
-      box-shadow: 0 0 0 0.2rem rgba(#333, 0.2);
-    }
-
-    &.ng-invalid.ng-touched {
-      border-color: #333;
-
-      &:focus {
-        box-shadow: 0 0 0 0.2rem rgba(#333, 0.2);
-      }
-    }
-  }
-
-  textarea {
-    min-height: 100px;
-    resize: vertical;
   }
 
   .p-error {
@@ -60,9 +25,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #ccc;
 }
 
 .product-item {
