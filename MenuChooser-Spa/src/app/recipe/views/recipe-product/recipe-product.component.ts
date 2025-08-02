@@ -34,14 +34,13 @@ export class RecipeProductComponent implements OnInit {
   public cancel = output<void>();
   public suggestionProducts = signal<IProduct[]>([]);
 
-  public productForm: FormGroup = this.formBuilder.group({
-    product: [null, Validators.required],
-    quantity: [null, [Validators.required, Validators.min(0.01)]]
-  });
+  public productForm!: FormGroup;
 
   public ngOnInit(): void {
-    this.initForm();
-    this.setupFormValueChanges();
+    this.productForm = this.formBuilder.group({
+      product: [this.product()?.product, Validators.required],
+      quantity: [this.product()?.quantity, [Validators.required, Validators.min(0.01)]]
+    });
   }
 
   onSave() {
@@ -50,9 +49,6 @@ export class RecipeProductComponent implements OnInit {
         product: this.productForm.value.product,
         quantity: this.productForm.value.quantity
       });
-    } else {
-      // Mark all fields as touched to show validation messages
-      this.productForm.markAllAsTouched();
     }
   }
 
@@ -65,28 +61,5 @@ export class RecipeProductComponent implements OnInit {
       tap(products => this.suggestionProducts.set(products)),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
-  }
-
-  private initForm(): void {
-    // Set initial values if product input is provided
-    if (this.product()) {
-      this.productForm.patchValue({
-        product: this.product()?.product || null,
-        quantity: this.product()?.quantity || null
-      });
-    }
-  }
-
-  private setupFormValueChanges(): void {
-    this.productForm.valueChanges.pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe(value => {
-      if (this.productForm.valid && value.product && value.quantity) {
-        this.product.set({
-          product: value.product,
-          quantity: value.quantity
-        });
-      }
-    });
   }
 }

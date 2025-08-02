@@ -62,27 +62,15 @@
                             </div>
 
                             <div class="space-y-4">
-                                <!-- <div class="flex justify-between items-center">
-                                    <h2 class="text-xl font-bold">Steps</h2>
-                                    <p-button icon="pi pi-plus" label="Add Step" size="small"
-                                        (click)="showAddStepDialog = true">
-                                    </p-button>
-                                </div> -->
-
-                                <!-- <p-dataView [value]="formGroup.controls.steps.value" dataKey="order"
-                                    [sortField]="'order'" [sortOrder]="1">
-
+                                <p-dataView [value]="recipe().steps" [sortField]="'order'">
                                     <ng-template let-step let-i="index" pTemplate="listItem">
                                         <div class="col-12 p-2" pDraggable="steps" pDroppable="steps"
-                                            (onDragStart)="onStepDragStart(i)" (onDragEnd)="onStepDragEnd()"
-                                            (onDrop)="onStepDrop($event, i)"
                                             [ngClass]="{'border-1 border-primary-500 border-round': i === draggedStepIndex}">
-                                            <mc-step [stepFormGroup]="step" [availableProducts]="recipeProducts()"
-                                                (remove)="removeStep(i)">
+                                            <mc-step [availableProducts]="recipe().products" (remove)="removeStep(i)">
                                             </mc-step>
                                         </div>
                                     </ng-template>
-                                </p-dataView> -->
+                                </p-dataView>
                             </div>
                         </div>
                     </div>

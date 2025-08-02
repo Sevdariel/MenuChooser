@@ -1,45 +1,40 @@
-<form [formGroup]="productForm" class="p-4 bg-white rounded-lg shadow">
-  <h2 class="text-xl font-semibold mb-4">Add Product to Recipe</h2>
-
-  <div class="grid gap-4">
-    <div class="field">
-      <label for="product" class="block text-sm font-medium text-gray-700 mb-1">Product</label>
-      <p-autoComplete id="product" formControlName="product" field="name" [suggestions]="suggestionProducts()"
-        (completeMethod)="search($event)" placeholder="Search for a product..." [dropdown]="true"
-        [forceSelection]="true" [minLength]="1" class="w-full"
-        [ngClass]="{'ng-invalid ng-dirty': productForm.get('product')?.invalid && productForm.get('product')?.touched}"
-        inputStyleClass="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-        <ng-template let-product pTemplate="item">
-          <div class="flex items-center">
-            <span class="font-medium">{{product.name}}</span>
-            <span class="ml-2 text-sm text-gray-500" *ngIf="product.unit">({{product.unit}})</span>
-          </div>
-        </ng-template>
-      </p-autoComplete>
-      <div *ngIf="productForm.get('product')?.invalid && productForm.get('product')?.touched"
-        class="text-red-500 text-sm mt-1">
-        Product is required
-      </div>
+<form [formGroup]="productForm" class="p-4">
+  <div class="field">
+    <label for="product" class="block text-sm font-medium text-gray-700 mb-1">Product</label>
+    <p-autoComplete id="product" formControlName="product" field="name" [suggestions]="suggestionProducts()"
+      (completeMethod)="search($event)" placeholder="Search for a product..." [dropdown]="true" [forceSelection]="true"
+      [minLength]="1" class="w-full"
+      [ngClass]="{'ng-invalid ng-dirty': productForm.get('product')?.invalid && productForm.get('product')?.touched}"
+      inputStyleClass="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+      <ng-template let-product pTemplate="item">
+        <div class="flex items-center">
+          <span class="font-medium">{{product.name}}</span>
+          <span class="ml-2 text-sm text-gray-500" *ngIf="product.unit">({{product.unit}})</span>
+        </div>
+      </ng-template>
+    </p-autoComplete>
+    <div *ngIf="productForm.get('product')?.invalid && productForm.get('product')?.touched"
+      class="text-red-500 text-sm mt-1">
+      Product is required
     </div>
+  </div>
 
-    <div class="field">
-      <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-      <p-inputNumber id="quantity" formControlName="quantity" mode="decimal" [min]="0.01" [step]="0.01"
-        [minFractionDigits]="2" [maxFractionDigits]="2" placeholder="Enter quantity" class="w-full"
-        [ngClass]="{'ng-invalid ng-dirty': productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched}"
-        inputStyleClass="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></p-inputNumber>
-      <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched"
-        class="text-red-500 text-sm mt-1">
-        <div *ngIf="productForm.get('quantity')?.errors?.['required']">Quantity is required</div>
-        <div *ngIf="productForm.get('quantity')?.errors?.['min']">Quantity must be greater than 0</div>
-      </div>
+  <div class="field">
+    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+    <p-inputNumber id="quantity" formControlName="quantity" mode="decimal" [min]="0.01" [step]="0.01"
+      [minFractionDigits]="2" [maxFractionDigits]="2" placeholder="Enter quantity" class="w-full"
+      [ngClass]="{'ng-invalid ng-dirty': productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched}"
+      inputStyleClass="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></p-inputNumber>
+    <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched"
+      class="text-red-500 text-sm mt-1">
+      <div *ngIf="productForm.get('quantity')?.errors?.['required']">Quantity is required</div>
+      <div *ngIf="productForm.get('quantity')?.errors?.['min']">Quantity must be greater than 0</div>
     </div>
+  </div>
 
-    <div class="flex justify-end gap-2 mt-4">
-      <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text"
-        (click)="onCancel()"></button>
-      <button pButton type="submit" label="Save" icon="pi pi-plus" class="p-button-primary" (click)="onSave()"
-        [disabled]="productForm.invalid"></button>
-    </div>
+  <div class="flex justify-end gap-2 mt-4">
+    <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onCancel()"></button>
+    <button pButton type="submit" label="Save" icon="pi pi-plus" class="p-button-primary" (click)="onSave()"
+      [disabled]="productForm.invalid"></button>
   </div>
 </form>
