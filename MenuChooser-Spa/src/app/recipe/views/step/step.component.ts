@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, OnInit, output } from '@angular/core';
+import { Component, inject, input, model, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { IRecipeProduct, IStep } from '../../models/recipe.model';
 import { TextareaModule } from 'primeng/textarea';
-import { FloatLabelModule } from 'primeng/floatlabel';
+import { IRecipeProduct, IStep } from '../../models/recipe.model';
 
 @Component({
   selector: 'mc-step',
@@ -31,9 +31,7 @@ export class StepComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
 
   public availableProducts = input<IRecipeProduct[]>();
-  public step = input<IStep | null>();
-
-  public save = output<IStep>();
+  public step = model<IStep | null>(null);
 
   public formGroup!: FormGroup;
 
@@ -48,7 +46,7 @@ export class StepComponent implements OnInit {
 
   public onSubmit(): void {
     if (this.formGroup.valid) {
-      this.save.emit(this.formGroup.getRawValue());
+      this.step.set(this.formGroup.getRawValue());
     }
   }
 }

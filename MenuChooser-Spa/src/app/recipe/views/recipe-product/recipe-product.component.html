@@ -4,7 +4,6 @@
     <p-autoComplete id="product" formControlName="product" field="name" [suggestions]="suggestionProducts()"
       (completeMethod)="search($event)" placeholder="Search for a product..." [dropdown]="true" [forceSelection]="true"
       [minLength]="1" class="w-full"
-      [ngClass]="{'ng-invalid ng-dirty': productForm.get('product')?.invalid && productForm.get('product')?.touched}"
       inputStyleClass="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
       <ng-template let-product pTemplate="item">
         <div class="flex items-center">
@@ -13,23 +12,13 @@
         </div>
       </ng-template>
     </p-autoComplete>
-    <div *ngIf="productForm.get('product')?.invalid && productForm.get('product')?.touched"
-      class="text-red-500 text-sm mt-1">
-      Product is required
-    </div>
   </div>
 
   <div class="field">
     <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
     <p-inputNumber id="quantity" formControlName="quantity" mode="decimal" [min]="0.01" [step]="0.01"
       [minFractionDigits]="2" [maxFractionDigits]="2" placeholder="Enter quantity" class="w-full"
-      [ngClass]="{'ng-invalid ng-dirty': productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched}"
       inputStyleClass="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></p-inputNumber>
-    <div *ngIf="productForm.get('quantity')?.invalid && productForm.get('quantity')?.touched"
-      class="text-red-500 text-sm mt-1">
-      <div *ngIf="productForm.get('quantity')?.errors?.['required']">Quantity is required</div>
-      <div *ngIf="productForm.get('quantity')?.errors?.['min']">Quantity must be greater than 0</div>
-    </div>
   </div>
 
   <div class="flex justify-end gap-2 mt-4">

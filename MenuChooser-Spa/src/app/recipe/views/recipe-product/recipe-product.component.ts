@@ -1,15 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, model, OnInit, output, signal } from '@angular/core';
+import { Component, DestroyRef, inject, model, OnInit, output, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { tap } from 'rxjs';
 import { IProduct } from '../../../product/models/product.model';
 import { ProductService } from '../../../product/services/product.service';
 import { IRecipeProduct } from '../../models/recipe.model';
-import { tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { DestroyRef } from '@angular/core';
 
 @Component({
   selector: 'mc-recipe-product',
@@ -30,7 +29,6 @@ export class RecipeProductComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
 
   public product = model<IRecipeProduct | null>(null);
-  public save = output<IRecipeProduct>();
   public cancel = output<void>();
   public suggestionProducts = signal<IProduct[]>([]);
 
@@ -45,10 +43,7 @@ export class RecipeProductComponent implements OnInit {
 
   onSave() {
     if (this.productForm.valid) {
-      this.save.emit({
-        product: this.productForm.value.product,
-        quantity: this.productForm.value.quantity
-      });
+      this.product.set(this.productForm.getRawValue());
     }
   }
 
