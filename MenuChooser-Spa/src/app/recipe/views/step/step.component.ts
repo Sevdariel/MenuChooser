@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, input, model, OnInit } from '@angular/core';
+import { Component, inject, input, model, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
@@ -33,6 +33,8 @@ export class StepComponent implements OnInit {
   public availableProducts = input<IRecipeProduct[]>();
   public step = model<IStep | null>(null);
 
+  public closeDrawer = output();
+
   public formGroup!: FormGroup;
 
   public ngOnInit(): void {
@@ -47,6 +49,7 @@ export class StepComponent implements OnInit {
   public onSubmit(): void {
     if (this.formGroup.valid) {
       this.step.set(this.formGroup.getRawValue());
+      this.closeDrawer.emit();
     }
   }
 }

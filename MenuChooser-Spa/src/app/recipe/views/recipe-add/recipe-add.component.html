@@ -87,10 +87,10 @@
     styleClass="w-full md:w-80 lg:w-[30rem]">
     <ng-container *ngIf="drawerService.contentVisible() === drawerContent.RecipeProduct">
         <mc-recipe-product [(product)]="selectedProduct"
-            (cancel)="drawerService.toggleDrawerPannel(drawerContent.None)"></mc-recipe-product>
+            (closeDrawer)="onRecipeProductSave($event)"></mc-recipe-product>
     </ng-container>
     <ng-container *ngIf="drawerService.contentVisible() === drawerContent.Step">
         <mc-step [(step)]="selectedStep" [availableProducts]="recipe().products"
-            (cancel)="drawerService.toggleDrawerPannel(drawerContent.None)"></mc-step>
+            (closeDrawer)="drawerService.toggleDrawerPannel(drawerContent.None)"></mc-step>
     </ng-container>
 </p-drawer>

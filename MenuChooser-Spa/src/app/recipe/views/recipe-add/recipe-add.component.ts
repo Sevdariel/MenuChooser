@@ -72,10 +72,7 @@ import { DrawerContent } from '../../../shared/drawer/drawer.model';
 export class RecipeAddComponent implements OnInit {
 
   private readonly formBuilder = inject(FormBuilder);
-  private readonly recipeMapperService = inject(RecipeMapperService);
   public readonly drawerService = inject(DrawerService);
-
-  @ViewChild('addStepPopover') protected addStepPopover!: Popover;
 
   private recipeSignal = signal<IRecipe>(defaultRecipe);
   public recipe = this.recipeSignal.asReadonly();
@@ -95,15 +92,17 @@ export class RecipeAddComponent implements OnInit {
 
   public formGroup!: FormGroup<RecipeFormType>;
 
-  public showAddStepDialog = false;
   public draggedStepIndex: number | null = null;
 
   constructor() {
     effect(() => {
+      console.log('this.selectedProduct()', this.selectedProduct());
+      console.log('this.selectedStep()', this.selectedStep());
       this.formGroup.patchValue({
-        products: this.recipeSignal().products,
-        steps: this.recipeSignal().steps,
+        products: [this.selectedProduct()!],
+        steps: [this.selectedStep()!],
       })
+      console.log(this.formGroup.getRawValue());
     })
   }
 
@@ -114,15 +113,12 @@ export class RecipeAddComponent implements OnInit {
       products: new FormControl<IRecipeProduct[]>(this.recipeSignal().products),
       steps: new FormControl<IStep[]>(this.recipeSignal().steps),
     });
+
   }
 
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
     const flat = flattenObject(recipeProduct);
     return flat[field];
-  }
-
-  public toggleAddStep(event: any) {
-    this.addStepPopover.toggle(event);
   }
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {
@@ -135,14 +131,16 @@ export class RecipeAddComponent implements OnInit {
     this.drawerService.toggleDrawerPannel(DrawerContent.Step);
   }
 
-  public onRecipeProductSave(recipeProduct: IRecipeProduct) {
-    this.recipeSignal.update(recipe => ({
-      ...recipe,
-      products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
-    }));
-
-    this.selectedProduct.set(null);
+  public onRecipeProductSave(recipeProduct: IRecipeProduct | null) {
     this.drawerService.toggleDrawerPannel(DrawerContent.None);
+    if (!!recipeProduct) {
+      this.recipeSignal.update(recipe => ({
+        ...recipe,
+        products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
+      }));
+
+      this.selectedProduct.set(null);
+    }
   }
 
   public drawerHeader() {

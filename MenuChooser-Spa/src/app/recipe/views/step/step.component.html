@@ -30,7 +30,7 @@
   </p-floatLabel>
 
   <div class="form-actions">
-    <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text"></button>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text" (click)="closeDrawer.emit()"></button>
     <button pButton type="submit" [label]="step()?.order !== null ? 'Update' : 'Add'" icon="pi pi-check"
       [disabled]="!formGroup.valid"></button>
   </div>

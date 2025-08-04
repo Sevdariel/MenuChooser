@@ -29,7 +29,7 @@ export class RecipeProductComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
 
   public product = model<IRecipeProduct | null>(null);
-  public cancel = output<void>();
+  public closeDrawer = output<IRecipeProduct | null>();
   public suggestionProducts = signal<IProduct[]>([]);
 
   public productForm!: FormGroup;
@@ -43,12 +43,9 @@ export class RecipeProductComponent implements OnInit {
 
   onSave() {
     if (this.productForm.valid) {
-      this.product.set(this.productForm.getRawValue());
+      console.log('this.productForm', this.productForm.getRawValue());
+      this.closeDrawer.emit(this.productForm.getRawValue());
     }
-  }
-
-  onCancel() {
-    this.cancel.emit();
   }
 
   public search(event: any) {

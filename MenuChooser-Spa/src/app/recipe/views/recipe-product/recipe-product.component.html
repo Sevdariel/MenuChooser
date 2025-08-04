@@ -22,7 +22,8 @@
   </div>
 
   <div class="flex justify-end gap-2 mt-4">
-    <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onCancel()"></button>
+    <button pButton type="button" label="Cancel" icon="pi pi-times" class="p-button-text"
+      (click)="closeDrawer.emit(null)"></button>
     <button pButton type="submit" label="Save" icon="pi pi-plus" class="p-button-primary" (click)="onSave()"
       [disabled]="productForm.invalid"></button>
   </div>
