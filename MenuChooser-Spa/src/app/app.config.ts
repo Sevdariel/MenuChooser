@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import Aura from '@primeng/themes/aura';
 import { provideAngularSvgIcon } from 'angular-svg-icon';
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
     provideAngularSvgIcon(),
+    provideAnimations(),
     providePrimeNG({
       theme: {
         preset: Aura,
