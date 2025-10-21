@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -14,25 +14,21 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { OrderListModule } from 'primeng/orderlist';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { Popover, PopoverModule } from 'primeng/popover';
+import { PopoverModule } from 'primeng/popover';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { SidebarModule } from 'primeng/sidebar';
 import { TableModule } from 'primeng/table';
-import { TabViewModule } from 'primeng/tabview';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
+import { DrawerContent } from '../../../shared/drawer/drawer.model';
+import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import { IRecipe, IRecipeProduct, IStep, RecipeFormType } from '../../models/recipe.model';
-import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
 import { StepComponent } from '../step/step.component';
-import { DrawerService } from '../../../shared/drawer/drawer.service';
-import { DrawerContent } from '../../../shared/drawer/drawer.model';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -52,14 +48,11 @@ import { DrawerContent } from '../../../shared/drawer/drawer.model';
     InputTextModule,
     MultiSelectModule,
     OrderListModule,
-    OverlayPanelModule,
     PopoverModule,
     ReactiveFormsModule,
     RecipeProductComponent,
     SelectButtonModule,
-    SidebarModule,
     TableModule,
-    TabViewModule,
     TagModule,
     TextareaModule,
     ToggleButtonModule,
