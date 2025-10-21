@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../core/authorization/auth.service';
 import { DropdownMenuComponent } from '../dropdown-menu/dropdown-menu.component';
@@ -10,12 +10,11 @@ import { RouterModule } from '@angular/router';
 @Component({
     selector: 'mc-nav-bar',
     imports: [
-        CommonModule,
-        DropdownMenuComponent,
-        NavbarLoginComponent,
-        ButtonModule,
-        RouterModule,
-    ],
+    DropdownMenuComponent,
+    NavbarLoginComponent,
+    ButtonModule,
+    RouterModule
+],
     templateUrl: './nav-bar.component.html',
     styleUrl: './nav-bar.component.scss'
 })
