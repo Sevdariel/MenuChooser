@@ -6,10 +6,10 @@ services:
       context: ./MenuChooser-API
       dockerfile: Dockerfile
     ports:
-      - "7103:7103"
+      - "7103:80"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
-      ConnectionStrings__MongoDb: "mongodb://mongo:27017"
+      DatabaseConfiguration__ConnectionString: "mongodb://mongo:27017"
       # Zakładam, że masz w appsettings.Development.json connection string do Mongo
       # Możesz też nadpisać go zmienną środowiskową, np.:
       # ConnectionStrings__MongoDb: "mongodb://mongo:27017"
