@@ -1,5 +1,6 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import PrimeUI from 'tailwindcss-primeui';
+
+export default {
   content: [
     "./src/**/*.{html,ts}",
   ],
@@ -23,6 +24,7 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/forms'),
+    PrimeUI
   ],
 }
 
