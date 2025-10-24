@@ -28,6 +28,7 @@
               <label for="duration">Duration</label>
             </p-floatlabel>
           </div>
+
           <p-table
             tableStyleClass="table-fixed"
             size="small"
@@ -44,31 +45,33 @@
                 ></p-button>
               </div>
             </ng-template>
-            <ng-template #header>
-              <tr>
-                @for (column of productColumns; track column) {
-                  <th class="flex-grow">{{ column.caption }}</th>
-                }
-                <th class="w-12"></th>
-              </tr>
-            </ng-template>
-            <ng-template #body let-product let-rowIndex="rowIndex">
-              <tr class="min-h-10">
-                @for (column of productColumns; track column) {
-                  <td class="flex-grow">
-                    {{ displayValue(product, column.field) }}
+            @if (this.recipe().products.length > 0) {
+              <ng-template #header>
+                <tr>
+                  @for (column of productColumns; track column) {
+                    <th class="flex-grow">{{ column.caption }}</th>
+                  }
+                  <th class="w-12"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-product let-rowIndex="rowIndex">
+                <tr class="min-h-10">
+                  @for (column of productColumns; track column) {
+                    <td class="flex-grow">
+                      {{ displayValue(product, column.field) }}
+                    </td>
+                  }
+                  <td class="w-12 flex-shrink-0">
+                    <p-button
+                      type="button"
+                      icon="pi pi-pencil"
+                      variant="text"
+                      (click)="openRecipeProductPreview(product)"
+                    ></p-button>
                   </td>
-                }
-                <td class="w-12 flex-shrink-0">
-                  <p-button
-                    type="button"
-                    icon="pi pi-pencil"
-                    variant="text"
-                    (click)="openRecipeProductPreview(product)"
-                  ></p-button>
-                </td>
-              </tr>
-            </ng-template>
+                </tr>
+              </ng-template>
+            }
           </p-table>
           <div>
             <div class="card">
