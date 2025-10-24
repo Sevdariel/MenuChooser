@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  webapi:
+    build:
+      context: ./MenuChooser-API
+      dockerfile: Dockerfile
+    ports:
+      - "7103:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DatabaseConfiguration__ConnectionString: "mongodb://mongo:27017"
+      # Zakładam, że masz w appsettings.Development.json connection string do Mongo
+      # Możesz też nadpisać go zmienną środowiskową, np.:
+      # ConnectionStrings__MongoDb: "mongodb://mongo:27017"
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"     # dostęp z zewnątrz np. MongoDB Compass
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongo_data:
+
+networks:
+  app-network:
