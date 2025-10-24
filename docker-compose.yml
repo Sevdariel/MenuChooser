@@ -1,10 +1,7 @@
-version: "3.8"
-
 services:
   webapi:
     build:
       context: ./MenuChooser-API
-      dockerfile: Dockerfile
     depends_on:
       - mongo
     networks:

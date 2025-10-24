@@ -1,7 +1,9 @@
 services:
   webapi:
+    build:
+      dockerfile: Dockerfile
     ports:
-      - "7103:7103"
+      - "7103:80"
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       DatabaseConfiguration__ConnectionString: "mongodb://mongo:27017"
