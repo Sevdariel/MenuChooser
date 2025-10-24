@@ -1,6 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -8,7 +14,7 @@ import { DataViewModule } from 'primeng/dataview';
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { DragDropModule } from 'primeng/dragdrop';
-import { DrawerModule } from "primeng/drawer";
+import { DrawerModule } from 'primeng/drawer';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,8 +32,13 @@ import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipe } from '../../models/default-recipe.model';
-import { IRecipe, IRecipeProduct, IStep, RecipeFormType } from '../../models/recipe.model';
-import { RecipeProductComponent } from "../recipe-product/recipe-product.component";
+import {
+  IRecipe,
+  IRecipeProduct,
+  IStep,
+  RecipeFormType,
+} from '../../models/recipe.model';
+import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
 
 @Component({
@@ -60,10 +71,9 @@ import { StepComponent } from '../step/step.component';
     StepComponent,
   ],
   templateUrl: './recipe-add.component.html',
-  styleUrl: './recipe-add.component.scss'
+  styleUrl: './recipe-add.component.scss',
 })
 export class RecipeAddComponent implements OnInit {
-
   private readonly formBuilder = inject(FormBuilder);
   public readonly drawerService = inject(DrawerService);
 
@@ -94,9 +104,9 @@ export class RecipeAddComponent implements OnInit {
       this.formGroup.patchValue({
         products: [this.selectedProduct()!],
         steps: [this.selectedStep()!],
-      })
+      });
       console.log(this.formGroup.getRawValue());
-    })
+    });
   }
 
   public ngOnInit(): void {
@@ -106,7 +116,6 @@ export class RecipeAddComponent implements OnInit {
       products: new FormControl<IRecipeProduct[]>(this.recipeSignal().products),
       steps: new FormControl<IStep[]>(this.recipeSignal().steps),
     });
-
   }
 
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
@@ -127,7 +136,7 @@ export class RecipeAddComponent implements OnInit {
   public onRecipeProductSave(recipeProduct: IRecipeProduct | null) {
     this.drawerService.toggleDrawerPannel(DrawerContent.None);
     if (!!recipeProduct) {
-      this.recipeSignal.update(recipe => ({
+      this.recipeSignal.update((recipe) => ({
         ...recipe,
         products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
       }));
@@ -148,9 +157,9 @@ export class RecipeAddComponent implements OnInit {
   }
 
   public onStepSave(step: IStep) {
-    this.recipeSignal.update(recipe => {
+    this.recipeSignal.update((recipe) => {
       const steps = [...recipe.steps];
-      const existingIndex = steps.findIndex(s => s.order === step.order);
+      const existingIndex = steps.findIndex((s) => s.order === step.order);
 
       if (existingIndex >= 0) {
         // Update existing step
@@ -162,7 +171,7 @@ export class RecipeAddComponent implements OnInit {
 
       return {
         ...recipe,
-        steps: [...steps]
+        steps: [...steps],
       };
     });
 
@@ -184,7 +193,6 @@ export class RecipeAddComponent implements OnInit {
     //   order: steps.value.length,
     //   products: this.newStepForm.controls.products.value || []
     // };
-
     // // steps.push(this.recipeMapperService.mapStepToFormGroup(newStep));
     // this.newStepForm.reset({
     //   content: '',
@@ -208,12 +216,10 @@ export class RecipeAddComponent implements OnInit {
     // // Get the reordered array
     // const reorderedItems = event.items;
     // const steps = this.formGroup.controls.steps;
-
     // // Clear the form array
     // while (steps.length) {
     //   steps.removeAt(0);
     // }
-
     // // Add the reordered items back with updated order
     // reorderedItems.forEach((item: any, index: number) => {
     //   const step = item.data;
@@ -222,8 +228,5 @@ export class RecipeAddComponent implements OnInit {
     // });
   }
 
-  public saveRecipe() {
-
-  }
-
+  public saveRecipe() {}
 }

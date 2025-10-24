@@ -1,96 +1,144 @@
 <div class="flex justify-center pt-4">
-    <div class="w-1/2 rounded-lg shadow p-4 space-y-5">
-        <div class="flex flex-col space-y-4">
-            <h1 class="text-2xl font-bold leading-tight">Add new recipe</h1>
-        </div>
-        <div>
-            <form [formGroup]="formGroup" (submit)="saveRecipe()">
-                <div class="space-y-4 flex flex-col">
-                    <div class="flex flex-row justify-between space-x-5">
-                        <p-floatlabel variant="on" class="w-full">
-                            <input id="name" type="text" class="w-full" pInputText formControlName="name">
-                            <label for="name">Name</label>
-                        </p-floatlabel>
-                        <p-floatlabel variant="on" class="w-full">
-                            <input id="duration" type="text" class="w-full" pInputText formControlName="duration">
-                            <label for="duration">Duration</label>
-                        </p-floatlabel>
-                    </div>
-                    <div>
-                        <p-table tableStyleClass="table-fixed" size="small" [value]="this.recipe().products">
-                            <ng-template #caption>
-                                <div class="flex flex-row justify-between">
-                                    <span class="text-xl font-bold">Products</span>
-                                    <p-button icon="pi pi-plus" label="Add product" size="small"
-                                        (click)="openRecipeProductPreview(null)"></p-button>
-                                </div>
-                            </ng-template>
-                            <ng-template #header>
-                                <tr>
-                                    @for (column of productColumns; track column) {
-                                    <th class="flex-grow">{{column.caption}}</th>
-                                    }
-                                    <th class="w-12"></th>
-                                </tr>
-                            </ng-template>
-                            <ng-template #body let-product let-rowIndex="rowIndex">
-                                <tr class="min-h-10">
-                                    @for (column of productColumns; track column) {
-                                    <td class="flex-grow">
-                                        {{displayValue(product, column.field)}}
-                                    </td>
-                                    }
-                                    <td class="w-12 flex-shrink-0">
-                                        <p-button type="button" icon="pi pi-pencil" variant="text"
-                                            (click)="openRecipeProductPreview(product)"></p-button>
-                                    </td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
-                    </div>
-                    <div>
-                        <div class="card">
-                            <div class="flex justify-between">
-                                <h2 class="text-xl font-bold">Steps</h2>
-                                <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
-                                    size="small">
-                                </p-button>
-                                <!-- Temporary disabled for development
+  <div class="w-1/2 rounded-lg shadow p-4 space-y-5">
+    <div class="flex flex-col space-y-4">
+      <h1 class="text-2xl font-bold leading-tight">Add new recipe</h1>
+    </div>
+    <div>
+      <form [formGroup]="formGroup" (submit)="saveRecipe()">
+        <div class="space-y-4 flex flex-col">
+          <div class="flex flex-row justify-between space-x-5">
+            <p-floatlabel variant="on" class="w-full">
+              <input
+                id="name"
+                type="text"
+                class="w-full"
+                pInputText
+                formControlName="name"
+              />
+              <label for="name">Name</label>
+            </p-floatlabel>
+            <p-floatlabel variant="on" class="w-full">
+              <input
+                id="duration"
+                type="text"
+                class="w-full"
+                pInputText
+                formControlName="duration"
+              />
+              <label for="duration">Duration</label>
+            </p-floatlabel>
+          </div>
+          <p-table
+            tableStyleClass="table-fixed"
+            size="small"
+            [value]="this.recipe().products"
+          >
+            <ng-template #caption>
+              <div class="flex flex-row justify-between">
+                <span class="text-xl font-bold">Products</span>
+                <p-button
+                  icon="pi pi-plus"
+                  label="Add product"
+                  size="small"
+                  (click)="openRecipeProductPreview(null)"
+                ></p-button>
+              </div>
+            </ng-template>
+            <ng-template #header>
+              <tr>
+                @for (column of productColumns; track column) {
+                  <th class="flex-grow">{{ column.caption }}</th>
+                }
+                <th class="w-12"></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-product let-rowIndex="rowIndex">
+              <tr class="min-h-10">
+                @for (column of productColumns; track column) {
+                  <td class="flex-grow">
+                    {{ displayValue(product, column.field) }}
+                  </td>
+                }
+                <td class="w-12 flex-shrink-0">
+                  <p-button
+                    type="button"
+                    icon="pi pi-pencil"
+                    variant="text"
+                    (click)="openRecipeProductPreview(product)"
+                  ></p-button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <div>
+            <div class="card">
+              <div class="flex justify-between">
+                <h2 class="text-xl font-bold">Steps</h2>
+                <p-button
+                  icon="pi pi-plus"
+                  label="Add step"
+                  (onClick)="openStepPreview(null)"
+                  size="small"
+                >
+                </p-button>
+                <!-- Temporary disabled for development
                                 <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
                                     [disabled]="recipe().products.length === 0" size="small">
                                 </p-button> -->
-                            </div>
+              </div>
 
-                            <div class="space-y-4">
-                                <p-dataView [value]="recipe().steps" [sortField]="'order'">
-                                    <ng-template let-step let-i="index" pTemplate="listItem">
-                                        <div class="col-12 p-2" pDraggable="steps" pDroppable="steps"
-                                            [ngClass]="{'border-1 border-primary-500 border-round': i === draggedStepIndex}">
-                                            <mc-step [availableProducts]="recipe().products" (remove)="removeStep(i)">
-                                            </mc-step>
-                                        </div>
-                                    </ng-template>
-                                </p-dataView>
-                            </div>
-                        </div>
+              <div class="space-y-4">
+                <p-dataView [value]="recipe().steps" [sortField]="'order'">
+                  <ng-template let-step let-i="index" pTemplate="listItem">
+                    <div
+                      class="col-12 p-2"
+                      pDraggable="steps"
+                      pDroppable="steps"
+                      [ngClass]="{
+                        'border-1 border-primary-500 border-round':
+                          i === draggedStepIndex,
+                      }"
+                    >
+                      <mc-step
+                        [availableProducts]="recipe().products"
+                        (remove)="removeStep(i)"
+                      >
+                      </mc-step>
                     </div>
-                    <div class="flex items-end">
-                        <p-button id="save" type="submit">Save</p-button>
-                    </div>
-                </div>
-            </form>
+                  </ng-template>
+                </p-dataView>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-end">
+            <p-button id="save" type="submit">Save</p-button>
+          </div>
         </div>
+      </form>
     </div>
+  </div>
 </div>
 
-<p-drawer [header]="drawerHeader()" [(visible)]="drawerService.drawerVisible" position="right" dismissible="true"
-   styleClass="md:!w-80 lg:!w-[30rem]">
-    <ng-container *ngIf="drawerService.contentVisible() === drawerContent.RecipeProduct">
-        <mc-recipe-product [(product)]="selectedProduct"
-            (closeDrawer)="onRecipeProductSave($event)"></mc-recipe-product>
-    </ng-container>
-    <ng-container *ngIf="drawerService.contentVisible() === drawerContent.Step">
-        <mc-step [(step)]="selectedStep" [availableProducts]="recipe().products"
-            (closeDrawer)="drawerService.toggleDrawerPannel(drawerContent.None)"></mc-step>
-    </ng-container>
+<p-drawer
+  [header]="drawerHeader()"
+  [(visible)]="drawerService.drawerVisible"
+  position="right"
+  dismissible="true"
+  styleClass="md:!w-80 lg:!w-[30rem]"
+>
+  <ng-container
+    *ngIf="drawerService.contentVisible() === drawerContent.RecipeProduct"
+  >
+    <mc-recipe-product
+      [(product)]="selectedProduct"
+      (closeDrawer)="onRecipeProductSave($event)"
+    ></mc-recipe-product>
+  </ng-container>
+  <ng-container *ngIf="drawerService.contentVisible() === drawerContent.Step">
+    <mc-step
+      [(step)]="selectedStep"
+      [availableProducts]="recipe().products"
+      (closeDrawer)="drawerService.toggleDrawerPannel(drawerContent.None)"
+    ></mc-step>
+  </ng-container>
 </p-drawer>
