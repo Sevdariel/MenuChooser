@@ -1,7 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, model, OnInit, output, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  model,
+  OnInit,
+  output,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -18,10 +32,10 @@ import { IRecipeProduct } from '../../models/recipe.model';
     ReactiveFormsModule,
     AutoCompleteModule,
     InputNumberModule,
-    ButtonModule
+    ButtonModule,
   ],
   templateUrl: './recipe-product.component.html',
-  styleUrl: './recipe-product.component.scss'
+  styleUrl: './recipe-product.component.scss',
 })
 export class RecipeProductComponent implements OnInit {
   private readonly productService = inject(ProductService);
@@ -34,10 +48,19 @@ export class RecipeProductComponent implements OnInit {
 
   public productForm!: FormGroup;
 
+  constructor() {
+    effect(() => {
+      this.productForm.patchValue({
+        product: this.product()?.product,
+        quantity: this.product()?.quantity,
+      });
+    });
+  }
+
   public ngOnInit(): void {
     this.productForm = this.formBuilder.group({
-      product: [this.product()?.product, Validators.required],
-      quantity: [this.product()?.quantity, [Validators.required, Validators.min(0.01)]]
+      product: ['', Validators.required],
+      quantity: ['', [Validators.required, Validators.min(0.01)]],
     });
   }
 
@@ -49,9 +72,12 @@ export class RecipeProductComponent implements OnInit {
   }
 
   public search(event: any) {
-    this.productService.getFilteredProducts(event.query).pipe(
-      tap(products => this.suggestionProducts.set(products)),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
+    this.productService
+      .getFilteredProducts(event.query)
+      .pipe(
+        tap((products) => this.suggestionProducts.set(products)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 }
