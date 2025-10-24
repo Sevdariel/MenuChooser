@@ -84,7 +84,7 @@
 </div>
 
 <p-drawer [header]="drawerHeader()" [(visible)]="drawerService.drawerVisible" position="right" dismissible="true"
-    styleClass="w-full md:w-80 lg:w-[30rem]">
+   styleClass="md:!w-80 lg:!w-[30rem]">
     <ng-container *ngIf="drawerService.contentVisible() === drawerContent.RecipeProduct">
         <mc-recipe-product [(product)]="selectedProduct"
             (closeDrawer)="onRecipeProductSave($event)"></mc-recipe-product>
