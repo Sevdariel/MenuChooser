@@ -63,7 +63,7 @@ namespace Products.Controllers
         }
 
         [HttpGet("items")]
-        public async Task<ActionResult<List<Product>>> SearchProductsByPattern([FromQuery] string searchPattern)
+        public async Task<ActionResult<List<Product>>> SearchProductsByPattern([FromQuery] string searchPattern = "")
         {
             var result = await _productService.SearchProductsByPattern(searchPattern);
 

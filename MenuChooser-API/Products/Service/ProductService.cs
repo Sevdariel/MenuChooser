@@ -66,6 +66,9 @@ namespace Products.Service
 
         public async Task<List<Product>> SearchProductsByPattern(string pattern)
         {
+            if (string.IsNullOrWhiteSpace(pattern))
+                return await _productCollection.Find(_ => true).Limit(10).ToListAsync();
+            
             var filter = Builders<Product>.Filter.Regex("name", new MongoDB.Bson.BsonRegularExpression(pattern, "i"));
 
             return await _productCollection.Find(filter).ToListAsync();
