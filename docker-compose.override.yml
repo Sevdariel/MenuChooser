@@ -8,8 +8,8 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
       DatabaseConfiguration__ConnectionString: "mongodb://mongo:27017"
     volumes:
-      - ./MenuChooser-API:/app
-    command: ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:7103"]
+      - ./MenuChooser-Api:/app
+    command: ["dotnet", "watch", "run", "-v", "--project", "MenuChooser/MenuChooser.csproj", "--urls", "http://0.0.0.0:7103"]
 
   mongo:
     ports:
