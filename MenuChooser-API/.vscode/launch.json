@@ -1,0 +1,32 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach to .NET in Docker",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "/opt/homebrew/bin/docker",
+        "pipeArgs": ["exec", "-i", "menuchooser-webapi-1"],
+        "debuggerPath": "/vsdbg/vsdbg",
+        "quoteArgs": false
+      },
+      "sourceFileMap": {
+        "/app": "${workspaceFolder}/MenuChooser"
+      }
+    },
+    {
+      "name": "Launch MenuChooser (local)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/MenuChooser/bin/Debug/net8.0/MenuChooser.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/MenuChooser",
+      "stopAtEntry": false,
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

@@ -12,14 +12,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
+builder.Services.AddDatabaseServices(builder.Configuration);
+builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddAuthenticationService(builder.Configuration);
 builder.Services.AddEmailServices(builder.Configuration);
 builder.Services.AddUserService();
 builder.Services.AddProductServices();
 builder.Services.AddRecipeServices();
 builder.Services.AddAccountServices();
-builder.Services.AddDatabaseServices(builder.Configuration);
-builder.Services.AddApplicationService(builder.Configuration);
 
 var app = builder.Build();
 

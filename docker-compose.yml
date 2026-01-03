@@ -10,9 +10,9 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       DatabaseConfiguration__ConnectionString: "mongodb://mongo:27017"
-      # Zakładam, że masz w appsettings.Development.json connection string do Mongo
-      # Możesz też nadpisać go zmienną środowiskową, np.:
-      # ConnectionStrings__MongoDb: "mongodb://mongo:27017"
+      DatabaseConfiguration__DatabaseName: "MenuChooser"
+      DatabaseConfiguration__CollectionsNames__0: "Menu"
+      DatabaseConfiguration__CollectionsNames__1: "User"
     depends_on:
       - mongo
     networks:
