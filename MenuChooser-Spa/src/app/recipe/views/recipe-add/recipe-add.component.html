@@ -129,19 +129,17 @@
   dismissible="true"
   styleClass="md:!w-80 lg:!w-[30rem]"
 >
-  <ng-container
-    *ngIf="drawerService.contentVisible() === drawerContent.RecipeProduct"
-  >
+  @if (drawerService.contentVisible() === drawerContent.RecipeProduct) {
     <mc-recipe-product
       [(product)]="selectedProduct"
       (closeDrawer)="onRecipeProductSave($event)"
     ></mc-recipe-product>
-  </ng-container>
-  <ng-container *ngIf="drawerService.contentVisible() === drawerContent.Step">
+  }
+  @if (drawerService.contentVisible() === drawerContent.Step) {
     <mc-step
       [(step)]="selectedStep"
       [availableProducts]="recipe().products"
       (closeDrawer)="drawerService.toggleDrawerPannel(drawerContent.None)"
     ></mc-step>
-  </ng-container>
+  }
 </p-drawer>

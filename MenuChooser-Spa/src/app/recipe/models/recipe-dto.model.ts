@@ -1,5 +1,5 @@
 import { IProduct } from "../../product/models/product.model";
-import { MealType } from "./recipe.model";
+import { MealType, Unit } from "./recipe.model";
 
 export interface IRecipeListItem {
     id: string;
@@ -22,6 +22,7 @@ export interface IRecipeDto {
 export interface IRecipeProductDto {
     product: IProduct;
     quantity: number;
+    unit: Unit;
 }
 
 export interface IStepDto {
