@@ -58,21 +58,49 @@
   </p-floatLabel>
 
   @if (selectedProducts() && selectedProducts()!.length > 0) {
-    <p-table [value]="selectedProducts()!" formArrayName="products">
-      <ng-template #body let-products>
+    <p-table [value]="productsArray.controls">
+      <ng-template pTemplate="header">
         <tr>
-          <td>{{ products.product.name }}</td>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Unit</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+        <tr [formGroup]="row">
           <td>
-            <p-inputnumber></p-inputnumber>
-            {{ products.quantity }}
+            {{ row.get("product").value.name }}
           </td>
-          <td>
-            <p-select
-              formControlName="unit"
-              [options]="units"
-              optionLabel="name"
-              placeholder="Select a City"
-            />
+
+          <td pEditableColumn>
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <p-inputNumber formControlName="quantity" fluid>
+                </p-inputNumber>
+              </ng-template>
+
+              <ng-template pTemplate="output">
+                {{ row.value.quantity }}
+              </ng-template>
+            </p-cellEditor>
+          </td>
+
+          <td pEditableColumn>
+            <p-cellEditor>
+              <ng-template pTemplate="input">
+                <p-select
+                  formControlName="unit"
+                  [options]="units"
+                  optionLabel="name"
+                  appendTo="body"
+                >
+                </p-select>
+              </ng-template>
+              <ng-template pTemplate="output">
+                {{ row.value.unit }}
+              </ng-template>
+            </p-cellEditor>
           </td>
         </tr>
       </ng-template>
