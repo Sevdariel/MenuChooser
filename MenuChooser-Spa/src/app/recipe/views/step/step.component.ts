@@ -63,7 +63,7 @@ export class StepComponent implements OnInit {
     { nonNullable: true },
   );
   protected unit = Unit;
-  protected units = Object.values(Unit);
+  protected units = Object.values(Unit).map(unit => ({ label: unit, value: unit }));
 
   public closeDrawer = output();
 
@@ -71,18 +71,16 @@ export class StepComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const selected = this.selectedProducts() ?? []; // signal<Product[]>
+      const selected = this.selectedProducts() ?? [];
       const array = this.productsArray;
 
-      console.log('selected', selected)
-      console.log('array', array)
       // ADD
       selected.forEach((product) => {
         const exists = array.controls.some(
           (ctrl) => ctrl.value.product.id === product.product.id,
         );
 
-        console.log('exists', exists)
+        console.log('exists', exists);
 
         if (!exists) {
           array.push(this.createProductGroup(product));
@@ -94,7 +92,7 @@ export class StepComponent implements OnInit {
 
       // REMOVE
       array.controls.forEach((ctrl, index) => {
-        console.log('ctrl', ctrl)
+        console.log('ctrl', ctrl);
         const stillSelected = selected.some(
           (p) => p.product.id === ctrl.value.product.id,
         );
@@ -120,19 +118,13 @@ export class StepComponent implements OnInit {
       products: this.formBuilder.array<FormGroup>([]),
     });
 
-    // this.formGroup.valueChanges.pipe(
-    //   debounceTime(500),
-    //   takeUntilDestroyed(this.destroyRef)
-    // ).subscribe(formGroup => {
-    //   console.log(formGroup);
-    //   this.formGroupStepValue.set(formGroup);
-    // });
-
     this.selectedProductsFormControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((products) => {
         this.selectedProducts.set(products);
       });
+
+      console.log('units', this.units)
   }
 
   public onSubmit(): void {
@@ -142,13 +134,18 @@ export class StepComponent implements OnInit {
     }
   }
 
-  createProductGroup(product: IRecipeProduct): FormGroup {
+  protected addProductToRecipe() {
+    // TODO: Implement add product to recipe logic
+    console.log('Add product to recipe');
+  }
+
+  private createProductGroup(product: IRecipeProduct): FormGroup {
     const newFormGroup = this.formBuilder.group({
       product: this.formBuilder.control(product.product, { nonNullable: true }),
       quantity: this.formBuilder.control(1, { nonNullable: true }),
       unit: this.formBuilder.control(null, Validators.required),
     });
-    console.log('newFormGroup', newFormGroup)
+
     return newFormGroup;
   }
 }

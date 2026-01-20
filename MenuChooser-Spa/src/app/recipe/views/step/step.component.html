@@ -53,6 +53,11 @@
           <!-- <div class="product-quantity">{{ product.quantity }} {{ product.product.unit }}</div> -->
         </div>
       </ng-template>
+      @if (availableProducts()?.length === 0) {
+        <ng-template #footer>
+          <p-button label="Add product to recipe" fluid severity="secondary" text size="small" icon="pi pi-plus"/>
+        </ng-template>
+      }
     </p-multiSelect>
     <label>Products Used in This Step</label>
   </p-floatLabel>
@@ -92,7 +97,8 @@
                 <p-select
                   formControlName="unit"
                   [options]="units"
-                  optionLabel="name"
+                  optionLabel="label"
+                  optionValue="value"
                   appendTo="body"
                 >
                 </p-select>
