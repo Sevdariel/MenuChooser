@@ -91,6 +91,10 @@ export class RecipeAddComponent implements OnInit {
     { field: 'name', caption: 'Name' },
     { field: 'quantity', caption: 'Quantity' },
   ];
+  protected readonly stepColumns = [
+    { field: 'content', caption: 'Content' },
+    { field: 'duration', caption: 'Duration' },
+  ];
   protected drawerContent = DrawerContent;
 
   public formGroup!: FormGroup<RecipeFormType>;
@@ -156,27 +160,17 @@ export class RecipeAddComponent implements OnInit {
     }
   }
 
-  public onStepSave(step: IStep) {
-    this.recipeSignal.update((recipe) => {
-      const steps = [...recipe.steps];
-      const existingIndex = steps.findIndex((s) => s.order === step.order);
-
-      if (existingIndex >= 0) {
-        // Update existing step
-        steps[existingIndex] = step;
-      } else {
-        // Add new step
-        steps.push(step);
-      }
-
-      return {
+  public onStepSave(step: IStep | null) {
+    if (!!step) {
+      this.recipeSignal.update((recipe) => ({
         ...recipe,
-        steps: [...steps],
-      };
-    });
+        steps: upsertByPath(recipe.steps, step, 'step.id'),
+      }));
 
-    this.selectedStep.set(null);
-    this.drawerService.toggleDrawerPannel(DrawerContent.None);
+      console.log('this.recipeSignal.steps', this.recipeSignal().steps);
+      this.selectedStep.set(null);
+      this.drawerService.toggleDrawerPannel(DrawerContent.None);
+    }
   }
 
   public onStepCancel() {

@@ -65,7 +65,7 @@ export class StepComponent implements OnInit {
   protected unit = Unit;
   protected units = Object.values(Unit).map(unit => ({ label: unit, value: unit }));
 
-  public closeDrawer = output();
+  public closeDrawer = output<IStep | null>();
 
   public formGroup!: FormGroup;
 
@@ -127,10 +127,9 @@ export class StepComponent implements OnInit {
       console.log('units', this.units)
   }
 
-  public onSubmit(): void {
+  public onSubmit() {
     if (this.formGroup.valid) {
-      this.step.set(this.formGroup.getRawValue());
-      this.closeDrawer.emit();
+      this.closeDrawer.emit(this.formGroup.getRawValue());
     }
   }
 

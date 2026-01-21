@@ -12,6 +12,7 @@ export interface IRecipe {
 }
 
 export interface IStep {
+  id: string;
   order: number;
   content: string;
   products: IRecipeProduct[];

@@ -73,46 +73,52 @@
               </ng-template>
             }
           </p-table>
-          <div>
-            <div class="card">
-              <div class="flex justify-between">
-                <h2 class="text-xl font-bold">Steps</h2>
+
+          <p-table
+            tableStyleClass="table-fixed"
+            size="small"
+            [value]="this.recipe().steps"
+          >
+            <ng-template #caption>
+              <div class="flex flex-row justify-between">
+                <span class="text-xl font-bold">Steps</span>
                 <p-button
                   icon="pi pi-plus"
                   label="Add step"
-                  (onClick)="openStepPreview(null)"
                   size="small"
-                >
-                </p-button>
-                <!-- Temporary disabled for development
-                                <p-button icon="pi pi-plus" label="Add step" (onClick)="openStepPreview(null)"
-                                    [disabled]="recipe().products.length === 0" size="small">
-                                </p-button> -->
+                  (click)="openStepPreview(null)"
+                ></p-button>
               </div>
+            </ng-template>
+            @if (this.recipe().steps.length > 0) {
+              <ng-template #header>
+                <tr>
+                  @for (column of stepColumns; track column) {
+                    <th class="flex-grow">{{ column.caption }}</th>
+                  }
+                  <th class="w-12"></th>
+                </tr>
+              </ng-template>
+              <ng-template #body let-step let-rowIndex="rowIndex">
+                <tr class="min-h-10">
+                  @for (column of stepColumns; track column) {
+                    <td class="flex-grow">
+                      {{ displayValue(step, column.field) }}
+                    </td>
+                  }
+                  <td class="w-12 flex-shrink-0">
+                    <p-button
+                      type="button"
+                      icon="pi pi-pencil"
+                      variant="text"
+                      (click)="openStepPreview(step)"
+                    ></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+            }
+          </p-table>
 
-              <div class="space-y-4">
-                <p-dataView [value]="recipe().steps" [sortField]="'order'">
-                  <ng-template let-step let-i="index" pTemplate="listItem">
-                    <div
-                      class="col-12 p-2"
-                      pDraggable="steps"
-                      pDroppable="steps"
-                      [ngClass]="{
-                        'border-1 border-primary-500 border-round':
-                          i === draggedStepIndex,
-                      }"
-                    >
-                      <mc-step
-                        [availableProducts]="recipe().products"
-                        (remove)="removeStep(i)"
-                      >
-                      </mc-step>
-                    </div>
-                  </ng-template>
-                </p-dataView>
-              </div>
-            </div>
-          </div>
           <div class="flex items-end">
             <p-button id="save" type="submit">Save</p-button>
           </div>
@@ -139,7 +145,7 @@
     <mc-step
       [(step)]="selectedStep"
       [availableProducts]="recipe().products"
-      (closeDrawer)="drawerService.toggleDrawerPannel(drawerContent.None)"
+      (closeDrawer)="onStepSave($event)"
     ></mc-step>
   }
 </p-drawer>
