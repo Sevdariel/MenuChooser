@@ -25,7 +25,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TextareaModule } from 'primeng/textarea';
-import { IRecipeProduct, IStep, Unit } from '../../models/recipe.model';
+import { defaultUnit, IRecipeProduct, IStep, Unit } from '../../models/recipe.model';
 import { TableModule } from 'primeng/table';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime } from 'rxjs/operators';
@@ -63,7 +63,10 @@ export class StepComponent implements OnInit {
     { nonNullable: true },
   );
   protected unit = Unit;
-  protected units = Object.values(Unit).map(unit => ({ label: unit, value: unit }));
+  protected units = Object.values(Unit).map((unit) => ({
+    label: unit,
+    value: unit,
+  }));
 
   public closeDrawer = output<IStep | null>();
 
@@ -80,19 +83,12 @@ export class StepComponent implements OnInit {
           (ctrl) => ctrl.value.product.id === product.product.id,
         );
 
-        console.log('exists', exists);
-
         if (!exists) {
           array.push(this.createProductGroup(product));
         }
       });
 
-      console.log('array.controls', array.controls);
-      console.log('array', array);
-
-      // REMOVE
       array.controls.forEach((ctrl, index) => {
-        console.log('ctrl', ctrl);
         const stillSelected = selected.some(
           (p) => p.product.id === ctrl.value.product.id,
         );
@@ -101,8 +97,6 @@ export class StepComponent implements OnInit {
           array.removeAt(index);
         }
       });
-
-      console.log(this.productsArray.controls);
     });
   }
 
@@ -124,7 +118,9 @@ export class StepComponent implements OnInit {
         this.selectedProducts.set(products);
       });
 
-      console.log('units', this.units)
+    if (!!this.step()) {
+      this.selectedProducts.set(this.step()!.products);
+    }
   }
 
   public onSubmit() {
@@ -139,8 +135,6 @@ export class StepComponent implements OnInit {
   }
 
   private createProductGroup(product: IRecipeProduct): FormGroup {
-    const defaultUnit = this.units[0]?.value || Unit.GRAM; // pierwszy element z listy
-    
     const newFormGroup = this.formBuilder.group({
       product: this.formBuilder.control(product.product, { nonNullable: true }),
       quantity: this.formBuilder.control(1, { nonNullable: true }),

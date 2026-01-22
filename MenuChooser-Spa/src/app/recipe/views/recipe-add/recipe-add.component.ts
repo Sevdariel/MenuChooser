@@ -103,13 +103,10 @@ export class RecipeAddComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      console.log('this.selectedProduct()', this.selectedProduct());
-      console.log('this.selectedStep()', this.selectedStep());
       this.formGroup.patchValue({
         products: [this.selectedProduct()!],
         steps: [this.selectedStep()!],
       });
-      console.log(this.formGroup.getRawValue());
     });
   }
 
@@ -167,59 +164,9 @@ export class RecipeAddComponent implements OnInit {
         steps: upsertByPath(recipe.steps, step, 'step.id'),
       }));
 
-      console.log('this.recipeSignal.steps', this.recipeSignal().steps);
       this.selectedStep.set(null);
       this.drawerService.toggleDrawerPannel(DrawerContent.None);
     }
-  }
-
-  public onStepCancel() {
-    this.selectedStep.set(null);
-    this.togglePanel.set(false);
-    this.toggleStepPanel.set(false);
-  }
-
-  public addNewStep() {
-    // const steps = this.formGroup.controls.steps;
-    // const newStep: IStep = {
-    //   content: this.newStepForm.controls.content.value,
-    //   duration: this.newStepForm.controls.duration.value,
-    //   order: steps.value.length,
-    //   products: this.newStepForm.controls.products.value || []
-    // };
-    // // steps.push(this.recipeMapperService.mapStepToFormGroup(newStep));
-    // this.newStepForm.reset({
-    //   content: '',
-    //   duration: 0,
-    //   order: steps.length,
-    //   products: []
-    // });
-    // this.showAddStepDialog = false;
-  }
-
-  public removeStep(index: number) {
-    // const steps = this.formGroup.controls.steps;
-    // steps.removeAt(index);
-    // // Update order of remaining steps
-    // steps.controls.forEach((step, idx) => {
-    //   step.patchValue({ order: idx });
-    // });
-  }
-
-  public onStepReorder(event: any) {
-    // // Get the reordered array
-    // const reorderedItems = event.items;
-    // const steps = this.formGroup.controls.steps;
-    // // Clear the form array
-    // while (steps.length) {
-    //   steps.removeAt(0);
-    // }
-    // // Add the reordered items back with updated order
-    // reorderedItems.forEach((item: any, index: number) => {
-    //   const step = item.data;
-    //   step.patchValue({ order: index });
-    //   steps.push(step);
-    // });
   }
 
   public saveRecipe() {}

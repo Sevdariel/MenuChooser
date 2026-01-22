@@ -33,6 +33,8 @@ export enum Unit {
   PIECE = 'szt',
 }
 
+export const defaultUnit = Unit.GRAM;
+
 export enum MealType {
   Breakfast = 0,
   Dinner,

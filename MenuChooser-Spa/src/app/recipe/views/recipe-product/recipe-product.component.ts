@@ -66,7 +66,6 @@ export class RecipeProductComponent implements OnInit {
 
   onSave() {
     if (this.productForm.valid) {
-      console.log('this.productForm', this.productForm.getRawValue());
       this.closeDrawer.emit(this.productForm.getRawValue());
     }
   }

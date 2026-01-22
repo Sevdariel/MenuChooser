@@ -48,8 +48,6 @@ export class RecipePreviewComponent implements OnInit {
       tap(data => this.recipeSignal.set(data['recipe'])),
       takeUntilDestroyed(this.destroyRef))
       .subscribe();
-
-    console.log('recipe', this.recipe())
   }
 
   public updateRecipe(updatedRecipe: IRecipe) {
