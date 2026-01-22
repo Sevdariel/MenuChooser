@@ -98,6 +98,16 @@ export class StepComponent implements OnInit {
         }
       });
     });
+
+    effect(() => {
+      this.formGroup.patchValue({
+        order: this.step()?.order,
+        content: this.step()?.content,
+        duration: this.step()?.duration,
+      });
+
+      this.selectedProducts.set(this.step()?.products || null);
+    });
   }
 
   get productsArray(): FormArray<FormGroup> {
