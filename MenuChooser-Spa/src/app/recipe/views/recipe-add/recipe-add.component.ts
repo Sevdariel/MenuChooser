@@ -32,12 +32,14 @@ import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipe } from '../../models/default-recipe.model';
+import { ICreateRecipeDto } from '../../models/recipe-dto.model';
 import {
   IRecipe,
   IRecipeProduct,
   IStep,
   RecipeFormType,
 } from '../../models/recipe.model';
+import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
 
@@ -76,6 +78,7 @@ import { StepComponent } from '../step/step.component';
 export class RecipeAddComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   public readonly drawerService = inject(DrawerService);
+  private readonly recipeMapperService = inject(RecipeMapperService);
 
   private recipeSignal = signal<IRecipe>(defaultRecipe);
   public recipe = this.recipeSignal.asReadonly();
@@ -104,8 +107,8 @@ export class RecipeAddComponent implements OnInit {
   constructor() {
     effect(() => {
       this.formGroup.patchValue({
-        products: [this.selectedProduct()!],
-        steps: [this.selectedStep()!],
+        products: this.recipeSignal().products,
+        steps: this.recipeSignal().steps,
       });
     });
   }
@@ -169,5 +172,9 @@ export class RecipeAddComponent implements OnInit {
     }
   }
 
-  public saveRecipe() {}
+  public saveRecipe() {
+    const formGroupRawValue = this.formGroup.getRawValue();
+    const createRecipeDto: ICreateRecipeDto = this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
+    console.log(createRecipeDto);
+  }
 }
