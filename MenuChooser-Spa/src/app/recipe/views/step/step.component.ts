@@ -139,10 +139,12 @@ export class StepComponent implements OnInit {
   }
 
   private createProductGroup(product: IRecipeProduct): FormGroup {
+    const defaultUnit = this.units[0]?.value || Unit.GRAM; // pierwszy element z listy
+    
     const newFormGroup = this.formBuilder.group({
       product: this.formBuilder.control(product.product, { nonNullable: true }),
       quantity: this.formBuilder.control(1, { nonNullable: true }),
-      unit: this.formBuilder.control(null, Validators.required),
+      unit: this.formBuilder.control(defaultUnit, Validators.required),
     });
 
     return newFormGroup;
