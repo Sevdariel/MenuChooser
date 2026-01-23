@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ICreateRecipeDto, IRecipeDto, IStepDto } from '../models/recipe-dto.model';
-import { IRecipe, IRecipeProduct, IStep, MealType, RecipeStepsFormType } from '../models/recipe.model';
+import { IRecipe, IRecipeForm, IRecipeProduct, IStep, MealType, RecipeStepsFormType } from '../models/recipe.model';
 import { AuthService } from '../../core/authorization/auth.service';
 
 @Injectable({
@@ -45,17 +45,21 @@ export class RecipeMapperService {
     }))
   }
 
-  public mapToCreateRecipeDto(recipe: IRecipe): ICreateRecipeDto {
+  public mapToCreateRecipeDto(recipe: IRecipeForm): ICreateRecipeDto {
     return {
-      name: recipe.name,
-      duration: recipe.duration,
-      productIds: recipe.products.map((product: IRecipeProduct) => product.product.id),
-      steps: recipe.steps.map((step: IStep) => ({
+      name: recipe.name || '',
+      duration: recipe.duration || 0,
+      recipeProducts: recipe.products?.map((product: IRecipeProduct) => ({
+        productIds: product.product.id,
+        quantity: product.quantity,
+        unit: product.unit,
+      })) || [],
+      steps: recipe.steps?.map((step: IStep) => ({
         order: step.order,
         content: step.content,
         duration: step.duration,
         productIds: step.products.map((product: IRecipeProduct) => product.product.id),
-      })),
+      })) || [],
       mealType: MealType.Appetizer, // To do
       createdBy: this.authService.loggedUser()?.username || '',
     };

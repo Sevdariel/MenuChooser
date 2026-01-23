@@ -10,7 +10,8 @@ namespace Recipes.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [AllowAnonymous]
-    public class RecipeController(RecipeService recipeService, IMapper mapper, ProductService productService) : ControllerBase
+    public class RecipeController(RecipeService recipeService, IMapper mapper, ProductService productService)
+        : ControllerBase
     {
         private readonly RecipeService _recipeService = recipeService;
         private readonly IMapper _mapper = mapper;
@@ -33,11 +34,13 @@ namespace Recipes.Controllers
             if (recipe == null)
                 return NotFound("Recipe doesn't exists");
 
-            var products = await _productService.GetProductsByIdsAsync(recipe.ProductIds);
+            var products =
+                await _productService.GetProductsByIdsAsync(recipe.RecipeProducts
+                    .Select(recipeProduct => recipeProduct.ProductIds).ToList());
 
             var recipeDto = _mapper.Map<RecipeDto>(recipe);
             var recipeProductsDto = _mapper.Map<List<RecipeProductDto>>(products);
-            recipeDto.Products = recipeProductsDto;            
+            recipeDto.Products = recipeProductsDto;
 
             return recipeDto;
         }

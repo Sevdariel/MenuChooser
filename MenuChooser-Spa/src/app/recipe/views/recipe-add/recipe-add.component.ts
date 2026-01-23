@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -35,6 +42,7 @@ import { defaultRecipe } from '../../models/default-recipe.model';
 import { ICreateRecipeDto } from '../../models/recipe-dto.model';
 import {
   IRecipe,
+  IRecipeForm,
   IRecipeProduct,
   IStep,
   RecipeFormType,
@@ -42,6 +50,10 @@ import {
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
+import { RecipeService } from '../../services/recipe.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { tap } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -79,6 +91,9 @@ export class RecipeAddComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   public readonly drawerService = inject(DrawerService);
   private readonly recipeMapperService = inject(RecipeMapperService);
+  private readonly recipeService = inject(RecipeService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   private recipeSignal = signal<IRecipe>(defaultRecipe);
   public recipe = this.recipeSignal.asReadonly();
@@ -114,7 +129,7 @@ export class RecipeAddComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.formGroup = this.formBuilder.group({
+    this.formGroup = this.formBuilder.group<RecipeFormType>({
       duration: new FormControl(this.recipeSignal().duration),
       name: new FormControl(this.recipeSignal().name),
       products: new FormControl<IRecipeProduct[]>(this.recipeSignal().products),
@@ -173,8 +188,15 @@ export class RecipeAddComponent implements OnInit {
   }
 
   public saveRecipe() {
-    const formGroupRawValue = this.formGroup.getRawValue();
-    const createRecipeDto: ICreateRecipeDto = this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
-    console.log(createRecipeDto);
+    const formGroupRawValue: IRecipeForm = this.formGroup.getRawValue();
+    const createRecipeDto: ICreateRecipeDto =
+      this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
+
+    this.recipeService
+      .createRecipe(createRecipeDto)
+      .pipe(
+        tap(newRecipe => this.router.navigate([`/recipes/${newRecipe.id}`])),
+        takeUntilDestroyed(this.destroyRef))
+      .subscribe();
   }
 }

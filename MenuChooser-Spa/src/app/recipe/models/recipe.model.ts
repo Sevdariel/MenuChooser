@@ -22,7 +22,14 @@ export interface IStep {
 export interface IRecipeProduct {
   product: IProduct;
   quantity: number;
-  unit: string;
+  unit: Unit;
+}
+
+export interface IRecipeForm {
+  name: string | null;
+  duration: number | null;
+  products: IRecipeProduct[] | null;
+  steps: IStep[] | null;
 }
 
 export enum Unit {

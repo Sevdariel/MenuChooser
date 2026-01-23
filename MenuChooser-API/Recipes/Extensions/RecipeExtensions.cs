@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Recipes.Mappers;
 using Recipes.Service;
 
 namespace Recipes.Extensions

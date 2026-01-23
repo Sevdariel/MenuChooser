@@ -3,7 +3,7 @@ using Products.Entities;
 using Recipes.Dto;
 using Recipes.Entities;
 
-namespace Recipes.Extensions
+namespace Recipes.Mappers
 {
     public class RecipeMappingProfile : Profile
     {
@@ -13,7 +13,7 @@ namespace Recipes.Extensions
             CreateMap<UpdateRecipeDto, Recipe>();
             CreateMap<Recipe, RecipeListItemDto>();
             CreateMap<Recipe, RecipeDto>();
-            CreateMap<Product, RecipeProductDto>();
+            CreateMap<List<Product>, RecipeProductDto>();
         }
     }
 }

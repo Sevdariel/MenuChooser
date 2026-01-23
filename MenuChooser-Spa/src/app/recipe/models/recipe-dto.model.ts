@@ -12,14 +12,14 @@ export interface IRecipeDto {
     id: string;
     name: string;
     duration: number;
-    products: IRecipeProductDto[];
+    products: IGetRecipeProductDto[];
     steps: IStepDto[];
     createdBy: string;
     updatedBy: string;
     mealType: MealType;
 }
 
-export interface IRecipeProductDto {
+export interface IGetRecipeProductDto {
     product: IProduct;
     quantity: number;
     unit: Unit;
@@ -44,8 +44,14 @@ export interface IUpdateRecipeDto {
 export interface ICreateRecipeDto {
     name: string;
     duration: number;
-    productIds: string[];
+    recipeProducts: ISaveRecipeProductDto[];
     steps: IStepDto[];
     mealType: MealType;
     createdBy: string;
+}
+
+export interface ISaveRecipeProductDto {
+    productIds: string;
+    quantity: number;
+    unit: Unit;
 }
