@@ -36,10 +36,23 @@ namespace Recipes.Controllers
 
             var products =
                 await _productService.GetProductsByIdsAsync(recipe.RecipeProducts
-                    .Select(recipeProduct => recipeProduct.ProductIds).ToList());
+                    .Select(recipeProduct => recipeProduct.ProductId).ToList());
 
             var recipeDto = _mapper.Map<RecipeDto>(recipe);
-            var recipeProductsDto = _mapper.Map<List<RecipeProductDto>>(products);
+            
+            var recipeProductsDto = recipe.RecipeProducts
+                .Select(rp =>
+                {
+                    var product = products.First(p => p.Id == rp.ProductId);
+
+                    return new RecipeProductDto
+                    {
+                        Product = product,
+                        Quantity = rp.Quantity,
+                        Unit = rp.Unit
+                    };
+                })
+                .ToList();
             recipeDto.Products = recipeProductsDto;
 
             return recipeDto;

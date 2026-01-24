@@ -50,7 +50,7 @@ export class RecipeMapperService {
       name: recipe.name || '',
       duration: recipe.duration || 0,
       recipeProducts: recipe.products?.map((product: IRecipeProduct) => ({
-        productIds: product.product.id,
+        productId: product.product.id,
         quantity: product.quantity,
         unit: product.unit,
       })) || [],

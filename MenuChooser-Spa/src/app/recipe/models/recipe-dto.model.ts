@@ -51,7 +51,7 @@ export interface ICreateRecipeDto {
 }
 
 export interface ISaveRecipeProductDto {
-    productIds: string;
+    productId: string;
     quantity: number;
     unit: Unit;
 }
