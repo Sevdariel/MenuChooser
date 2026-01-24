@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   DestroyRef,
@@ -35,7 +35,6 @@ import { SelectModule } from 'primeng/select';
   selector: 'mc-step',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormsModule,
     InputNumberModule,
@@ -45,8 +44,8 @@ import { SelectModule } from 'primeng/select';
     TextareaModule,
     FloatLabelModule,
     TableModule,
-    SelectModule,
-  ],
+    SelectModule
+],
   templateUrl: './step.component.html',
   styleUrl: './step.component.scss',
 })

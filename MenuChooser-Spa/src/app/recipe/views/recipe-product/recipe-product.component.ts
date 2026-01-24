@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   DestroyRef,
@@ -28,12 +28,11 @@ import { IRecipeProduct } from '../../models/recipe.model';
   selector: 'mc-recipe-product',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     AutoCompleteModule,
     InputNumberModule,
-    ButtonModule,
-  ],
+    ButtonModule
+],
   templateUrl: './recipe-product.component.html',
   styleUrl: './recipe-product.component.scss',
 })
