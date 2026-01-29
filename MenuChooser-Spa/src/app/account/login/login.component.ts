@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import { IUserLoginDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
@@ -10,7 +12,13 @@ import { AccountService } from '../../shared/account/account.service';
     selector: 'mc-login',
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss',
-    standalone: false
+    standalone: true,
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        RouterLink,
+        ErrorDirective
+    ]
 })
 export class LoginComponent implements OnInit {
 

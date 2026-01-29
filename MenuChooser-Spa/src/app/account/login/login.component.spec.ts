@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { RouterTestingModule } from '@angular/router/testing';
 import { IUserLoginDto } from '../../shared/account/account-dto.model';
-import { AccountModule } from '../account.module';
 import { LoginComponent } from './login.component';
 import { By } from '@angular/platform-browser';
 import { AccountService } from '../../shared/account/account.service';
+import { ValidationService } from '../../core/validation/service/validation.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -18,16 +19,22 @@ describe('LoginComponent', () => {
   };
 
   beforeEach(async () => {
-
+    accountServiceSpy = jasmine.createSpyObj('AccountService', ['login', 'register']);
 
     await TestBed.configureTestingModule({
-    imports: [AccountModule],
-    providers: [provideHttpClient(withInterceptorsFromDi())]
+    imports: [
+      LoginComponent,
+      RouterTestingModule
+    ],
+    providers: [
+      provideHttpClient(withInterceptorsFromDi()),
+      ValidationService,
+      { provide: AccountService, useValue: accountServiceSpy }
+    ]
 }).compileComponents();
 
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
-    accountServiceSpy = jasmine.createSpyObj('AccountService', ['login', 'register']);
     fixture.detectChanges();
   });
 
@@ -70,7 +77,7 @@ describe('LoginComponent', () => {
     
     debugElement.triggerEventHandler('click', null);
 
-    expect(accountServiceSpy.login()).toHaveBeenCalled();
+    expect(accountServiceSpy.login).toHaveBeenCalled();
 
     // expect(debugElement.triggerEventHandler('click', null)).toHaveBeenCalled();
   })
