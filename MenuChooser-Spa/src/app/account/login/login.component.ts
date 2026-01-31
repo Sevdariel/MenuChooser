@@ -6,9 +6,15 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  Validators
+  Validators,
 } from '@angular/forms';
-import { FieldTree, form, FormField } from '@angular/forms/signals';
+import {
+  email,
+  FieldTree,
+  form,
+  FormField,
+  required,
+} from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
 import { ValidationService } from '../../core/validation/service/validation.service';
@@ -36,7 +42,6 @@ export class LoginComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
 
   public formGroup!: FormGroup;
-  public signalForm!: FieldTree<ILogin>;
 
   private loginModel = signal<ILogin>({
     email: '',
@@ -44,8 +49,15 @@ export class LoginComponent implements OnInit {
     rememberMe: false,
   });
 
+  public signalForm = form(this.loginModel, (schemaPath) => {
+    (required(schemaPath.email, { message: 'Email is required' }),
+      email(schemaPath.email, {
+        message: 'Invalid email address format. Try again.',
+      }),
+      required(schemaPath.password, { message: 'Password is required' }));
+  });
+
   public ngOnInit(): void {
-    this.signalForm = form(this.loginModel);
     this.formGroup = this.formBuilder.nonNullable.group({
       email: new FormControl('', {
         validators: [Validators.required, Validators.email],
@@ -60,6 +72,22 @@ export class LoginComponent implements OnInit {
     console.log('this.signalForm.email()', this.signalForm.email());
     console.log('this.signalForm.password()', this.signalForm.password());
     console.log('this.signalForm.rememberMe()', this.signalForm.rememberMe());
+    console.log('this.signalForm.email().valu', this.signalForm.email().value);
+    console.log(
+      'this.signalForm.password().value',
+      this.signalForm.password().value,
+    );
+    console.log(
+      'this.signalForm.rememberMe().value',
+      this.signalForm.rememberMe().value,
+    );
+
+    console.log('this.signalForm.email().errors()', this.signalForm.email().errors());
+    if (this.signalForm().invalid()) {
+      console.log('this.loginModel()', this.loginModel());
+    } else {
+      console.log('Walidacja przeszłą zajebiście')
+    }
     this.formGroup.markAllAsTouched();
 
     if (this.formGroup.valid) {
