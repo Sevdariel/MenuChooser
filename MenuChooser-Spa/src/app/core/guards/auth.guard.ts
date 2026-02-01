@@ -11,8 +11,13 @@ export const authGuard: CanActivateFn = (route, state) => {
   if (authService.isAuthenticated()) {
     return true;
   } else {
-    router.navigate(['/login']);
-    messageService.add({ severity: 'error', summary: 'Authorization error', detail: 'User is not logged in', life: 3000 })
+    router.navigate(['account/login']);
+    messageService.add({
+      severity: 'error',
+      summary: 'Authorization error',
+      detail: 'User is not logged in',
+      life: 3000,
+    });
     return false;
   }
 };

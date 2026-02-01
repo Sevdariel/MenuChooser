@@ -2,7 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
-import { email, form, FormField, required } from '@angular/forms/signals';
+import {
+  email,
+  form,
+  FormField,
+  required,
+  submit,
+} from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
 import { ValidationService } from '../../core/validation/service/validation.service';
@@ -41,13 +47,18 @@ export class LoginComponent {
       required(schemaPath.password, { message: 'Password is required' }));
   });
 
+  public onSubmit(event: Event) {
+    event.preventDefault();
+    submit(this.signalForm, async () => this.login());
+  }
+
   public login() {
     if (this.signalForm().valid()) {
       const loginDto = this.loginModel();
       this.accountService
         .login(loginDto)
         .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => this.router.navigateByUrl(''));
+        .subscribe(() => this.router.navigateByUrl('home'));
     }
   }
 }
