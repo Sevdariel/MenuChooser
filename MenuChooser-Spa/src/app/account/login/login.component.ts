@@ -21,7 +21,6 @@ import { ILogin } from './models/login.model';
   styleUrl: './login.component.scss',
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     RouterLink,
     ErrorDirective,
     FormField,

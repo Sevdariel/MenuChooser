@@ -15,7 +15,6 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 @NgModule({
   declarations: [
     SignUpComponent,
-    ForgotPasswordComponent,
     ResetPasswordComponent,
   ],
   imports: [

@@ -14,7 +14,7 @@ export interface IUserRegisterDto {
 
 export interface IForgotPasswordDto {
     email: string;
-    clientURI: string;
+    clientURI?: string;
 }
 
 export interface IResetPasswordSendDto {
