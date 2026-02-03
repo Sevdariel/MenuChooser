@@ -1,57 +1,97 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { form, FormField, required, submit } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { getEmailFromToken } from '../../core/authorization/token-decoder.helper';
+import { MessageModule } from 'primeng/message';
+import { tap } from 'rxjs';
+import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
+import { ValidationService } from '../../core/validation/service/validation.service';
 import { IResetPasswordDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
-
-type ResetPasswordFormType = {
-  password: FormControl<string>;
-  confirmPassword: FormControl<string>;
-};
+import { getEmailFromToken } from '../../core/authorization/token-decoder.helper';
 
 @Component({
   selector: 'mc-reset-password',
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss',
-  standalone: false,
+  styleUrls: ['./reset-password.component.scss'],
+  imports: [FormField, ErrorDirective, MessageModule, CommonModule],
   providers: [MessageService],
 })
-export class ResetPasswordComponent implements OnInit {
-  private formBuilder = inject(FormBuilder);
+export class ResetPasswordComponent {
+  public validationService = inject(ValidationService);
   private accountService = inject(AccountService);
-  private activatedRoute = inject(ActivatedRoute);
-  private router = inject(Router);
-  private destroyRef = inject(DestroyRef);
   private messageService = inject(MessageService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
-  public formGroup!: FormGroup<ResetPasswordFormType>;
+  private resetPasswordModel = signal<IResetPasswordDto>({
+    token: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
-  public ngOnInit(): void {
-    this.formGroup = this.formBuilder.nonNullable.group({
-      password: new FormControl(),
-      confirmPassword: new FormControl(),
-    })
+  protected signalForm = form(this.resetPasswordModel, (schemaPath) => {
+    required(schemaPath.password);
+    required(schemaPath.confirmPassword);
+  });
+
+  protected onSubmit(event: Event) {
+    event.preventDefault();
+    submit(this.signalForm, async () => {
+      this.resetPassword();
+    });
   }
 
   public resetPassword() {
-    if (this.formGroup.controls.password.value !== this.formGroup.controls.confirmPassword.value) {
-      return this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Email field can\'t be empty', life: 3000 })
+    if (
+      this.resetPasswordModel().password !==
+      this.resetPasswordModel().confirmPassword
+    ) {
+      return this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Passwords do not match',
+        life: 3000,
+      });
     }
+
+    const token = this.activatedRoute.snapshot.queryParamMap.get('token');
+    if (!token) {
+      return this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Invalid reset token',
+        life: 3000,
+      });
+    }
+
+    // Extract email from JWT token
+    const email = getEmailFromToken(token);
 
     const resetPasswordDto: IResetPasswordDto = {
-      password: this.formGroup.controls.password.value,
-      confirmPassword: this.formGroup.controls.confirmPassword.value,
-      email: getEmailFromToken(this.activatedRoute.snapshot.queryParamMap.get('token')!),
-      token: this.activatedRoute.snapshot.queryParamMap.get('token')!,
-    }
+      password: this.resetPasswordModel().password,
+      confirmPassword: this.resetPasswordModel().confirmPassword,
+      email,
+      token,
+    };
 
-    this.accountService.resetPassword(resetPasswordDto)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.router.navigate(['account/login']));
+    this.accountService
+      .resetPassword(resetPasswordDto)
+      .pipe(
+        tap(() => {
+          this.resetPasswordModel.set({
+            token: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+          });
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => this.router.navigate(['/account/login']));
   }
 }
-
-

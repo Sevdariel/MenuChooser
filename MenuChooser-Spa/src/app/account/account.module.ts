@@ -8,15 +8,10 @@ import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
 import { ErrorDirective } from '../core/validation/error-directive/error.directive';
 import { AccountRoutingModule } from './account-routing.module';
-import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 
 @NgModule({
-  declarations: [
-    SignUpComponent,
-    ResetPasswordComponent,
-  ],
+  declarations: [SignUpComponent],
   imports: [
     ErrorDirective,
     CommonModule,
@@ -27,6 +22,6 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     InputTextModule,
     FloatLabelModule,
     CheckboxModule,
-  ]
+  ],
 })
-export class AccountModule { }
+export class AccountModule {}
