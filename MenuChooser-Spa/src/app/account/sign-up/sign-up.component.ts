@@ -1,59 +1,115 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  email,
+  form,
+  FormField,
+  required,
+  submit,
+  minLength,
+  maxLength,
+} from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { tap } from 'rxjs';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import { IUserRegisterDto } from '../../shared/account/account-dto.model';
-import { fieldMatchValidator } from '../../shared/validators/field-match.validator';
 import { AccountService } from './../../shared/account/account.service';
+import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
+import { MessageModule } from 'primeng/message';
+import { CommonModule } from '@angular/common';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'mc-sign-up',
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
-  standalone: false
+  standalone: true,
+  imports: [
+    FormField,
+    ErrorDirective,
+    MessageModule,
+    CommonModule,
+    CheckboxModule,
+    FloatLabelModule,
+    InputTextModule,
+    ToastModule,
+  ],
+  providers: [MessageService],
 })
-export class SignUpComponent implements OnInit {
+export class SignUpComponent {
+  public validationService = inject(ValidationService);
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
+  private messageService = inject(MessageService);
 
-  public readonly validationService = inject(ValidationService);
-  private readonly accountService = inject(AccountService);
-  private readonly formBuilder = inject(FormBuilder);
-  private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly messageService = inject(MessageService);
+  private signUpModel = signal<IUserRegisterDto & { repeatPassword: string }>({
+    username: '',
+    email: '',
+    password: '',
+    repeatPassword: '',
+    termsOfUse: false,
+    privacyPolicy: false,
+  });
 
-  public formGroup!: FormGroup;
+  protected signalForm = form(this.signUpModel, (schemaPath) => {
+    required(schemaPath.username);
+    minLength(schemaPath.username, 5);
+    maxLength(schemaPath.username, 128);
+    required(schemaPath.email);
+    email(schemaPath.email);
+    required(schemaPath.password);
+    required(schemaPath.repeatPassword);
+    required(schemaPath.termsOfUse);
+    required(schemaPath.privacyPolicy);
+  });
 
-  public ngOnInit(): void {
-    this.formGroup = this.formBuilder.nonNullable.group({
-      username: new FormControl('', { validators: [Validators.required, Validators.minLength(5), Validators.maxLength(128)] }),
-      email: new FormControl('', { validators: [Validators.required, Validators.email] }),
-      password: new FormControl('', { validators: Validators.required }),
-      repeatPassword: new FormControl('', { validators: Validators.required }),
-      termsOfUse: new FormControl(false, { validators: Validators.required }),
-      privacyPolicy: new FormControl(false, { validators: Validators.required }),
-    }, { validators: fieldMatchValidator('password', 'repeatPassword') });
+  protected onSubmit(event: Event) {
+    event.preventDefault();
+    submit(this.signalForm, async () => {
+      this.signUp();
+    });
   }
 
   public signUp() {
-    if (this.formGroup.invalid) {
-      return this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Sign up form contains errors', life: 3000 })
+    if (!this.signalForm().valid()) {
+      return this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Sign up form contains errors',
+        life: 3000,
+      });
     }
 
-    this.accountService.register(this.createDto())
+    // Additional validation for password match
+    if (this.signUpModel().password !== this.signUpModel().repeatPassword) {
+      return this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Passwords do not match',
+        life: 3000,
+      });
+    }
+
+    this.accountService
+      .register(this.signUpModel())
       .pipe(
+        tap(() => {
+          this.signUpModel.set({
+            username: '',
+            email: '',
+            password: '',
+            repeatPassword: '',
+            termsOfUse: false,
+            privacyPolicy: false,
+          });
+        }),
         takeUntilDestroyed(this.destroyRef),
-      ).subscribe(() => this.router.navigateByUrl(''));
-  }
-
-  private createDto(): IUserRegisterDto {
-    return {
-      email: this.formGroup.controls['email'].value,
-      username: this.formGroup.controls['username'].value,
-      password: this.formGroup.controls['password'].value,
-      termsOfUse: this.formGroup.controls['termsOfUse'].value,
-      privacyPolicy: this.formGroup.controls['privacyPolicy'].value,
-    }
+      )
+      .subscribe(() => this.router.navigate(['/account/login']));
   }
 }
