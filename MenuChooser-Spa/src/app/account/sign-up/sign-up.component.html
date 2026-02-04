@@ -13,13 +13,22 @@
       <form class="space-y-4 md:space-y-6" (submit)="onSubmit($event)">
         <div>
           <p-floatlabel variant="on">
-            <label for="username">Username</label>
+            <label
+              for="username"
+              [ngClass]="{
+                '!text-red-600':
+                  signalForm.username().errors().length > 0 &&
+                  signalForm.username().touched(),
+              }"
+              >Username</label
+            >
             <input
               type="text"
               [formField]="signalForm.username"
               [ngClass]="{
-                'ng-invalid ng-dirty':
-                  signalForm.username().errors().length > 0,
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  signalForm.username().errors().length > 0 &&
+                  signalForm.username().touched(),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
