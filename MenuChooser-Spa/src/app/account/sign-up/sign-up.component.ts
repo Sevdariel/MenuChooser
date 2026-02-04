@@ -57,15 +57,15 @@ export class SignUpComponent {
   });
 
   protected signalForm = form(this.signUpModel, (schemaPath) => {
-    required(schemaPath.username);
-    minLength(schemaPath.username, 5);
-    maxLength(schemaPath.username, 128);
-    required(schemaPath.email);
-    email(schemaPath.email);
-    required(schemaPath.password);
-    required(schemaPath.repeatPassword);
-    required(schemaPath.termsOfUse);
-    required(schemaPath.privacyPolicy);
+    required(schemaPath.username, {message: 'Username is required'});
+    minLength(schemaPath.username, 5, {message: 'Username must be at least 5 characters'});
+    maxLength(schemaPath.username, 128, {message: 'Username must be at most 128 characters'});
+    required(schemaPath.email, {message: 'Email is required'});
+    email(schemaPath.email, {message: 'Email is invalid'});
+    required(schemaPath.password, {message: 'Password is required'});
+    required(schemaPath.repeatPassword, {message: 'Repeat password is required'});
+    required(schemaPath.termsOfUse, {message: 'Terms of use is required'});
+    required(schemaPath.privacyPolicy, {message: 'Privacy policy is required'});
   });
 
   protected onSubmit(event: Event) {
@@ -85,7 +85,6 @@ export class SignUpComponent {
       });
     }
 
-    // Additional validation for password match
     if (this.signUpModel().password !== this.signUpModel().repeatPassword) {
       return this.messageService.add({
         severity: 'error',

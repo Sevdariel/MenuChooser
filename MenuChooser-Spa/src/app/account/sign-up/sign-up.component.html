@@ -1,96 +1,134 @@
-<div class="flex flex-col items-center md:h-[calc(100vh-64px)] justify-center px-6 py-8 mx-auto lg:py-0">
-  <div class="w-full rounded-lg shadow mb-6 dark:border md:mt-0 sm:max-w-md xl:p-0">
+<div
+  class="flex flex-col items-center md:h-[calc(100vh-64px)] justify-center px-6 py-8 mx-auto lg:py-0"
+>
+  <div
+    class="w-full rounded-lg shadow mb-6 dark:border md:mt-0 sm:max-w-md xl:p-0"
+  >
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-      <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-5xl text-center">
+      <h1
+        class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-5xl text-center"
+      >
         Sign up
       </h1>
       <form class="space-y-4 md:space-y-6" (submit)="onSubmit($event)">
         <div>
           <p-floatlabel variant="on">
             <label for="username">Username</label>
-            <input 
-              type="text" 
-              pInputText 
+            <input
+              type="text"
               [formField]="signalForm.username"
-              [ngClass]="{'ng-invalid ng-dirty': signalForm.username().touched() && signalForm.username().errors().length > 0}"
-              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" 
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  signalForm.username().errors().length > 0,
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (signalForm.username().errors().length > 0 && signalForm.username().touched()) {
-            <p-message severity="error" variant="simple" size="small">
-              {{signalForm.username().errors()[0].message}}
-            </p-message>
+          @if (
+            signalForm.username().errors().length > 0 &&
+            signalForm.username().touched()
+          ) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.username().errors()[0].message
+            }}</p-message>
           }
         </div>
         <div>
           <p-floatlabel variant="on">
             <label for="email">Email</label>
-            <input 
-              type="email" 
-              pInputText 
+            <input
+              type="email"
               [formField]="signalForm.email"
-              [ngClass]="{'ng-invalid ng-dirty': signalForm.email().touched() && signalForm.email().errors().length > 0}"
-              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" 
+              [ngClass]="{
+                'ng-invalid ng-dirty': signalForm.email().errors().length > 0,
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (signalForm.email().errors().length > 0 && signalForm.email().touched()) {
-            <p-message severity="error" variant="simple" size="small">
-              {{signalForm.email().errors()[0].message}}
-            </p-message>
+          @if (
+            signalForm.email().errors().length > 0 &&
+            signalForm.email().touched()
+          ) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.email().errors()[0].message
+            }}</p-message>
           }
         </div>
         <div>
           <p-floatlabel variant="on">
             <label for="password">Password</label>
-            <input 
-              type="password" 
-              pInputText 
+            <input
+              type="password"
               [formField]="signalForm.password"
-              [ngClass]="{'ng-invalid ng-dirty': signalForm.password().touched() && signalForm.password().errors().length > 0}"
-              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" 
+              pInputText
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  signalForm.password().errors().length > 0 &&
+                  signalForm.password().touched(),
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (signalForm.password().errors().length > 0 && signalForm.password().touched()) {
-            <p-message severity="error" variant="simple" size="small">
-              {{signalForm.password().errors()[0].message}}
-            </p-message>
+          @if (
+            signalForm.password().errors().length > 0 &&
+            signalForm.password().touched()
+          ) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.password().errors()[0].message
+            }}</p-message>
           }
         </div>
         <div>
           <p-floatlabel variant="on">
             <label for="repeatPassword">Repeat password</label>
-            <input 
-              type="password" 
-              pInputText 
+            <input
+              type="password"
               [formField]="signalForm.repeatPassword"
-              [ngClass]="{'ng-invalid ng-dirty': signalForm.repeatPassword().touched() && signalForm.repeatPassword().errors().length > 0}"
-              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" 
+              [ngClass]="{
+                'ng-invalid ng-dirty':
+                  signalForm.repeatPassword().errors().length > 0,
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (signalForm.repeatPassword().errors().length > 0 && signalForm.repeatPassword().touched()) {
-            <p-message severity="error" variant="simple" size="small">
-              {{signalForm.repeatPassword().errors()[0].message}}
-            </p-message>
+          @if (
+            signalForm.repeatPassword().errors().length > 0 &&
+            signalForm.repeatPassword().touched()
+          ) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.repeatPassword().errors()[0].message
+            }}</p-message>
           }
         </div>
         <div class="space-y-3 md:space-y-4">
           <div>
             <div class="flex items-center">
-              <p-checkbox 
-                [formField]="signalForm.termsOfUse" 
-                inputId="termsOfUse" 
+              <p-checkbox
+                [formField]="signalForm.termsOfUse"
+                inputId="termsOfUse"
                 binary="true"
-                size="small" 
-                styleClass="flex items-center" 
+                size="small"
+                styleClass="flex items-center"
               />
-              <label for="termsOfUse" class="ms-2 text-base"
-                [ngClass]="{'text-red-600': signalForm.termsOfUse().touched() && signalForm.termsOfUse().errors().length > 0}">
-                I agree to the Terms of Use
-              </label>
+              <label
+                for="termsOfUse"
+                class="ms-2 text-base"
+                [ngClass]="{
+                  'text-red-600':
+                    signalForm.termsOfUse().errors().length > 0 &&
+                    signalForm.termsOfUse().touched(),
+                }"
+                >I agree to the Terms of Use</label
+              >
             </div>
-            @if (signalForm.termsOfUse().errors().length > 0 && signalForm.termsOfUse().touched()) {
+            @if (
+              signalForm.termsOfUse().errors().length > 0 &&
+              signalForm.termsOfUse().touched()
+            ) {
               <div>
-                <mc-error>{{signalForm.termsOfUse().errors()[0].message}}</mc-error>
+                <mc-error>{{
+                  signalForm.termsOfUse().errors()[0].message
+                }}</mc-error>
               </div>
             }
           </div>
@@ -98,29 +136,41 @@
           <div class="space-y-3 md:space-y-4">
             <div>
               <div class="flex items-center">
-                <p-checkbox 
-                  [formField]="signalForm.privacyPolicy" 
-                  inputId="privacyPolicy" 
+                <p-checkbox
+                  [formField]="signalForm.privacyPolicy"
+                  inputId="privacyPolicy"
                   binary="true"
-                  size="small" 
-                  styleClass="flex items-center" 
+                  size="small"
+                  styleClass="flex items-center"
                 />
-                <label for="privacyPolicy" class="ms-2 text-base"
-                  [ngClass]="{'text-red-600': signalForm.privacyPolicy().touched() && signalForm.privacyPolicy().errors().length > 0}">
-                  I agree to the Privacy Policy
-                </label>
+                <label
+                  for="privacyPolicy"
+                  class="ms-2 text-base"
+                  [ngClass]="{
+                    'text-red-600':
+                      signalForm.privacyPolicy().errors().length > 0 &&
+                      signalForm.privacyPolicy().touched,
+                  }"
+                  >I agree to the Privacy Policy</label
+                >
               </div>
-              @if (signalForm.privacyPolicy().errors().length > 0 && signalForm.privacyPolicy().touched()) {
+              @if (
+                signalForm.privacyPolicy().errors().length > 0 &&
+                signalForm.privacyPolicy().touched()
+              ) {
                 <div>
-                  <mc-error>{{signalForm.privacyPolicy().errors()[0].message}}</mc-error>
+                  <mc-error>{{
+                    signalForm.privacyPolicy().errors()[0].message
+                  }}</mc-error>
                 </div>
               }
             </div>
           </div>
           <div class="items-center justify-center flex">
-            <button 
+            <button
               type="submit"
-              class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600">
+              class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600"
+            >
               Sign up
             </button>
           </div>
@@ -129,3 +179,4 @@
     </div>
   </div>
 </div>
+<p-toast />
