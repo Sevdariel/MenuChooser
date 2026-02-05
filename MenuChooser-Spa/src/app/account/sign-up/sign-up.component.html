@@ -1,98 +1,183 @@
-<div class="flex flex-col items-center md:h-[calc(100vh-64px)] justify-center px-6 py-8 mx-auto lg:py-0">
-    <div class="w-full rounded-lg shadow mb-6 dark:border md:mt-0 sm:max-w-md xl:p-0">
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-5xl text-center">
-                Sign up
-            </h1>
-            <form class="space-y-4 md:space-y-6" [formGroup]="formGroup" (submit)="signUp()">
-                <div>
-                    <p-floatlabel variant="on">
-                        <label for="username">Username</label>
-                        <input type="text" pInputText formControlName="username"
-                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['username'])}"
-                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
-                    </p-floatlabel>
-                    @if (validationService.showError(formGroup.controls['username'])) {
-                    <p-message severity="error" variant="simple"
-                        size="small">{{validationService.getErrorMessage(formGroup.controls['username'])}}</p-message>
-                    }
-                </div>
-                <div>
-                    <p-floatlabel variant="on">
-                        <label for="email">Email</label>
-                        <input type="email" pInputText formControlName="email"
-                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['email'])}"
-                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
-                    </p-floatlabel>
-                    @if (validationService.showError(formGroup.controls['email'])) {
-                    <p-message severity="error" variant="simple"
-                        size="small">{{validationService.getErrorMessage(formGroup.controls['email'])}}</p-message>
-                    }
-                </div>
-                <div>
-                    <p-floatlabel variant="on">
-                        <label for="password">Password</label>
-                        <input type="password" pInputText formControlName="password" required
-                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['password'])}"
-                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
-                    </p-floatlabel>
-                    @if (validationService.showError(formGroup.controls['password'])) {
-                    <p-message severity="error" variant="simple"
-                        size="small">{{validationService.getErrorMessage(formGroup.controls['password'])}}</p-message>
-                    }
-                </div>
-                <div>
-                    <p-floatlabel variant="on">
-                        <label for="repeatPassword">Repeat password</label>
-                        <input type="password" pInputText formControlName="repeatPassword" required
-                            [ngClass]="{'ng-invalid ng-dirty': validationService.showError(formGroup.controls['repeatPassword'])}"
-                            class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5" />
-                    </p-floatlabel>
-                    @if (validationService.showError(formGroup.controls['repeatPassword'])) {
-                    <p-message severity="error" variant="simple"
-                        size="small">{{validationService.getErrorMessage(formGroup.controls['repeatPassword'])}}</p-message>
-                    }
-                </div>
-                <div class="space-y-3 md:space-y-4">
-                    <div>
-                        <div class="flex items-center">
-                            <p-checkbox formControlName="termsOfUse" inputId="termsOfUse" required binary="true"
-                                size="small" styleClass="flex items-center" />
-                            <label for="termsOfUse" class="ms-2 text-base"
-                                [ngClass]="{'text-red-600': formGroup.controls['termsOfUse'].touched && formGroup.controls['termsOfUse'].errors}">I
-                                agree to the Terms of Use</label>
-                        </div>
-                        @if (validationService.showError(formGroup.controls['termsOfUse'])) {
-                        <div>
-                            <mc-error>{{validationService.getErrorMessage(formGroup.controls['termsOfUse'])}}</mc-error>
-                        </div>
-                        }
-                    </div>
-
-                    <div class="space-y-3 md:space-y-4">
-                        <div>
-                            <div class="flex items-center">
-                                <p-checkbox formControlName="privacyPolicy" inputId="privacyPolicy" binary="true"
-                                    required size="small" styleClass="flex items-center" />
-                                <label for="privacyPolicy" class="ms-2 text-base"
-                                    [ngClass]="{'text-red-600': formGroup.controls['privacyPolicy'].touched && formGroup.controls['privacyPolicy'].errors}">I
-                                    agree to the Privacy Policy</label>
-                            </div>
-                            @if (validationService.showError(formGroup.controls['privacyPolicy'])) {
-                            <div>
-                                <mc-error>{{validationService.getErrorMessage(formGroup.controls['privacyPolicy'])}}</mc-error>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    <div class="items-center justify-center flex">
-                        <button type="submit"
-                            class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600">Sign
-                            up</button>
-                    </div>
-                </div>
-            </form>
+<div
+  class="flex flex-col items-center md:h-[calc(100vh-64px)] justify-center px-6 py-8 mx-auto lg:py-0"
+>
+  <div
+    class="w-full rounded-lg shadow mb-6 dark:border md:mt-0 sm:max-w-md xl:p-0"
+  >
+    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+      <h1
+        class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-5xl text-center"
+      >
+        Sign up
+      </h1>
+      <form class="space-y-4 md:space-y-6" (submit)="onSubmit($event)">
+        <div>
+          <p-floatlabel variant="on">
+            <label
+              for="username"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.username()),
+              }"
+              >Username</label
+            >
+            <input
+              type="text"
+              [formField]="signalForm.username"
+              [ngClass]="{
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.username()),
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+            />
+          </p-floatlabel>
+          @if (isFieldInvalid(signalForm.username())) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.username().errors()[0].message
+            }}</p-message>
+          }
         </div>
+        <div>
+          <p-floatlabel variant="on">
+            <label
+              for="email"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.email()),
+              }"
+              >Email</label
+            >
+            <input
+              type="email"
+              [formField]="signalForm.email"
+              [ngClass]="{
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.email()),
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+            />
+          </p-floatlabel>
+          @if (isFieldInvalid(signalForm.email())) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.email().errors()[0].message
+            }}</p-message>
+          }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+            <label
+              for="password"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.password()),
+              }"
+              >Password</label
+            >
+            <input
+              type="password"
+              [formField]="signalForm.password"
+              [ngClass]="{
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.password()),
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+            />
+          </p-floatlabel>
+          @if (isFieldInvalid(signalForm.password())) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.password().errors()[0].message
+            }}</p-message>
+          }
+        </div>
+        <div>
+          <p-floatlabel variant="on">
+            <label
+              for="repeatPassword"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.repeatPassword()),
+              }"
+              >Repeat password</label
+            >
+            <input
+              type="password"
+              [formField]="signalForm.repeatPassword"
+              [ngClass]="{
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.repeatPassword()),
+              }"
+              class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+            />
+          </p-floatlabel>
+          @if (isFieldInvalid(signalForm.repeatPassword())) {
+            <p-message severity="error" variant="simple" size="small">{{
+              signalForm.repeatPassword().errors()[0].message
+            }}</p-message>
+          }
+        </div>
+        <div class="space-y-3 md:space-y-4">
+          <div>
+            <div class="flex items-center">
+              <p-checkbox
+                [formField]="signalForm.termsOfUse"
+                inputId="termsOfUse"
+                binary="true"
+                size="small"
+                styleClass="flex items-center"
+              />
+              <label
+                for="termsOfUse"
+                class="ms-2 text-base"
+                [ngClass]="{
+                  'text-red-600': isFieldInvalid(signalForm.termsOfUse()),
+                }"
+                >I agree to the Terms of Use</label
+              >
+            </div>
+            @if (isFieldInvalid(signalForm.termsOfUse())) {
+              <div>
+                <mc-error>{{
+                  signalForm.termsOfUse().errors()[0].message
+                }}</mc-error>
+              </div>
+            }
+          </div>
+
+          <div class="space-y-3 md:space-y-4">
+            <div>
+              <div class="flex items-center">
+                <p-checkbox
+                  [formField]="signalForm.privacyPolicy"
+                  inputId="privacyPolicy"
+                  binary="true"
+                  size="small"
+                  styleClass="flex items-center"
+                />
+                <label
+                  for="privacyPolicy"
+                  class="ms-2 text-base"
+                  [ngClass]="{
+                    'text-red-600': isFieldInvalid(signalForm.privacyPolicy()),
+                  }"
+                  >I agree to the Privacy Policy</label
+                >
+              </div>
+              @if (isFieldInvalid(signalForm.privacyPolicy())) {
+                <div>
+                  <mc-error>{{
+                    signalForm.privacyPolicy().errors()[0].message
+                  }}</mc-error>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="items-center justify-center flex">
+            <button
+              type="submit"
+              class="h-12 w-52 bg-light-orange-900 rounded px-3 py-2 text-center font-medium text-lg hover:bg-light-orange-600"
+            >
+              Sign up
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 <p-toast />
