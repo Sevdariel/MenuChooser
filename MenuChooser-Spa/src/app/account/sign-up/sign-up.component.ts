@@ -1,28 +1,27 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   email,
   form,
   FormField,
-  required,
-  submit,
-  minLength,
   maxLength,
-  FieldTree,
+  minLength,
+  required,
+  submit
 } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { tap } from 'rxjs';
-import { ValidationService } from '../../core/validation/service/validation.service';
-import { IUserRegisterDto } from '../../shared/account/account-dto.model';
-import { AccountService } from './../../shared/account/account.service';
-import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
-import { MessageModule } from 'primeng/message';
-import { CommonModule } from '@angular/common';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { ToastModule } from 'primeng/toast';
+import { tap } from 'rxjs';
+import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
+import { ValidationService } from '../../core/validation/service/validation.service';
+import { IUserRegisterDto } from '../../shared/account/account-dto.model';
+import { AccountService } from './../../shared/account/account.service';
 
 @Component({
   selector: 'mc-sign-up',
