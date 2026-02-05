@@ -16,9 +16,7 @@
             <label
               for="username"
               [ngClass]="{
-                '!text-red-600':
-                  signalForm.username().errors().length > 0 &&
-                  signalForm.username().touched(),
+                '!text-red-600': isFieldInvalid(signalForm.username()),
               }"
               >Username</label
             >
@@ -27,16 +25,12 @@
               [formField]="signalForm.username"
               [ngClass]="{
                 'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
-                  signalForm.username().errors().length > 0 &&
-                  signalForm.username().touched(),
+                  isFieldInvalid(signalForm.username()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (
-            signalForm.username().errors().length > 0 &&
-            signalForm.username().touched()
-          ) {
+          @if (isFieldInvalid(signalForm.username())) {
             <p-message severity="error" variant="simple" size="small">{{
               signalForm.username().errors()[0].message
             }}</p-message>
@@ -49,15 +43,12 @@
               type="email"
               [formField]="signalForm.email"
               [ngClass]="{
-                'ng-invalid ng-dirty': signalForm.email().errors().length > 0,
+                'ng-invalid ng-dirty': isFieldInvalid(signalForm.email()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (
-            signalForm.email().errors().length > 0 &&
-            signalForm.email().touched()
-          ) {
+          @if (isFieldInvalid(signalForm.email())) {
             <p-message severity="error" variant="simple" size="small">{{
               signalForm.email().errors()[0].message
             }}</p-message>
@@ -71,17 +62,12 @@
               [formField]="signalForm.password"
               pInputText
               [ngClass]="{
-                'ng-invalid ng-dirty':
-                  signalForm.password().errors().length > 0 &&
-                  signalForm.password().touched(),
+                'ng-invalid ng-dirty': isFieldInvalid(signalForm.password()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (
-            signalForm.password().errors().length > 0 &&
-            signalForm.password().touched()
-          ) {
+          @if (isFieldInvalid(signalForm.password())) {
             <p-message severity="error" variant="simple" size="small">{{
               signalForm.password().errors()[0].message
             }}</p-message>
@@ -94,16 +80,12 @@
               type="password"
               [formField]="signalForm.repeatPassword"
               [ngClass]="{
-                'ng-invalid ng-dirty':
-                  signalForm.repeatPassword().errors().length > 0,
+                'ng-invalid ng-dirty': isFieldInvalid(signalForm.repeatPassword()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
           </p-floatlabel>
-          @if (
-            signalForm.repeatPassword().errors().length > 0 &&
-            signalForm.repeatPassword().touched()
-          ) {
+          @if (isFieldInvalid(signalForm.repeatPassword())) {
             <p-message severity="error" variant="simple" size="small">{{
               signalForm.repeatPassword().errors()[0].message
             }}</p-message>
@@ -123,17 +105,12 @@
                 for="termsOfUse"
                 class="ms-2 text-base"
                 [ngClass]="{
-                  'text-red-600':
-                    signalForm.termsOfUse().errors().length > 0 &&
-                    signalForm.termsOfUse().touched(),
+                  'text-red-600': isFieldInvalid(signalForm.termsOfUse()),
                 }"
                 >I agree to the Terms of Use</label
               >
             </div>
-            @if (
-              signalForm.termsOfUse().errors().length > 0 &&
-              signalForm.termsOfUse().touched()
-            ) {
+            @if (isFieldInvalid(signalForm.termsOfUse())) {
               <div>
                 <mc-error>{{
                   signalForm.termsOfUse().errors()[0].message
@@ -156,17 +133,12 @@
                   for="privacyPolicy"
                   class="ms-2 text-base"
                   [ngClass]="{
-                    'text-red-600':
-                      signalForm.privacyPolicy().errors().length > 0 &&
-                      signalForm.privacyPolicy().touched,
+                    'text-red-600': isFieldInvalid(signalForm.privacyPolicy()),
                   }"
                   >I agree to the Privacy Policy</label
                 >
               </div>
-              @if (
-                signalForm.privacyPolicy().errors().length > 0 &&
-                signalForm.privacyPolicy().touched()
-              ) {
+              @if (isFieldInvalid(signalForm.privacyPolicy())) {
                 <div>
                   <mc-error>{{
                     signalForm.privacyPolicy().errors()[0].message

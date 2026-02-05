@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   email,
@@ -8,6 +8,7 @@ import {
   submit,
   minLength,
   maxLength,
+  FieldTree,
 } from '@angular/forms/signals';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -57,15 +58,23 @@ export class SignUpComponent {
   });
 
   protected signalForm = form(this.signUpModel, (schemaPath) => {
-    required(schemaPath.username, {message: 'Username is required'});
-    minLength(schemaPath.username, 5, {message: 'Username must be at least 5 characters'});
-    maxLength(schemaPath.username, 128, {message: 'Username must be at most 128 characters'});
-    required(schemaPath.email, {message: 'Email is required'});
-    email(schemaPath.email, {message: 'Email is invalid'});
-    required(schemaPath.password, {message: 'Password is required'});
-    required(schemaPath.repeatPassword, {message: 'Repeat password is required'});
-    required(schemaPath.termsOfUse, {message: 'Terms of use is required'});
-    required(schemaPath.privacyPolicy, {message: 'Privacy policy is required'});
+    required(schemaPath.username, { message: 'Username is required' });
+    minLength(schemaPath.username, 5, {
+      message: 'Username must be at least 5 characters',
+    });
+    maxLength(schemaPath.username, 128, {
+      message: 'Username must be at most 128 characters',
+    });
+    required(schemaPath.email, { message: 'Email is required' });
+    email(schemaPath.email, { message: 'Email is invalid' });
+    required(schemaPath.password, { message: 'Password is required' });
+    required(schemaPath.repeatPassword, {
+      message: 'Repeat password is required',
+    });
+    required(schemaPath.termsOfUse, { message: 'Terms of use is required' });
+    required(schemaPath.privacyPolicy, {
+      message: 'Privacy policy is required',
+    });
   });
 
   protected onSubmit(event: Event) {
@@ -111,4 +120,9 @@ export class SignUpComponent {
       )
       .subscribe(() => this.router.navigate(['/account/login']));
   }
+
+  protected isFieldInvalid = (formField: any): boolean => {
+    console.log('formField', formField);
+    return formField.errors().length > 0 && formField.touched();
+  };
 }
