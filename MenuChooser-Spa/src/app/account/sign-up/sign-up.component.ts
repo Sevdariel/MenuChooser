@@ -121,8 +121,6 @@ export class SignUpComponent {
       .subscribe(() => this.router.navigate(['/account/login']));
   }
 
-  protected isFieldInvalid = (formField: any): boolean => {
-    console.log('formField', formField);
-    return formField.errors().length > 0 && formField.touched();
-  };
+  protected isFieldInvalid = (formField: any): boolean =>
+    formField.errors().length > 0 && formField.touched();
 }

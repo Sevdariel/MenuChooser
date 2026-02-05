@@ -38,12 +38,19 @@
         </div>
         <div>
           <p-floatlabel variant="on">
-            <label for="email">Email</label>
+            <label
+              for="email"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.email()),
+              }"
+              >Email</label
+            >
             <input
               type="email"
               [formField]="signalForm.email"
               [ngClass]="{
-                'ng-invalid ng-dirty': isFieldInvalid(signalForm.email()),
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.email()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
@@ -56,13 +63,19 @@
         </div>
         <div>
           <p-floatlabel variant="on">
-            <label for="password">Password</label>
+            <label
+              for="password"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.password()),
+              }"
+              >Password</label
+            >
             <input
               type="password"
               [formField]="signalForm.password"
-              pInputText
               [ngClass]="{
-                'ng-invalid ng-dirty': isFieldInvalid(signalForm.password()),
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.password()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
@@ -75,12 +88,19 @@
         </div>
         <div>
           <p-floatlabel variant="on">
-            <label for="repeatPassword">Repeat password</label>
+            <label
+              for="repeatPassword"
+              [ngClass]="{
+                '!text-red-600': isFieldInvalid(signalForm.repeatPassword()),
+              }"
+              >Repeat password</label
+            >
             <input
               type="password"
               [formField]="signalForm.repeatPassword"
               [ngClass]="{
-                'ng-invalid ng-dirty': isFieldInvalid(signalForm.repeatPassword()),
+                'invalid:border-red-600 invalid:placeholder:text-red-600 invalid:text-red-600':
+                  isFieldInvalid(signalForm.repeatPassword()),
               }"
               class="text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
             />
