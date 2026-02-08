@@ -1,12 +1,12 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SvgIconComponent } from 'angular-svg-icon';
+import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { TableModule } from 'primeng/table';
 import { tap } from 'rxjs';
 import { IProduct } from '../../models/product.model';
-import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'mc-products-list',
@@ -18,6 +18,7 @@ import { ButtonModule } from 'primeng/button';
   ],
   templateUrl: './products-list.component.html',
   styleUrl: './products-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsListComponent implements OnInit {
 
@@ -31,6 +32,7 @@ export class ProductsListComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private productsSignal = signal<IProduct[]>([]);
+  
   public products = this.productsSignal.asReadonly();
 
   public ngOnInit(): void {
