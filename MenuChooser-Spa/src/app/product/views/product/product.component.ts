@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { SvgIconComponent } from 'angular-svg-icon';
@@ -11,16 +18,12 @@ import { ProductEditComponent } from '../product-edit/product-edit.component';
 
 @Component({
   selector: 'mc-product',
-  imports: [
-    DrawerModule,
-    ProductEditComponent,
-    SvgIconComponent,
-  ],
+  imports: [DrawerModule, ProductEditComponent, SvgIconComponent],
   templateUrl: './product.component.html',
   styleUrl: './product.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductComponent implements OnInit {
-
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -29,9 +32,11 @@ export class ProductComponent implements OnInit {
   public togglePanel = signal(false);
 
   public ngOnInit(): void {
-    this.activatedRoute.data.pipe(
-      tap(data => this.productSignal.set(data['product'])),
-      takeUntilDestroyed(this.destroyRef))
+    this.activatedRoute.data
+      .pipe(
+        tap((data) => this.productSignal.set(data['product'])),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe();
   }
 

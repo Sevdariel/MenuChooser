@@ -1,56 +1,68 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { form, FormField, required } from '@angular/forms/signals';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
+import { tap } from 'rxjs';
 import { AuthService } from '../../../core/authorization/auth.service';
 import { IAddProductDto } from '../../models/product-dto.model';
-import { ProductFormType } from '../../models/product.model';
+import { IProductForm } from '../../models/product-form.model';
 import { ProductService } from '../../services/product.service';
-import { tap } from 'rxjs';
 
 @Component({
   selector: 'mc-add-product',
   imports: [
-    ReactiveFormsModule,
     InputTextModule,
     FloatLabel,
     ButtonModule,
     RouterModule,
+    FormField,
   ],
   templateUrl: './add-product.component.html',
-  styleUrl: './add-product.component.scss'
+  styleUrl: './add-product.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddProductComponent implements OnInit {
-
-  private readonly formBuilder = inject(FormBuilder);
+export class AddProductComponent {
   private readonly productService = inject(ProductService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
 
-  public formGroup!: FormGroup<ProductFormType>;
+  protected productModel = signal<IProductForm>({
+    name: '',
+    producent: '',
+  });
 
-  public ngOnInit(): void {
-    this.formGroup = this.formBuilder.group({
-      name: new FormControl(),
-      producent: new FormControl(),
-    });
-  }
+  protected signalForm = form(this.productModel, (schemaPath) => {
+    required(schemaPath.name);
+    required(schemaPath.producent);
+  });
 
-  public add() {
+  public add(event: Event) {
+    event.preventDefault();
     const addProductDto: IAddProductDto = {
       createdBy: this.authService.loggedUser()!.username,
-      name: this.formGroup.controls.name.value!,
-      producent: this.formGroup.controls.producent.value!,
-    }
+      name: this.productModel().name,
+      producent: this.productModel().producent,
+    };
 
-    this.productService.addProduct(addProductDto)
+    this.productService
+      .addProduct(addProductDto)
       .pipe(
-        tap(newProduct => this.router.navigate([`/products/${newProduct.id}`])),
-        takeUntilDestroyed(this.destroyRef))
-      .subscribe()
+        tap((newProduct) =>
+          this.router.navigate([`/products/${newProduct.id}`]),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 }
