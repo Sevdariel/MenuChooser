@@ -1,21 +1,33 @@
 <div class="p-4">
-    <form [formGroup]="formGroup" (submit)="save()">
-        <div class="space-y-4 flex flex-col">
-            <div>
-                <p-floatlabel variant="on">
-                    <input id="name" type="text" class="w-full" pInputText formControlName="name">
-                    <label for="name">Name</label>
-                </p-floatlabel>
-            </div>
-            <div>
-                <p-floatlabel variant="on">
-                    <input id="producent" type="text" class="w-full" pInputText formControlName="producent">
-                    <label for="producent">Producent</label>
-                </p-floatlabel>
-            </div>
-            <div class="flex items-end justify-end">
-                <p-button id="save" type="submit">Save</p-button>
-            </div>
-        </div>
-    </form>
+  <form (submit)="save($event)">
+    <div class="space-y-4 flex flex-col">
+      <div>
+        <p-floatlabel variant="on">
+          <input
+            id="name"
+            type="text"
+            class="w-full"
+            pInputText
+            [formField]="signalForm.name"
+          />
+          <label for="name">Name</label>
+        </p-floatlabel>
+      </div>
+      <div>
+        <p-floatlabel variant="on">
+          <input
+            id="producent"
+            type="text"
+            class="w-full"
+            pInputText
+            [formField]="signalForm.producent"
+          />
+          <label for="producent">Producent</label>
+        </p-floatlabel>
+      </div>
+      <div class="flex items-end justify-end">
+        <p-button id="save" type="submit">Save</p-button>
+      </div>
+    </div>
+  </form>
 </div>

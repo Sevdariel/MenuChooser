@@ -21,7 +21,6 @@ import { ProductService } from '../../services/product.service';
 @Component({
   selector: 'mc-add-product',
   imports: [
-    ReactiveFormsModule,
     InputTextModule,
     FloatLabel,
     ButtonModule,
