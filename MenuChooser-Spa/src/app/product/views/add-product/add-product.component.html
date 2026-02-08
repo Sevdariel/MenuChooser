@@ -4,15 +4,15 @@
             <h1 class="text-2xl font-bold leading-tight">Add new product</h1>
         </div>
         <div>
-            <form [formGroup]="formGroup" (submit)="add()">
+            <form (submit)="add($event)">
                 <div class="space-y-4 flex flex-col">
                     <div class="flex flex-row justify-between space-x-5">
                         <p-floatlabel variant="on" class="w-full">
-                            <input id="name" type="text" class="w-full" pInputText formControlName="name">
+                            <input id="name" type="text" class="w-full" pInputText [formField]="signalForm.name">
                             <label for="name">Name</label>
                         </p-floatlabel>
                         <p-floatlabel variant="on" class="w-full">
-                            <input id="producent" type="text" class="w-full" pInputText formControlName="producent">
+                            <input id="producent" type="text" class="w-full" pInputText [formField]="signalForm.producent">
                             <label for="producent">Producent</label>
                         </p-floatlabel>
                     </div>
