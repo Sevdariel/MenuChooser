@@ -1,16 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { form, FormField, required, submit } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { MessageModule } from 'primeng/message';
 import { tap } from 'rxjs';
+import { getEmailFromToken } from '../../core/authorization/token-decoder.helper';
 import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import { IResetPasswordDto } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
-import { getEmailFromToken } from '../../core/authorization/token-decoder.helper';
 
 @Component({
   selector: 'mc-reset-password',
@@ -18,6 +24,7 @@ import { getEmailFromToken } from '../../core/authorization/token-decoder.helper
   styleUrls: ['./reset-password.component.scss'],
   imports: [FormField, ErrorDirective, MessageModule, CommonModule],
   providers: [MessageService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent {
   public validationService = inject(ValidationService);
@@ -69,7 +76,6 @@ export class ResetPasswordComponent {
       });
     }
 
-    // Extract email from JWT token
     const email = getEmailFromToken(token);
 
     const resetPasswordDto: IResetPasswordDto = {

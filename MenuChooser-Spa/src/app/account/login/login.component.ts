@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule } from '@angular/forms';
 import {
   email,
   form,
@@ -19,12 +24,8 @@ import { ILogin } from './models/login.model';
   selector: 'mc-login',
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
-  imports: [
-    CommonModule,
-    RouterLink,
-    ErrorDirective,
-    FormField,
-  ],
+  imports: [CommonModule, RouterLink, ErrorDirective, FormField],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   public validationService = inject(ValidationService);
