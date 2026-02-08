@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import {
@@ -9,16 +16,15 @@ import {
   submit,
 } from '@angular/forms/signals';
 import { MessageService } from 'primeng/api';
+import { MessageModule } from 'primeng/message';
 import { tap } from 'rxjs';
+import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
 import { ValidationService } from '../../core/validation/service/validation.service';
 import {
   IForgotPasswordDto,
   IResetPasswordSendDto,
 } from '../../shared/account/account-dto.model';
 import { AccountService } from '../../shared/account/account.service';
-import { ErrorDirective } from '../../core/validation/error-directive/error.directive';
-import { MessageModule } from 'primeng/message';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'mc-forgot-password',
@@ -26,6 +32,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './forgot-password.component.scss',
   imports: [FormField, ErrorDirective, MessageModule, CommonModule],
   providers: [MessageService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordComponent {
   public isReset = signal(false);
