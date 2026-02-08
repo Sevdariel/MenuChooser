@@ -4,16 +4,11 @@ import {
   DestroyRef,
   effect,
   inject,
-  OnInit,
-  signal,
+  signal
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { form, FormField } from '@angular/forms/signals';
+import { Router } from '@angular/router';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -34,26 +29,26 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
+import { tap } from 'rxjs';
 import { DrawerContent } from '../../../shared/drawer/drawer.model';
 import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
-import { defaultRecipe } from '../../models/default-recipe.model';
+import {
+  defaultRecipe,
+  defaultRecipeForm,
+} from '../../models/default-recipe.model';
 import { ICreateRecipeDto } from '../../models/recipe-dto.model';
 import {
   IRecipe,
   IRecipeForm,
   IRecipeProduct,
-  IStep,
-  RecipeFormType,
+  IStep
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
+import { RecipeService } from '../../services/recipe.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
-import { RecipeService } from '../../services/recipe.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { tap } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'mc-recipe-add',
@@ -68,13 +63,12 @@ import { Router } from '@angular/router';
     DragDropModule,
     DrawerModule,
     FloatLabel,
-    FormsModule,
+    FormField,
     InputNumberModule,
     InputTextModule,
     MultiSelectModule,
     OrderListModule,
     PopoverModule,
-    ReactiveFormsModule,
     RecipeProductComponent,
     SelectButtonModule,
     TableModule,
@@ -87,8 +81,7 @@ import { Router } from '@angular/router';
   templateUrl: './recipe-add.component.html',
   styleUrl: './recipe-add.component.scss',
 })
-export class RecipeAddComponent implements OnInit {
-  private readonly formBuilder = inject(FormBuilder);
+export class RecipeAddComponent {
   public readonly drawerService = inject(DrawerService);
   private readonly recipeMapperService = inject(RecipeMapperService);
   private readonly recipeService = inject(RecipeService);
@@ -114,28 +107,10 @@ export class RecipeAddComponent implements OnInit {
     { field: 'duration', caption: 'Duration' },
   ];
   protected drawerContent = DrawerContent;
-
-  public formGroup!: FormGroup<RecipeFormType>;
+  protected recipeModel = signal<IRecipeForm>(defaultRecipeForm);
+  protected signalForm = form(this.recipeModel);
 
   public draggedStepIndex: number | null = null;
-
-  constructor() {
-    effect(() => {
-      this.formGroup.patchValue({
-        products: this.recipeSignal().products,
-        steps: this.recipeSignal().steps,
-      });
-    });
-  }
-
-  public ngOnInit(): void {
-    this.formGroup = this.formBuilder.group<RecipeFormType>({
-      duration: new FormControl(this.recipeSignal().duration),
-      name: new FormControl(this.recipeSignal().name),
-      products: new FormControl<IRecipeProduct[]>(this.recipeSignal().products),
-      steps: new FormControl<IStep[]>(this.recipeSignal().steps),
-    });
-  }
 
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
     const flat = flattenObject(recipeProduct);
@@ -195,8 +170,9 @@ export class RecipeAddComponent implements OnInit {
     this.recipeService
       .createRecipe(createRecipeDto)
       .pipe(
-        tap(newRecipe => this.router.navigate([`/recipes/${newRecipe.id}`])),
-        takeUntilDestroyed(this.destroyRef))
+        tap((newRecipe) => this.router.navigate([`/recipes/${newRecipe.id}`])),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe();
   }
 }
