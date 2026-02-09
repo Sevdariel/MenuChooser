@@ -13,7 +13,7 @@ import {
   RecipeStepsFormType,
 } from '../models/recipe.model';
 import { AuthService } from '../../core/authorization/auth.service';
-import { IRecipeForm } from '../models/recipe-form.model';
+import { IRecipeForm } from '../models/recipe-forms.model';
 
 @Injectable({
   providedIn: 'root',

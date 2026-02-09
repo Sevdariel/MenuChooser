@@ -1,71 +1,55 @@
-
 import {
   Component,
   DestroyRef,
-  effect,
   inject,
   model,
-  OnInit,
   output,
   signal,
+  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { tap } from 'rxjs';
 import { IProduct } from '../../../product/models/product.model';
 import { ProductService } from '../../../product/services/product.service';
+import { defaultRecipeProductForm } from '../../models/default-recipe.model';
+import { IRecipeProductForm } from '../../models/recipe-forms.model';
 import { IRecipeProduct } from '../../models/recipe.model';
 
 @Component({
   selector: 'mc-recipe-product',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    AutoCompleteModule,
-    InputNumberModule,
-    ButtonModule
-],
+  imports: [AutoCompleteModule, ButtonModule, InputNumberModule, ReactiveFormsModule],
   templateUrl: './recipe-product.component.html',
   styleUrl: './recipe-product.component.scss',
 })
 export class RecipeProductComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly formBuilder = inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
 
   public product = model<IRecipeProduct | null>(null);
   public closeDrawer = output<IRecipeProduct | null>();
   public suggestionProducts = signal<IProduct[]>([]);
+  
+  public recipeForm!: FormGroup;
 
-  public productForm!: FormGroup;
-
-  constructor() {
-    effect(() => {
-      this.productForm.patchValue({
-        product: this.product()?.product,
-        quantity: this.product()?.quantity,
-      });
+  ngOnInit() {
+    this.recipeForm = this.fb.group({
+      product: [defaultRecipeProductForm.product],
+      quantity: [defaultRecipeProductForm.quantity],
+      unit: [defaultRecipeProductForm.unit],
     });
   }
 
-  public ngOnInit(): void {
-    this.productForm = this.formBuilder.group({
-      product: ['', Validators.required],
-      quantity: ['', [Validators.required, Validators.min(0.01)]],
-    });
-  }
+  onSave(event: Event) {
+    event.preventDefault();
 
-  onSave() {
-    if (this.productForm.valid) {
-      this.closeDrawer.emit(this.productForm.getRawValue());
+    if (this.recipeForm.valid) {
+      this.closeDrawer.emit(this.recipeForm.value);
     }
   }
 

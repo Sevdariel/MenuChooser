@@ -1,5 +1,5 @@
-import { IRecipeForm } from './recipe-form.model';
-import { IRecipe } from './recipe.model';
+import { IRecipeForm, IRecipeProductForm } from './recipe-forms.model';
+import { IRecipe, Unit } from './recipe.model';
 
 export const defaultRecipe: IRecipe = {
   createdBy: '',
@@ -16,4 +16,16 @@ export const defaultRecipeForm: IRecipeForm = {
   duration: 0,
   products: [],
   steps: [],
+};
+
+export const defaultRecipeProductForm: IRecipeProductForm = {
+  product: {
+    id: '',
+    name: '',
+    producent: '',
+    createdBy: '',
+    updatedBy: '',
+  },
+  quantity: 0,
+  unit: Unit.GRAM,
 };

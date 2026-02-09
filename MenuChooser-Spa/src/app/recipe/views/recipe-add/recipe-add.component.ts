@@ -16,7 +16,7 @@ import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipeForm } from '../../models/default-recipe.model';
 import { ICreateRecipeDto } from '../../models/recipe-dto.model';
-import { IRecipeForm } from '../../models/recipe-form.model';
+import { IRecipeForm } from '../../models/recipe-forms.model';
 import { IRecipeProduct, IStep } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeService } from '../../services/recipe.service';
