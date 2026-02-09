@@ -1,50 +1,23 @@
 import { CommonModule } from '@angular/common';
-import {
-  Component,
-  DestroyRef,
-  effect,
-  inject,
-  signal
-} from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { form, FormField } from '@angular/forms/signals';
 import { Router } from '@angular/router';
-import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { DataViewModule } from 'primeng/dataview';
-import { DialogModule } from 'primeng/dialog';
-import { DividerModule } from 'primeng/divider';
-import { DragDropModule } from 'primeng/dragdrop';
 import { DrawerModule } from 'primeng/drawer';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { OrderListModule } from 'primeng/orderlist';
-import { PopoverModule } from 'primeng/popover';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { TextareaModule } from 'primeng/textarea';
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { TooltipModule } from 'primeng/tooltip';
 import { tap } from 'rxjs';
 import { DrawerContent } from '../../../shared/drawer/drawer.model';
 import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
-import {
-  defaultRecipe,
-  defaultRecipeForm,
-} from '../../models/default-recipe.model';
+import { defaultRecipeForm } from '../../models/default-recipe.model';
 import { ICreateRecipeDto } from '../../models/recipe-dto.model';
-import {
-  IRecipe,
-  IRecipeForm,
-  IRecipeProduct,
-  IStep
-} from '../../models/recipe.model';
+import { IRecipeForm } from '../../models/recipe-form.model';
+import { IRecipeProduct, IStep } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeService } from '../../services/recipe.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
@@ -53,29 +26,15 @@ import { StepComponent } from '../step/step.component';
 @Component({
   selector: 'mc-recipe-add',
   imports: [
-    AutoCompleteModule,
     ButtonModule,
-    CardModule,
     CommonModule,
-    DataViewModule,
-    DialogModule,
-    DividerModule,
-    DragDropModule,
     DrawerModule,
     FloatLabel,
     FormField,
     InputNumberModule,
     InputTextModule,
-    MultiSelectModule,
-    OrderListModule,
-    PopoverModule,
     RecipeProductComponent,
-    SelectButtonModule,
     TableModule,
-    TagModule,
-    TextareaModule,
-    ToggleButtonModule,
-    TooltipModule,
     StepComponent,
   ],
   templateUrl: './recipe-add.component.html',
@@ -87,9 +46,6 @@ export class RecipeAddComponent {
   private readonly recipeService = inject(RecipeService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
-
-  private recipeSignal = signal<IRecipe>(defaultRecipe);
-  public recipe = this.recipeSignal.asReadonly();
 
   public selectedProduct = signal<IRecipeProduct | null>(null);
   public selectedStep = signal<IStep | null>(null);
@@ -107,6 +63,7 @@ export class RecipeAddComponent {
     { field: 'duration', caption: 'Duration' },
   ];
   protected drawerContent = DrawerContent;
+  
   protected recipeModel = signal<IRecipeForm>(defaultRecipeForm);
   protected signalForm = form(this.recipeModel);
 
@@ -130,7 +87,7 @@ export class RecipeAddComponent {
   public onRecipeProductSave(recipeProduct: IRecipeProduct | null) {
     this.drawerService.toggleDrawerPannel(DrawerContent.None);
     if (!!recipeProduct) {
-      this.recipeSignal.update((recipe) => ({
+      this.recipeModel.update((recipe) => ({
         ...recipe,
         products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
       }));
@@ -152,7 +109,7 @@ export class RecipeAddComponent {
 
   public onStepSave(step: IStep | null) {
     if (!!step) {
-      this.recipeSignal.update((recipe) => ({
+      this.recipeModel.update((recipe) => ({
         ...recipe,
         steps: upsertByPath(recipe.steps, step, 'step.id'),
       }));
@@ -162,10 +119,10 @@ export class RecipeAddComponent {
     }
   }
 
-  public saveRecipe() {
-    const formGroupRawValue: IRecipeForm = this.formGroup.getRawValue();
+  public saveRecipe(event: Event) {
+    event.preventDefault();
     const createRecipeDto: ICreateRecipeDto =
-      this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
+      this.recipeMapperService.mapToCreateRecipeDto(this.recipeModel());
 
     this.recipeService
       .createRecipe(createRecipeDto)

@@ -4,7 +4,7 @@
       <h1 class="text-2xl font-bold leading-tight">Add new recipe</h1>
     </div>
     <div>
-      <form [formGroup]="formGroup" (submit)="saveRecipe()">
+      <form (submit)="saveRecipe($event)">
         <div class="space-y-4 flex flex-col">
           <div class="flex flex-row justify-between space-x-5">
             <p-floatlabel variant="on" class="w-full">
@@ -13,17 +13,17 @@
                 type="text"
                 class="w-full"
                 pInputText
-                formControlName="name"
+                [formField]="signalForm.name"
               />
               <label for="name">Name</label>
             </p-floatlabel>
             <p-floatlabel variant="on" class="w-full">
               <input
                 id="duration"
-                type="text"
+                type="number"
                 class="w-full"
-                pInputText
-                formControlName="duration"
+                pInputNumber
+                [formField]="signalForm.duration"
               />
               <label for="duration">Duration</label>
             </p-floatlabel>
@@ -32,7 +32,7 @@
           <p-table
             tableStyleClass="table-fixed"
             size="small"
-            [value]="this.recipe().products"
+            [value]="this.recipeModel().products"
           >
             <ng-template #caption>
               <div class="flex flex-row justify-between">
@@ -45,7 +45,7 @@
                 ></p-button>
               </div>
             </ng-template>
-            @if (this.recipe().products.length > 0) {
+            @if (this.recipeModel().products.length > 0) {
               <ng-template #header>
                 <tr>
                   @for (column of productColumns; track column) {
@@ -77,7 +77,7 @@
           <p-table
             tableStyleClass="table-fixed"
             size="small"
-            [value]="this.recipe().steps"
+            [value]="this.recipeModel().steps"
           >
             <ng-template #caption>
               <div class="flex flex-row justify-between">
@@ -90,7 +90,7 @@
                 ></p-button>
               </div>
             </ng-template>
-            @if (this.recipe().steps.length > 0) {
+            @if (this.recipeModel().steps.length > 0) {
               <ng-template #header>
                 <tr>
                   @for (column of stepColumns; track column) {
@@ -144,7 +144,7 @@
   @if (drawerService.contentVisible() === drawerContent.Step) {
     <mc-step
       [(step)]="selectedStep"
-      [availableProducts]="recipe().products"
+      [availableProducts]="recipeModel().products"
       (closeDrawer)="onStepSave($event)"
     ></mc-step>
   }

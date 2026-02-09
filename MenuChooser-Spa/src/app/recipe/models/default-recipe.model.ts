@@ -1,4 +1,5 @@
-import { IRecipe, IRecipeForm } from './recipe.model';
+import { IRecipeForm } from './recipe-form.model';
+import { IRecipe } from './recipe.model';
 
 export const defaultRecipe: IRecipe = {
   createdBy: '',
