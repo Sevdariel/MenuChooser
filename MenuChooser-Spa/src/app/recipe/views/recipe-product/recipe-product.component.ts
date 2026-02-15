@@ -5,10 +5,9 @@ import {
   model,
   output,
   signal,
-  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { form, FormField } from '@angular/forms/signals';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
@@ -22,34 +21,28 @@ import { IRecipeProduct } from '../../models/recipe.model';
 @Component({
   selector: 'mc-recipe-product',
   standalone: true,
-  imports: [AutoCompleteModule, ButtonModule, InputNumberModule, ReactiveFormsModule],
+  imports: [AutoCompleteModule, ButtonModule, InputNumberModule, FormField],
   templateUrl: './recipe-product.component.html',
   styleUrl: './recipe-product.component.scss',
 })
-export class RecipeProductComponent implements OnInit {
+export class RecipeProductComponent {
   private readonly productService = inject(ProductService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly fb = inject(FormBuilder);
 
   public product = model<IRecipeProduct | null>(null);
   public closeDrawer = output<IRecipeProduct | null>();
   public suggestionProducts = signal<IProduct[]>([]);
   
-  public recipeForm!: FormGroup;
-
-  ngOnInit() {
-    this.recipeForm = this.fb.group({
-      product: [defaultRecipeProductForm.product],
-      quantity: [defaultRecipeProductForm.quantity],
-      unit: [defaultRecipeProductForm.unit],
-    });
-  }
+  protected recipeProductModel = signal<IRecipeProductForm>(
+    defaultRecipeProductForm,
+  );
+  protected signalForm = form(this.recipeProductModel);
 
   onSave(event: Event) {
     event.preventDefault();
 
-    if (this.recipeForm.valid) {
-      this.closeDrawer.emit(this.recipeForm.value);
+    if (this.signalForm().valid()) {
+      this.closeDrawer.emit(this.recipeProductModel());
     }
   }
 

@@ -1,11 +1,11 @@
-<form [formGroup]="recipeForm" (submit)="onSave($event)" class="p-4">
+<form (submit)="onSave($event)" class="p-4">
   <div class="field">
     <label for="product" class="block text-sm font-medium text-gray-700 mb-1"
       >Product</label
       >
       <p-autoComplete
         id="product"
-        formControlName="product"
+        [formField]="signalForm.product"
         optionLabel="name"
         [suggestions]="suggestionProducts()"
         (completeMethod)="search($event)"
@@ -35,7 +35,7 @@
           >
           <p-inputNumber
             id="quantity"
-            formControlName="quantity"
+            [formField]="signalForm.quantity"
             mode="decimal"
             [min]="0.01"
             [step]="0.01"
@@ -62,7 +62,7 @@
             label="Save"
             icon="pi pi-plus"
             class="p-button-primary"
-            [disabled]="!recipeForm.valid"
+            [disabled]="productForm.invalid"
           ></button>
         </div>
       </form>
