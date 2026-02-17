@@ -7,22 +7,24 @@ import { DrawerModule } from 'primeng/drawer';
 import { TableModule } from 'primeng/table';
 import { tap } from 'rxjs';
 import { IRecipeListItem } from './../../models/recipe-dto.model';
+import { Store } from '@ngxs/store';
+import { RecipeState } from '../../store/recipe.store';
 
 @Component({
   selector: 'mc-recipes-list',
-  imports: [
-    SvgIconComponent,
-    ButtonModule,
-    TableModule,
-    DrawerModule,
-  ],
+  imports: [SvgIconComponent, ButtonModule, TableModule, DrawerModule],
   templateUrl: './recipes-list.component.html',
-  styleUrl: './recipes-list.component.scss'
+  styleUrl: './recipes-list.component.scss',
 })
 export class RecipesListComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly store = inject(Store);
+
+  protected recipesList = this.store.selectSignal(
+    (state: RecipeState) => state.getRecipes,
+  );
 
   private recipesSignal = signal<IRecipeListItem[]>([]);
   public recipes = this.recipesSignal.asReadonly();
@@ -34,10 +36,14 @@ export class RecipesListComponent implements OnInit {
   ];
 
   public ngOnInit(): void {
-    this.activatedRoute.data.pipe(
-      tap(data => this.recipesSignal.set(data['recipes'])),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
+    console.log(this.recipesList());
+
+    this.activatedRoute.data
+      .pipe(
+        tap((data) => this.recipesSignal.set(data['recipes'])),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe();
   }
 
   public openRecipePreview(recipeId: string) {
@@ -46,5 +52,5 @@ export class RecipesListComponent implements OnInit {
 
   public addNewRecipe() {
     this.router.navigate([`${this.router.url}/new`]);
-    }
+  }
 }

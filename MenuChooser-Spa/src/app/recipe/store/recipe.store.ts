@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Action, State, StateContext } from '@ngxs/store';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { IRecipeListItem } from '../models/recipe-dto.model';
 import { RecipeService } from '../services/recipe.service';
 import { GetRecipes } from './recipe.actions';
@@ -17,6 +17,11 @@ interface RecipeStateModel {
 export class RecipeState {
   private readonly recipeService = inject(RecipeService);
 
+  @Selector()
+  public static getRecipes(state: RecipeStateModel): IRecipeListItem[] {
+    return state.recipes;
+  }
+  
   @Action(GetRecipes)
   public getRecipes(ctx: StateContext<RecipeStateModel>, action: GetRecipes) {
     return this.recipeService.getRecipes().pipe(
