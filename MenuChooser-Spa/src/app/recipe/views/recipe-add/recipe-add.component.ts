@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -86,6 +87,7 @@ import { Router } from '@angular/router';
   ],
   templateUrl: './recipe-add.component.html',
   styleUrl: './recipe-add.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeAddComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);

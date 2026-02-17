@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -30,6 +30,7 @@ import { RecipeService } from '../../services/recipe.service';
   ],
   templateUrl: './recipe-edit.component.html',
   styleUrl: './recipe-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeEditComponent {
 

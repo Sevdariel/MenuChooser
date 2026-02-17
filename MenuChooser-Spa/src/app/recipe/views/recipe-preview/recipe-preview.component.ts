@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { SvgIconComponent } from 'angular-svg-icon';
@@ -29,7 +36,8 @@ import { RecipeEditComponent } from '../recipe-edit/recipe-edit.component';
     RecipeEditComponent,
   ],
   templateUrl: './recipe-preview.component.html',
-  styleUrl: './recipe-preview.component.scss'
+  styleUrl: './recipe-preview.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipePreviewComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -39,14 +47,14 @@ export class RecipePreviewComponent implements OnInit {
   public recipe = this.recipeSignal.asReadonly();
   public togglePanel = false;
 
-  public productColumns = [
-    { field: 'name', header: 'Name' },
-  ]
+  public productColumns = [{ field: 'name', header: 'Name' }];
 
   public ngOnInit(): void {
-    this.activatedRoute.data.pipe(
-      tap(data => this.recipeSignal.set(data['recipe'])),
-      takeUntilDestroyed(this.destroyRef))
+    this.activatedRoute.data
+      .pipe(
+        tap((data) => this.recipeSignal.set(data['recipe'])),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe();
   }
 
