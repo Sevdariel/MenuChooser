@@ -25,12 +25,17 @@ export class RecipeState {
   @Action(GetRecipes)
   public getRecipes(ctx: StateContext<RecipeStateModel>, action: GetRecipes) {
     return this.recipeService.getRecipes().pipe(
-      tap((recipesResult) => {
-        const state = ctx.getState();
-        ctx.setState({
-          ...state,
-          recipes: recipesResult,
-        });
+      tap({
+        next: (recipesResult) => {
+          const state = ctx.getState();
+          ctx.setState({
+            ...state,
+            recipes: recipesResult,
+          });
+        },
+        error: (error) => {
+          console.error('❌ Error loading recipes:', error);
+        }
       }),
     );
   }
