@@ -1,31 +1,23 @@
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngxs/store';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { TableModule } from 'primeng/table';
-import { tap } from 'rxjs';
-import { IRecipeListItem } from './../../models/recipe-dto.model';
+import { RecipeState } from '../../store/recipe.store';
 
 @Component({
   selector: 'mc-recipes-list',
-  imports: [
-    SvgIconComponent,
-    ButtonModule,
-    TableModule,
-    DrawerModule,
-  ],
+  imports: [SvgIconComponent, ButtonModule, TableModule, DrawerModule],
   templateUrl: './recipes-list.component.html',
-  styleUrl: './recipes-list.component.scss'
+  styleUrl: './recipes-list.component.scss',
 })
-export class RecipesListComponent implements OnInit {
-  private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly destroyRef = inject(DestroyRef);
+export class RecipesListComponent {
   private readonly router = inject(Router);
+  private readonly store = inject(Store);
 
-  private recipesSignal = signal<IRecipeListItem[]>([]);
-  public recipes = this.recipesSignal.asReadonly();
+  protected recipesList = this.store.selectSignal(RecipeState.getRecipes);
 
   public readonly columns = [
     { field: 'name', header: 'Name' },
@@ -33,18 +25,11 @@ export class RecipesListComponent implements OnInit {
     { field: 'mealType', header: 'Meal type' },
   ];
 
-  public ngOnInit(): void {
-    this.activatedRoute.data.pipe(
-      tap(data => this.recipesSignal.set(data['recipes'])),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe();
-  }
-
   public openRecipePreview(recipeId: string) {
     this.router.navigate([`${this.router.url}/${recipeId}`]);
   }
 
   public addNewRecipe() {
     this.router.navigate([`${this.router.url}/new`]);
-    }
+  }
 }

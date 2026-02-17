@@ -1,10 +1,11 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
-import { IRecipeListItem } from '../models/recipe-dto.model';
-import { RecipeService } from './../services/recipe.service';
+import { Store } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { GetRecipes } from '../store/recipe.actions';
 
-export const recipesResolver: ResolveFn<IRecipeListItem[]> = (route, state) => {
-  const recipeService = inject(RecipeService);
+export const recipesResolver: ResolveFn<Observable<void>> = (route, state) => {
+  const recipeStore = inject(Store);
 
-  return recipeService.getRecipes();
+  return recipeStore.dispatch(new GetRecipes());
 };
