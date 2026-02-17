@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { SvgIconComponent } from 'angular-svg-icon';
@@ -12,6 +12,7 @@ import { RecipeState } from '../../store/recipe.store';
   imports: [SvgIconComponent, ButtonModule, TableModule, DrawerModule],
   templateUrl: './recipes-list.component.html',
   styleUrl: './recipes-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipesListComponent {
   private readonly router = inject(Router);

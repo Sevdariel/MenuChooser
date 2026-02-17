@@ -1,5 +1,5 @@
-
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -26,15 +26,15 @@ import { IRecipeProduct } from '../../models/recipe.model';
 
 @Component({
   selector: 'mc-recipe-product',
-  standalone: true,
   imports: [
     ReactiveFormsModule,
     AutoCompleteModule,
     InputNumberModule,
-    ButtonModule
-],
+    ButtonModule,
+  ],
   templateUrl: './recipe-product.component.html',
   styleUrl: './recipe-product.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipeProductComponent implements OnInit {
   private readonly productService = inject(ProductService);

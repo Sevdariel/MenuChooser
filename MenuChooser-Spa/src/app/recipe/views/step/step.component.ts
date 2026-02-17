@@ -1,5 +1,5 @@
-
 import {
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   effect,
@@ -10,6 +10,7 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormArray,
   FormBuilder,
@@ -24,12 +25,15 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { TextareaModule } from 'primeng/textarea';
-import { defaultUnit, IRecipeProduct, IStep, Unit } from '../../models/recipe.model';
-import { TableModule } from 'primeng/table';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime } from 'rxjs/operators';
 import { SelectModule } from 'primeng/select';
+import { TableModule } from 'primeng/table';
+import { TextareaModule } from 'primeng/textarea';
+import {
+  defaultUnit,
+  IRecipeProduct,
+  IStep,
+  Unit,
+} from '../../models/recipe.model';
 
 @Component({
   selector: 'mc-step',
@@ -44,10 +48,11 @@ import { SelectModule } from 'primeng/select';
     TextareaModule,
     FloatLabelModule,
     TableModule,
-    SelectModule
-],
+    SelectModule,
+  ],
   templateUrl: './step.component.html',
   styleUrl: './step.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StepComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);

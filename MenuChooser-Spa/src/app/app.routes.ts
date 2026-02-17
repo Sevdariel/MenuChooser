@@ -14,7 +14,7 @@ export const routes: Routes = [
       {
         path: 'recipes',
         loadChildren: () =>
-          import('./recipe/recipe.module').then((m) => m.RecipeModule),
+          import('./recipe/recipe.routes').then((m) => m.routes),
       },
       {
         path: 'home',
