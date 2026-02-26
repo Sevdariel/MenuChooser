@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { NgxsModule } from '@ngxs/store';
 import { recipeResolver } from './resolvers/recipe.resolver';
 import { recipesResolver } from './resolvers/recipes.resolver';
-import { RecipeState } from './store/recipe.store';
+import { RecipeState } from './views/recipes-list/store/recipe.store';
 
 export const routes: Routes = [
   {

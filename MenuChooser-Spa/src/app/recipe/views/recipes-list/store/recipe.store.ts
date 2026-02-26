@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { IRecipeListItem } from '../models/recipe-dto.model';
-import { RecipeService } from '../services/recipe.service';
+import { IRecipeListItem } from '../../../models/recipe-dto.model';
+import { RecipeService } from '../../../services/recipe.service';
 import { GetRecipes } from './recipe.actions';
 import { exhaustMap, tap } from 'rxjs';
 

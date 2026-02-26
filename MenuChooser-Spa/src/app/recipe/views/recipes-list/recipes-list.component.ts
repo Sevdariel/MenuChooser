@@ -5,7 +5,7 @@ import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { TableModule } from 'primeng/table';
-import { RecipeState } from '../../store/recipe.store';
+import { RecipeState } from './store/recipe.store';
 
 @Component({
   selector: 'mc-recipes-list',
