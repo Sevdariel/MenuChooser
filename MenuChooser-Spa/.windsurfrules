@@ -1,0 +1,64 @@
+# Project: Meal Menu Planner — Frontend
+Application for creating meal menus over a specified time range.
+Meals are selected automatically. Users can add their own products and recipes.
+Users have accounts.
+
+---
+
+## Tech Stack
+- Angular 21 (standalone components only — NO NgModules)
+- NGXS (state management)
+- TypeScript (strict)
+- PrimeNG (UI components)
+- Tailwind CSS (styling)
+
+---
+
+## Component Conventions
+- ALL components must be standalone (`standalone: true`)
+- ALL components must use `ChangeDetectionStrategy.OnPush`
+- Use signals wherever possible (prefer `signal()`, `computed()`, `effect()` over traditional RxJS patterns when applicable)
+- No inline styles — use Tailwind classes only
+
+## TypeScript
+- Never use `any` — use `unknown` if a type cannot be determined
+- Always type API responses through dedicated interfaces/models
+- Prefer explicit types over inference where it improves readability
+
+## Naming
+- Models: suffix `Model` (e.g. `RecipeModel`)
+- DTOs: suffix `Dto` (e.g. `RecipeDto`)
+- Files: `kebab-case.component.ts`, `kebab-case.service.ts`, etc.
+- Boolean variables/properties: prefix and suffix depends on context (e.g. `isLoading`, `hasError`)
+
+## File Structure
+Top-level folders (inside `src/`):
+- Each feature has its own folder at the root level (e.g. `account/` contains everything related to login, registration, password reset)
+- `core/` — critical system-wide concerns only (e.g. error handling, navigation, auth guards)
+- `shared/` — reusable, standalone pieces used across multiple features (single components, directives, pipes)
+
+Inside each feature folder, split by type:
+account/
+  components/   ← views / UI components
+  services/
+  models/
+  resolvers/
+  ... (other types as needed)
+
+- Do not put feature-specific code in `core/` or `shared/`
+- Add to `shared/` only when a piece is genuinely reusable across features
+
+## NGXS
+- Actions in a dedicated file: `[feature].actions.ts`
+- No HTTP calls in components — always go through services
+- State selectors should be typed
+- Use `@Selector()` decorator for selectors
+- Use of Selector inside componets should be selectSignal()
+
+---
+
+## General Rules
+- Do not introduce new patterns or libraries without explicit instruction
+- When in doubt about style, look at existing code in the project and follow it
+- Prefer simple, readable solutions over clever ones
+- Do not leave TODO comments unless explicitly asked
