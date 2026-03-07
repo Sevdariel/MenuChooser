@@ -5,6 +5,7 @@ import {
   DestroyRef,
   effect,
   inject,
+  linkedSignal,
   OnInit,
   signal,
 } from '@angular/core';
@@ -114,9 +115,11 @@ export class RecipeFormComponent implements OnInit {
   public recipe = this.recipeSignal.asReadonly();
 
   public mode = signal<RecipeMode>(RecipeMode.CREATE);
-  public isEditMode = signal<boolean>(false);
-  public isPreviewMode = signal<boolean>(false);
-  public isCreateMode = signal<boolean>(false);
+  
+  // Use linkedSignal instead of separate signals + effect
+  public isEditMode = linkedSignal(() => this.mode() === RecipeMode.EDIT);
+  public isPreviewMode = linkedSignal(() => this.mode() === RecipeMode.PREVIEW);
+  public isCreateMode = linkedSignal(() => this.mode() === RecipeMode.CREATE);
 
   public selectedProduct = signal<IRecipeProduct | null>(null);
   public selectedStep = signal<IStep | null>(null);
@@ -145,13 +148,6 @@ export class RecipeFormComponent implements OnInit {
         products: this.recipeSignal().products,
         steps: this.recipeSignal().steps,
       });
-    });
-
-    effect(() => {
-      const currentMode = this.mode();
-      this.isEditMode.set(currentMode === RecipeMode.EDIT);
-      this.isPreviewMode.set(currentMode === RecipeMode.PREVIEW);
-      this.isCreateMode.set(currentMode === RecipeMode.CREATE);
     });
   }
 
