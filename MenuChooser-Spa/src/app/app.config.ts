@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
 import { withNgxsFormPlugin } from '@ngxs/form-plugin';
 import { provideStore } from '@ngxs/store';
+import { RecipeFormState } from './recipe/views/recipe-form/store/recipe-form.state';
 import Aura from '@primeuix/themes/aura';
 import { provideAngularSvgIcon } from 'angular-svg-icon';
 import { MessageService } from 'primeng/api';
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorInterceptor, authInterceptor])),
     provideAngularSvgIcon(),
-    provideStore([]),
+    provideStore([RecipeFormState]),
     withNgxsReduxDevtoolsPlugin(),
     withNgxsFormPlugin(),
     providePrimeNG({
