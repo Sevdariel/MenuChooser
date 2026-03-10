@@ -35,7 +35,7 @@ export interface IStepDto {
 export interface IUpdateRecipeDto {
     id: string;
     name: string;
-    productIds: string[];
+    recipeProducts: IUpsertRecipeProductDto[];
     duration: number;
     steps: IStepDto[];
     updatedBy: string;
@@ -44,13 +44,13 @@ export interface IUpdateRecipeDto {
 export interface ICreateRecipeDto {
     name: string;
     duration: number;
-    recipeProducts: ISaveRecipeProductDto[];
+    recipeProducts: IUpsertRecipeProductDto[];
     steps: IStepDto[];
     mealType: MealType;
     createdBy: string;
 }
 
-export interface ISaveRecipeProductDto {
+export interface IUpsertRecipeProductDto {
     productId: string;
     quantity: number;
     unit: Unit;

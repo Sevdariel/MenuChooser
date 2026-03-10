@@ -46,7 +46,10 @@ import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipe } from '../../models/default-recipe.model';
-import { ICreateRecipeDto } from '../../models/recipe-dto.model';
+import {
+  ICreateRecipeDto,
+  IUpdateRecipeDto,
+} from '../../models/recipe-dto.model';
 import {
   IRecipe,
   IRecipeForm,
@@ -62,7 +65,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export enum RecipeMode {
   PREVIEW = 'preview',
-  EDIT = 'edit'
+  EDIT = 'edit',
 }
 
 @Component({
@@ -114,7 +117,7 @@ export class RecipeFormComponent implements OnInit {
   public recipe = this.recipeSignal.asReadonly();
 
   public mode = signal<RecipeMode>(RecipeMode.EDIT);
-  
+
   // Use linkedSignal instead of separate signals + effect
   public isEditMode = linkedSignal(() => this.mode() === RecipeMode.EDIT);
   public isPreviewMode = linkedSignal(() => this.mode() === RecipeMode.PREVIEW);
@@ -257,7 +260,7 @@ export class RecipeFormComponent implements OnInit {
 
   public saveRecipe() {
     const formGroupRawValue: IRecipeForm = this.formGroup.getRawValue();
-    
+
     if (this.isEditMode() && !this.recipe().id) {
       const createRecipeDto: ICreateRecipeDto =
         this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
@@ -265,10 +268,15 @@ export class RecipeFormComponent implements OnInit {
       this.recipeService
         .createRecipe(createRecipeDto)
         .pipe(
-          tap(newRecipe => this.router.navigate([`/recipes/${newRecipe.id}`])),
-          takeUntilDestroyed(this.destroyRef))
+          tap((newRecipe) =>
+            this.router.navigate([`/recipes/${newRecipe.id}`]),
+          ),
+          takeUntilDestroyed(this.destroyRef),
+        )
         .subscribe();
     } else if (this.isEditMode() && this.recipe().id) {
+      const updateRecipeDto: IUpdateRecipeDto =
+        this.recipeMapperService.mapToUpdateRecipeDto(formGroupRawValue, this.recipe().id);
       // TODO: Implement update functionality
       // const updateRecipeDto: IUpdateRecipeDto = {
       //   ...this.recipe(),
