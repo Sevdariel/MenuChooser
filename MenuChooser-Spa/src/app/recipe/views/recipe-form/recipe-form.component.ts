@@ -9,6 +9,7 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
   FormControl,
@@ -17,6 +18,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SvgIconComponent } from 'angular-svg-icon';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -39,8 +41,6 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { tap } from 'rxjs';
-import { SvgIconComponent } from 'angular-svg-icon';
-import { AuthService } from '../../../core/authorization/auth.service';
 import { DrawerContent } from '../../../shared/drawer/drawer.model';
 import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
@@ -58,10 +58,9 @@ import {
   RecipeFormType,
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
+import { RecipeService } from '../../services/recipe.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
-import { RecipeService } from '../../services/recipe.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export enum RecipeMode {
   PREVIEW = 'preview',
@@ -111,7 +110,6 @@ export class RecipeFormComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly authService = inject(AuthService);
 
   private recipeSignal = signal<IRecipe>(defaultRecipe);
   public recipe = this.recipeSignal.asReadonly();
@@ -276,36 +274,20 @@ export class RecipeFormComponent implements OnInit {
         .subscribe();
     } else if (this.isEditMode() && this.recipe().id) {
       const updateRecipeDto: IUpdateRecipeDto =
-        this.recipeMapperService.mapToUpdateRecipeDto(formGroupRawValue, this.recipe().id);
-      // TODO: Implement update functionality
-      // const updateRecipeDto: IUpdateRecipeDto = {
-      //   ...this.recipe(),
-      //   duration: formGroupRawValue.duration!,
-      //   name: formGroupRawValue.name!,
-      //   productIds: formGroupRawValue.products?.map(product => product.product.id!) || [],
-      //   updatedBy: this.authService.loggedUser()?.username!,
-      //   steps: formGroupRawValue.steps?.map(({ products, ...step }) => <IStepDto>{
-      //     ...step,
-      //     productIds: products?.map(product => product.product.id),
-      //   }) || [],
-      // };
+        this.recipeMapperService.mapToUpdateRecipeDto(
+          formGroupRawValue,
+          this.recipe().id,
+        );
 
-      // this.recipeService.updateRecipe(updateRecipeDto).pipe(
-      //   tap(() => {
-      //     this.recipeSignal.update(recipe => ({
-      //       ...recipe,
-      //       ...formGroupRawValue
-      //     }));
-      //     this.switchToPreviewMode();
-      //   }),
-      //   takeUntilDestroyed(this.destroyRef))
-      //   .subscribe();
+      this.recipeService
+        .updateRecipe(updateRecipeDto)
+        .pipe(
+          tap(() => {
+            this.switchToPreviewMode();
+          }),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe();
     }
-  }
-
-  public updateRecipe(updatedRecipe: IRecipe) {
-    this.recipeSignal.update(() => updatedRecipe);
-    this.togglePanel.set(false);
-    this.switchToPreviewMode();
   }
 }
