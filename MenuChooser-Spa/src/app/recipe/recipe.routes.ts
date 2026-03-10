@@ -18,15 +18,15 @@ export const routes: Routes = [
   {
     path: 'new',
     loadComponent: () =>
-      import('./views/recipe-add/recipe-add.component').then(
-        (m) => m.RecipeAddComponent,
+      import('./views/recipe-form/recipe-form.component').then(
+        (m) => m.RecipeFormComponent,
       ),
   },
   {
     path: ':id',
     loadComponent: () =>
-      import('./views/recipe-preview/recipe-preview.component').then(
-        (m) => m.RecipePreviewComponent,
+      import('./views/recipe-form/recipe-form.component').then(
+        (m) => m.RecipeFormComponent,
       ),
     resolve: { recipe: recipeResolver },
   },

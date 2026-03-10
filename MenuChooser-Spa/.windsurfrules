@@ -20,6 +20,10 @@ Users have accounts.
 - Use signals wherever possible (prefer `signal()`, `computed()`, `effect()` over traditional RxJS patterns when applicable)
 - No inline styles — use Tailwind classes only
 
+## Styling
+- Use TailwindCss for one line styling
+- More than 3 styling properties should be moved to a separate class
+
 ## TypeScript
 - Never use `any` — use `unknown` if a type cannot be determined
 - Always type API responses through dedicated interfaces/models
