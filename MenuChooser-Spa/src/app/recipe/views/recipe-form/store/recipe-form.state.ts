@@ -18,6 +18,7 @@ import {
   SaveRecipeSuccess,
   UpdateRecipe,
   UpdateRecipeError,
+  UpdateRecipeLocally,
   UpdateRecipeSuccess,
 } from './recipe-form.actions';
 import { RecipeFormStateModel } from './recipe-form.state.model';
@@ -93,8 +94,7 @@ export class RecipeFormState {
   @Action(SaveRecipe)
   public saveRecipe(ctx: StateContext<RecipeFormStateModel>, action: SaveRecipe) {
     ctx.patchState({ isLoading: true, error: null });
-    const createRecipeDto = this.recipeMapperService.mapToCreateRecipeDto(action.recipe as IRecipeForm);
-    return this.recipeService.createRecipe(createRecipeDto).pipe(
+    return this.recipeService.createRecipe(action.createRecipeDto).pipe(
       exhaustMap((recipe: IRecipe) => ctx.dispatch(new SaveRecipeSuccess(recipe)))
     ).pipe(
       catchError((error) => {
@@ -111,6 +111,9 @@ export class RecipeFormState {
       isLoading: false,
       error: null,
     });
+    // Navigate to the new recipe
+    // Note: This would need router injection in state, which is not ideal
+    // Better to handle navigation in component with success subscription
   }
 
   @Action(SaveRecipeError)
@@ -124,9 +127,8 @@ export class RecipeFormState {
   @Action(UpdateRecipe)
   public updateRecipe(ctx: StateContext<RecipeFormStateModel>, action: UpdateRecipe) {
     ctx.patchState({ isLoading: true, error: null });
-    const updateRecipeDto = this.recipeMapperService.mapToUpdateRecipeDto(action.recipe as IRecipeForm, action.recipe.id);
-    return this.recipeService.updateRecipe(updateRecipeDto).pipe(
-      exhaustMap(() => ctx.dispatch(new UpdateRecipeSuccess(action.recipe)))
+    return this.recipeService.updateRecipe(action.updateRecipeDto).pipe(
+      exhaustMap(() => ctx.dispatch(new UpdateRecipeSuccess()))
     ).pipe(
       catchError((error) => {
         const errorMessage = error?.message || 'An unexpected error occurred';
@@ -136,9 +138,8 @@ export class RecipeFormState {
   }
 
   @Action(UpdateRecipeSuccess)
-  public updateRecipeSuccess(ctx: StateContext<RecipeFormStateModel>, action: UpdateRecipeSuccess) {
+  public updateRecipeSuccess(ctx: StateContext<RecipeFormStateModel>) {
     ctx.patchState({
-      recipe: action.recipe,
       isLoading: false,
       error: null,
     });
@@ -183,6 +184,13 @@ export class RecipeFormState {
     ctx.patchState({
       recipe: null,
       error: null,
+    });
+  }
+
+  @Action(UpdateRecipeLocally)
+  public updateRecipeLocally(ctx: StateContext<RecipeFormStateModel>, action: UpdateRecipeLocally) {
+    ctx.patchState({
+      recipe: action.recipe,
     });
   }
 

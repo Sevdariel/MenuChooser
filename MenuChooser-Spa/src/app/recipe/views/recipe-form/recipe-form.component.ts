@@ -18,6 +18,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngxs/store';
 import { SvgIconComponent } from 'angular-svg-icon';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
@@ -40,7 +41,7 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { tap } from 'rxjs';
+import { filter, take, tap } from 'rxjs';
 import { DrawerContent } from '../../../shared/drawer/drawer.model';
 import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
@@ -61,10 +62,18 @@ import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeService } from '../../services/recipe.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
+import {
+  GetRecipeSuccess,
+  SaveRecipe,
+  UpdateRecipe,
+  UpdateRecipeLocally,
+} from './store/recipe-form.actions';
+import { RecipeFormState } from './store/recipe-form.state';
 
 export enum RecipeMode {
   PREVIEW = 'preview',
   EDIT = 'edit',
+  CREATE = 'CREATE',
 }
 
 @Component({
@@ -110,15 +119,22 @@ export class RecipeFormComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly store = inject(Store);
 
-  private recipeSignal = signal<IRecipe>(defaultRecipe);
-  public recipe = this.recipeSignal.asReadonly();
+  // Use NGXS state instead of local signal
+  public recipe = this.store.selectSignal(RecipeFormState.recipe);
+  public isLoading = this.store.selectSignal(RecipeFormState.isLoading);
+  public error = this.store.selectSignal(RecipeFormState.error);
+  public hasError = this.store.selectSignal(RecipeFormState.hasError);
 
   public mode = signal<RecipeMode>(RecipeMode.EDIT);
 
   // Use linkedSignal instead of separate signals + effect
   public isEditMode = linkedSignal(() => this.mode() === RecipeMode.EDIT);
   public isPreviewMode = linkedSignal(() => this.mode() === RecipeMode.PREVIEW);
+  public isCreateMode = linkedSignal(
+    () => this.mode() === RecipeMode.EDIT && !this.recipe()?.id,
+  );
 
   public selectedProduct = signal<IRecipeProduct | null>(null);
   public selectedStep = signal<IStep | null>(null);
@@ -143,15 +159,21 @@ export class RecipeFormComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      this.formGroup?.patchValue({
-        products: this.recipeSignal().products,
-        steps: this.recipeSignal().steps,
-      });
+      const currentRecipe = this.recipe();
+      if (currentRecipe) {
+        this.formGroup?.patchValue({
+          products: currentRecipe.products,
+          steps: currentRecipe.steps,
+        });
+      }
     });
   }
 
   public ngOnInit(): void {
     this.initializeMode();
+    if (!this.isCreateMode()) {
+      this.loadRecipeFromResolver();
+    }
     this.initializeForm();
   }
 
@@ -162,25 +184,18 @@ export class RecipeFormComponent implements OnInit {
       // For new recipes, keep defaultRecipe (no id)
     } else if (url.includes('/recipes/')) {
       this.mode.set(RecipeMode.PREVIEW);
-      this.loadRecipeFromRoute();
+      // Recipe will be loaded from resolver in loadRecipeFromResolver()
     }
   }
 
-  private loadRecipeFromRoute(): void {
-    this.activatedRoute.data
-      .pipe(
-        tap((data) => {
-          if (data['recipe']) {
-            this.recipeSignal.set(data['recipe']);
-          }
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe();
+  private loadRecipeFromResolver(): void {
+    const routeData = this.activatedRoute.snapshot.data['recipe'] as IRecipe;
+
+    this.store.dispatch(new GetRecipeSuccess(routeData));
   }
 
   private initializeForm(): void {
-    const currentRecipe = this.recipeSignal();
+    const currentRecipe = this.recipe() || defaultRecipe;
     this.formGroup = this.formBuilder.group<RecipeFormType>({
       duration: new FormControl(currentRecipe.duration),
       name: new FormControl(currentRecipe.name),
@@ -198,7 +213,8 @@ export class RecipeFormComponent implements OnInit {
   }
 
   public cancelEdit(): void {
-    if (this.isEditMode() && !this.recipe().id) {
+    const currentRecipe = this.recipe();
+    if (this.isEditMode() && !currentRecipe?.id) {
       this.router.navigate(['/recipes']);
     } else {
       this.switchToPreviewMode();
@@ -224,11 +240,18 @@ export class RecipeFormComponent implements OnInit {
   public onRecipeProductSave(recipeProduct: IRecipeProduct | null) {
     this.drawerService.toggleDrawerPannel(DrawerContent.None);
     if (!!recipeProduct) {
-      this.recipeSignal.update((recipe) => ({
-        ...recipe,
-        products: upsertByPath(recipe.products, recipeProduct, 'product.id'),
-      }));
+      const currentRecipe = this.recipe() || defaultRecipe;
+      const updatedRecipe = {
+        ...currentRecipe,
+        products: upsertByPath(
+          currentRecipe.products,
+          recipeProduct,
+          'product.id',
+        ),
+      };
 
+      // Update through NGXS state (local update, no HTTP request)
+      this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
       this.selectedProduct.set(null);
     }
   }
@@ -246,11 +269,14 @@ export class RecipeFormComponent implements OnInit {
 
   public onStepSave(step: IStep | null) {
     if (!!step) {
-      this.recipeSignal.update((recipe) => ({
-        ...recipe,
-        steps: upsertByPath(recipe.steps, step, 'step.id'),
-      }));
+      const currentRecipe = this.recipe() || defaultRecipe;
+      const updatedRecipe = {
+        ...currentRecipe,
+        steps: upsertByPath(currentRecipe.steps, step, 'step.id'),
+      };
 
+      // Update through NGXS state (local update, no HTTP request)
+      this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
       this.selectedStep.set(null);
       this.drawerService.toggleDrawerPannel(DrawerContent.None);
     }
@@ -259,35 +285,42 @@ export class RecipeFormComponent implements OnInit {
   public saveRecipe() {
     const formGroupRawValue: IRecipeForm = this.formGroup.getRawValue();
 
-    if (this.isEditMode() && !this.recipe().id) {
-      const createRecipeDto: ICreateRecipeDto =
-        this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
-
-      this.recipeService
-        .createRecipe(createRecipeDto)
-        .pipe(
-          tap((newRecipe) =>
-            this.router.navigate([`/recipes/${newRecipe.id}`]),
-          ),
-          takeUntilDestroyed(this.destroyRef),
-        )
-        .subscribe();
-    } else if (this.isEditMode() && this.recipe().id) {
-      const updateRecipeDto: IUpdateRecipeDto =
-        this.recipeMapperService.mapToUpdateRecipeDto(
-          formGroupRawValue,
-          this.recipe().id,
-        );
-
-      this.recipeService
-        .updateRecipe(updateRecipeDto)
-        .pipe(
-          tap(() => {
-            this.switchToPreviewMode();
-          }),
-          takeUntilDestroyed(this.destroyRef),
-        )
-        .subscribe();
+    if (this.isEditMode() && !this.recipe()?.id) {
+      // Create new recipe - prepare DTO in component
+      const createRecipeDto = this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
+      
+      const currentRecipeId = this.recipe()?.id;
+      
+      this.store.dispatch(new SaveRecipe(createRecipeDto));
+      
+      // Listen for recipe creation success
+      this.store.select(RecipeFormState.recipe).pipe(
+        filter(recipe => recipe?.id !== currentRecipeId && !!recipe?.id),
+        take(1),
+        tap(recipe => {
+          if (recipe?.id) {
+            this.router.navigate([`/recipes/${recipe.id}`]);
+          }
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe();
+    } else if (this.isEditMode() && this.recipe()?.id) {
+      // Update existing recipe - prepare DTO in component
+      const recipeId = this.recipe()?.id;
+      if (!recipeId) return; // Guard against undefined
+      
+      const updateRecipeDto = this.recipeMapperService.mapToUpdateRecipeDto(formGroupRawValue, recipeId);
+      
+      // Update recipe via API
+      this.store.dispatch(new UpdateRecipe(updateRecipeDto)).pipe(
+        tap(() => {
+          // After successful API call, update local state with form data
+          const updatedRecipe = { ...formGroupRawValue, id: recipeId } as IRecipe;
+          this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+          this.switchToPreviewMode();
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe();
     }
   }
 }

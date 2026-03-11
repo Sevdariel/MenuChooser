@@ -2,24 +2,42 @@
   <div class="w-1/2 rounded-lg shadow p-4 space-y-5">
     <!-- Header Section -->
     <div class="flex flex-col space-y-4">
-      @if (isEditMode() && !recipe().id) {
+      @if (isEditMode() && !recipe()?.id) {
         <h1 class="text-2xl font-bold leading-tight">Add new recipe</h1>
       } @else if (isPreviewMode()) {
         <div class="flex flex-row justify-between">
-          <h1 class="text-2xl font-bold leading-tight">{{recipe().name}}</h1>
+          <h1 class="text-2xl font-bold leading-tight">{{ recipe()?.name }}</h1>
           <button id="edit-button" (click)="switchToEditMode()">
-            <svg-icon src="assets\icons\edit.svg" [svgStyle]="{'height.px': 20, 'width.px': 20 }"></svg-icon>
+            <svg-icon
+              src="assets\icons\edit.svg"
+              [svgStyle]="{ 'height.px': 20, 'width.px': 20 }"
+            ></svg-icon>
           </button>
         </div>
-        <p class="leading-none text-gray-400 font-extralight text-xs">Created by:
-          {{recipe().createdBy}}@if(recipe().updatedBy) {, updated by: {{recipe().updatedBy}}
-          }</p>
+        <p class="leading-none text-gray-400 font-extralight text-xs">
+          Created by: {{ recipe()?.createdBy }}
+          @if (recipe()?.updatedBy) {
+            , updated by: {{ recipe()?.updatedBy }}
+          }
+        </p>
       } @else if (isEditMode()) {
         <div class="flex flex-row justify-between">
-          <h1 class="text-2xl font-bold leading-tight">Edit recipe: {{recipe().name}}</h1>
+          <h1 class="text-2xl font-bold leading-tight">
+            Edit recipe: {{ recipe()?.name }}
+          </h1>
           <div class="flex gap-2">
-            <p-button label="Cancel" severity="secondary" size="small" (click)="cancelEdit()"></p-button>
-            <p-button label="Save" severity="primary" size="small" (click)="saveRecipe()"></p-button>
+            <p-button
+              label="Cancel"
+              severity="secondary"
+              size="small"
+              (click)="cancelEdit()"
+            ></p-button>
+            <p-button
+              label="Save"
+              severity="primary"
+              size="small"
+              (click)="saveRecipe()"
+            ></p-button>
           </div>
         </div>
       }
@@ -56,7 +74,7 @@
             <p-table
               tableStyleClass="table-fixed"
               size="small"
-              [value]="this.recipe().products"
+              [value]="this.recipe()?.products || []"
             >
               <ng-template #caption>
                 <div class="flex flex-row justify-between">
@@ -69,7 +87,7 @@
                   ></p-button>
                 </div>
               </ng-template>
-              @if (this.recipe().products.length > 0) {
+              @if ((this.recipe()?.products || []).length > 0) {
                 <ng-template #header>
                   <tr>
                     @for (column of productColumns; track column) {
@@ -101,7 +119,7 @@
             <p-table
               tableStyleClass="table-fixed"
               size="small"
-              [value]="this.recipe().steps"
+              [value]="this.recipe()?.steps || []"
             >
               <ng-template #caption>
                 <div class="flex flex-row justify-between">
@@ -114,7 +132,7 @@
                   ></p-button>
                 </div>
               </ng-template>
-              @if (this.recipe().steps.length > 0) {
+              @if ((this.recipe()?.steps || []).length > 0) {
                 <ng-template #header>
                   <tr>
                     @for (column of stepColumns; track column) {
@@ -145,7 +163,11 @@
 
             <div class="flex items-end">
               <p-button id="save" type="submit">
-                @if (isEditMode() && !recipe().id) { Create Recipe } @else { Update Recipe }
+                @if (isEditMode() && !recipe()?.id) {
+                  Create Recipe
+                } @else {
+                  Update Recipe
+                }
               </p-button>
             </div>
           </div>
@@ -157,7 +179,11 @@
     @if (isPreviewMode()) {
       <div class="flex flex-row gap-4">
         <div class="w-1/3">
-          <p-table [columns]="productColumns" [value]="recipe().products" [size]="'small'">
+          <p-table
+            [columns]="productColumns"
+            [value]="recipe()?.products || []"
+            [size]="'small'"
+          >
             <ng-template #caption>
               <div class="flex flex-row justify-between">
                 <span class="text-xl font-bold">Products</span>
@@ -166,14 +192,14 @@
             <ng-template #header let-columns>
               <tr>
                 @for (column of productColumns; track column) {
-                <th>{{column.field === 'name' ? 'Name' : 'Quantity'}}</th>
+                  <th>{{ column.field === "name" ? "Name" : "Quantity" }}</th>
                 }
               </tr>
             </ng-template>
             <ng-template #body let-products let-columns="productColumns">
               <tr>
                 @for (column of productColumns; track column) {
-                <td>{{displayValue(products, column.field)}}</td>
+                  <td>{{ displayValue(products, column.field) }}</td>
                 }
               </tr>
             </ng-template>
@@ -181,26 +207,36 @@
         </div>
         <div class="w-2/3">
           <p-card header="Steps">
-            <p-dataview #dataView [value]="recipe().steps">
+            <p-dataview #dataView [value]="recipe()?.steps || []">
               <ng-template #list let-steps>
                 <div class="grid grid-cols-12 gap-4 grid-nogutter">
-                  @for(step of steps; track step.order) {
-                  <div class="col-span-12">
-                    <div class="flex flex-col sm:flex-row sm:items-center p-4"
-                        [ngClass]="{ 'border-t border-gray-300': !$first }">
-                      <div class="flex gap-4">
-                        <div class="self-center text-lg font-bold">{{step.order}}.</div>
-                        <div class="flex flex-col" [ngClass]="{ 'gap-2': step.products}">
-                          <div class="flex">
-                            @for(product of step.products; track product) {
-                            <p-chip label="{{product.product.name}}" styleClass="text-xs "></p-chip>
-                            }
+                  @for (step of steps; track step.order) {
+                    <div class="col-span-12">
+                      <div
+                        class="flex flex-col sm:flex-row sm:items-center p-4"
+                        [ngClass]="{ 'border-t border-gray-300': !$first }"
+                      >
+                        <div class="flex gap-4">
+                          <div class="self-center text-lg font-bold">
+                            {{ step.order }}.
                           </div>
-                          <span>{{step.content}}</span>
+                          <div
+                            class="flex flex-col"
+                            [ngClass]="{ 'gap-2': step.products }"
+                          >
+                            <div class="flex">
+                              @for (product of step.products; track product) {
+                                <p-chip
+                                  label="{{ product.product.name }}"
+                                  styleClass="text-xs "
+                                ></p-chip>
+                              }
+                            </div>
+                            <span>{{ step.content }}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
                   }
                 </div>
               </ng-template>
@@ -229,7 +265,7 @@
   @if (drawerService.contentVisible() === drawerContent.Step) {
     <mc-step
       [(step)]="selectedStep"
-      [availableProducts]="recipe().products"
+      [availableProducts]="recipe()?.products || []"
       (closeDrawer)="onStepSave($event)"
     ></mc-step>
   }

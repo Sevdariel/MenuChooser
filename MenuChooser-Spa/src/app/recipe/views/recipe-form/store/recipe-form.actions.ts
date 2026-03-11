@@ -1,3 +1,4 @@
+import { ICreateRecipeDto, IRecipeDto, IUpdateRecipeDto } from '../../../../recipe/models/recipe-dto.model';
 import { IRecipe } from '../../../../recipe/models/recipe.model';
 
 export class GetRecipe {
@@ -17,7 +18,7 @@ export class GetRecipeError {
 
 export class SaveRecipe {
   static readonly type = '[Recipe Form] Save Recipe';
-  constructor(public readonly recipe: IRecipe) {}
+  constructor(public readonly createRecipeDto: ICreateRecipeDto) {}
 }
 
 export class SaveRecipeSuccess {
@@ -32,12 +33,12 @@ export class SaveRecipeError {
 
 export class UpdateRecipe {
   static readonly type = '[Recipe Form] Update Recipe';
-  constructor(public readonly recipe: IRecipe) {}
+  constructor(public readonly updateRecipeDto: IUpdateRecipeDto) {}
 }
 
 export class UpdateRecipeSuccess {
   static readonly type = '[Recipe Form] Update Recipe Success';
-  constructor(public readonly recipe: IRecipe) {}
+  constructor() {}
 }
 
 export class UpdateRecipeError {
@@ -62,4 +63,9 @@ export class DeleteRecipeError {
 
 export class ClearRecipeForm {
   static readonly type = '[Recipe Form] Clear Recipe Form';
+}
+
+export class UpdateRecipeLocally {
+  static readonly type = '[Recipe Form] Update Recipe Locally';
+  constructor(public readonly recipe: IRecipe) {}
 }
