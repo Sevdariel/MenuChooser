@@ -20,6 +20,11 @@ Users have accounts.
 - Use signals wherever possible (prefer `signal()`, `computed()`, `effect()` over traditional RxJS patterns when applicable)
 - No inline styles — use Tailwind classes only
 - Variables used in templates that are not inputs should be protected
+- Template is holding in separate file
+- Css is holding in separate file
+
+## SCSS
+- CSS should be based on tokens as much as possible
 
 ## Styling
 - Use TailwindCss for one line styling

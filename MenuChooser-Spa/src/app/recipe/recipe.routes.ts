@@ -27,8 +27,8 @@ export const routes: Routes = [
   {
     path: ':id',
     loadComponent: () =>
-      import('./views/recipe-form/recipe-form.component').then(
-        (m) => m.RecipeFormComponent,
+      import('./views/recipe-shell/recipe-shell.component').then(
+        (m) => m.RecipeShellComponent,
       ),
     resolve: { recipe: recipeResolver },
     providers: [importProvidersFrom(NgxsModule.forFeature([RecipeFormState]))],

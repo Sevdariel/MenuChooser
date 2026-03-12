@@ -1,0 +1,13 @@
+<div class="flex justify-center pt-4">
+  @if (viewMode() === RecipeViewMode.PREVIEW && recipe()) {
+    <mc-recipe-preview 
+      [recipe]="recipe()!" 
+      (editRequested)="switchToEditMode()" 
+    />
+  } @else {
+    <mc-recipe-form 
+      (cancelRequested)="switchToPreviewMode()"
+      (saveCompleted)="switchToPreviewMode()" 
+    />
+  }
+</div>

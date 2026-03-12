@@ -3,10 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  EventEmitter,
+  OnInit,
+  Output,
   effect,
   inject,
   linkedSignal,
-  OnInit,
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -48,10 +50,6 @@ import { flattenObject } from '../../../shared/helpers/flatten-object';
 import { upsertByPath } from '../../../shared/helpers/upsert-item';
 import { defaultRecipe } from '../../models/default-recipe.model';
 import {
-  ICreateRecipeDto,
-  IUpdateRecipeDto,
-} from '../../models/recipe-dto.model';
-import {
   IRecipe,
   IRecipeForm,
   IRecipeProduct,
@@ -59,7 +57,6 @@ import {
   RecipeFormType,
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
-import { RecipeService } from '../../services/recipe.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
 import { StepComponent } from '../step/step.component';
 import {
@@ -71,9 +68,8 @@ import {
 import { RecipeFormState } from './store/recipe-form.state';
 
 export enum RecipeMode {
-  PREVIEW = 'preview',
-  EDIT = 'edit',
   CREATE = 'CREATE',
+  EDIT = 'EDIT',
 }
 
 @Component({
@@ -99,7 +95,6 @@ export enum RecipeMode {
     ReactiveFormsModule,
     RecipeProductComponent,
     SelectButtonModule,
-    SvgIconComponent,
     TableModule,
     TagModule,
     TextareaModule,
@@ -115,26 +110,19 @@ export class RecipeFormComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   public readonly drawerService = inject(DrawerService);
   private readonly recipeMapperService = inject(RecipeMapperService);
-  private readonly recipeService = inject(RecipeService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly store = inject(Store);
+
+  @Output() public cancelRequested = new EventEmitter<void>();
+  @Output() public saveCompleted = new EventEmitter<void>();
 
   // Use NGXS state instead of local signal
   public recipe = this.store.selectSignal(RecipeFormState.recipe);
   public isLoading = this.store.selectSignal(RecipeFormState.isLoading);
   public error = this.store.selectSignal(RecipeFormState.error);
   public hasError = this.store.selectSignal(RecipeFormState.hasError);
-
-  public mode = signal<RecipeMode>(RecipeMode.EDIT);
-
-  // Use linkedSignal instead of separate signals + effect
-  public isEditMode = linkedSignal(() => this.mode() === RecipeMode.EDIT);
-  public isPreviewMode = linkedSignal(() => this.mode() === RecipeMode.PREVIEW);
-  public isCreateMode = linkedSignal(
-    () => this.mode() === RecipeMode.EDIT && !this.recipe()?.id,
-  );
 
   public selectedProduct = signal<IRecipeProduct | null>(null);
   public selectedStep = signal<IStep | null>(null);
@@ -170,22 +158,8 @@ export class RecipeFormComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.initializeMode();
-    if (!this.isCreateMode()) {
-      this.loadRecipeFromResolver();
-    }
+    this.loadRecipeFromResolver();
     this.initializeForm();
-  }
-
-  private initializeMode(): void {
-    const url = this.router.url;
-    if (url.includes('/new')) {
-      this.mode.set(RecipeMode.EDIT);
-      // For new recipes, keep defaultRecipe (no id)
-    } else if (url.includes('/recipes/')) {
-      this.mode.set(RecipeMode.PREVIEW);
-      // Recipe will be loaded from resolver in loadRecipeFromResolver()
-    }
   }
 
   private loadRecipeFromResolver(): void {
@@ -205,21 +179,11 @@ export class RecipeFormComponent implements OnInit {
   }
 
   public switchToEditMode(): void {
-    this.mode.set(RecipeMode.EDIT);
-  }
-
-  public switchToPreviewMode(): void {
-    this.mode.set(RecipeMode.PREVIEW);
+    // Not needed anymore - component is always in edit mode
   }
 
   public cancelEdit(): void {
-    const currentRecipe = this.recipe();
-    if (this.isEditMode() && !currentRecipe?.id) {
-      this.router.navigate(['/recipes']);
-    } else {
-      this.switchToPreviewMode();
-      this.initializeForm(); // Reset form to original values
-    }
+    this.cancelRequested.emit();
   }
 
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
@@ -285,42 +249,56 @@ export class RecipeFormComponent implements OnInit {
   public saveRecipe() {
     const formGroupRawValue: IRecipeForm = this.formGroup.getRawValue();
 
-    if (this.isEditMode() && !this.recipe()?.id) {
+    if (!this.recipe()?.id) {
       // Create new recipe - prepare DTO in component
-      const createRecipeDto = this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
-      
+      const createRecipeDto =
+        this.recipeMapperService.mapToCreateRecipeDto(formGroupRawValue);
+
       const currentRecipeId = this.recipe()?.id;
-      
+
       this.store.dispatch(new SaveRecipe(createRecipeDto));
-      
+
       // Listen for recipe creation success
-      this.store.select(RecipeFormState.recipe).pipe(
-        filter(recipe => recipe?.id !== currentRecipeId && !!recipe?.id),
-        take(1),
-        tap(recipe => {
-          if (recipe?.id) {
-            this.router.navigate([`/recipes/${recipe.id}`]);
-          }
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      ).subscribe();
-    } else if (this.isEditMode() && this.recipe()?.id) {
+      this.store
+        .select(RecipeFormState.recipe)
+        .pipe(
+          filter((recipe) => recipe?.id !== currentRecipeId && !!recipe?.id),
+          take(1),
+          tap((recipe) => {
+            if (recipe?.id) {
+              this.router.navigate([`/recipes/${recipe.id}`]);
+            }
+          }),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe();
+    } else if (this.recipe()?.id) {
       // Update existing recipe - prepare DTO in component
       const recipeId = this.recipe()?.id;
       if (!recipeId) return; // Guard against undefined
-      
-      const updateRecipeDto = this.recipeMapperService.mapToUpdateRecipeDto(formGroupRawValue, recipeId);
-      
+
+      const updateRecipeDto = this.recipeMapperService.mapToUpdateRecipeDto(
+        formGroupRawValue,
+        recipeId,
+      );
+
       // Update recipe via API
-      this.store.dispatch(new UpdateRecipe(updateRecipeDto)).pipe(
-        tap(() => {
-          // After successful API call, update local state with form data
-          const updatedRecipe = { ...formGroupRawValue, id: recipeId } as IRecipe;
-          this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
-          this.switchToPreviewMode();
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      ).subscribe();
+      this.store
+        .dispatch(new UpdateRecipe(updateRecipeDto))
+        .pipe(
+          tap(() => {
+            // After successful API call, update local state with form data
+            const updatedRecipe = {
+              ...formGroupRawValue,
+              id: recipeId,
+            } as IRecipe;
+            this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+            // Notify parent that save is completed
+            this.saveCompleted.emit();
+          }),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe();
     }
   }
 }
