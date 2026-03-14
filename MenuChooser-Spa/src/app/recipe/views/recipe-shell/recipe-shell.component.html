@@ -1,6 +1,6 @@
 <div class="flex justify-center pt-4">
   @if (viewMode() === RecipeViewMode.PREVIEW && recipe()) {
-    <mc-recipe-preview 
+    <mc-recipe-preview class="w-1/2"
       [recipe]="recipe()!" 
       (editRequested)="switchToEditMode()" 
     />
