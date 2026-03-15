@@ -143,8 +143,6 @@ export class RecipeFormComponent implements OnInit {
 
   public formGroup!: FormGroup<RecipeFormType>;
 
-  public draggedStepIndex: number | null = null;
-
   constructor() {
     effect(() => {
       const currentRecipe = this.recipe();
@@ -178,10 +176,6 @@ export class RecipeFormComponent implements OnInit {
     });
   }
 
-  public switchToEditMode(): void {
-    // Not needed anymore - component is always in edit mode
-  }
-
   public cancelEdit(): void {
     this.cancelRequested.emit();
   }
@@ -197,7 +191,25 @@ export class RecipeFormComponent implements OnInit {
   }
 
   public openStepPreview(step: IStep | null) {
-    this.selectedStep.set(step);
+    if (!step) {
+      // Nowy krok - znajdź najwyższy numer istniejących kroków
+      const currentSteps = this.recipe()?.steps || [];
+      const maxOrder = currentSteps.length > 0 
+        ? Math.max(...currentSteps.map(s => s.order || 0))
+        : 0;
+      
+      // Ustaw nowy krok z numerem maxOrder + 1 i unikalnym ID
+      this.selectedStep.set({
+        order: maxOrder + 1,
+        content: '',
+        duration: 0,
+        products: [],
+      });
+    } else {
+      // Edycja istniejącego kroku - zachowaj numer i ID
+      this.selectedStep.set(step);
+    }
+    
     this.drawerService.toggleDrawerPannel(DrawerContent.Step);
   }
 
@@ -220,6 +232,22 @@ export class RecipeFormComponent implements OnInit {
     }
   }
 
+  public onStepSave(step: IStep | null) {
+    if (!!step) {
+      const currentRecipe = this.recipe() || defaultRecipe;
+      
+      const updatedRecipe = {
+        ...currentRecipe,
+        steps: upsertByPath(currentRecipe.steps, step, 'order'),
+      };
+
+      // Update through NGXS state (local update, no HTTP request)
+      this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+      this.selectedStep.set(null);
+      this.drawerService.toggleDrawerPannel(DrawerContent.None);
+    }
+  }
+
   public drawerHeader() {
     switch (this.drawerService.contentVisible()) {
       case DrawerContent.RecipeProduct:
@@ -228,21 +256,6 @@ export class RecipeFormComponent implements OnInit {
         return this.selectedStep() ? 'Edit Step' : 'Add Step';
       default:
         return '';
-    }
-  }
-
-  public onStepSave(step: IStep | null) {
-    if (!!step) {
-      const currentRecipe = this.recipe() || defaultRecipe;
-      const updatedRecipe = {
-        ...currentRecipe,
-        steps: upsertByPath(currentRecipe.steps, step, 'step.id'),
-      };
-
-      // Update through NGXS state (local update, no HTTP request)
-      this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
-      this.selectedStep.set(null);
-      this.drawerService.toggleDrawerPannel(DrawerContent.None);
     }
   }
 
