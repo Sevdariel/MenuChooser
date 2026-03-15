@@ -10,7 +10,7 @@ namespace Recipes.Extensions
             this IServiceCollection services
         )
         {
-            services.AddAutoMapper(typeof(RecipeMappingProfile));
+            services.AddAutoMapper(cfg => cfg.AddProfile<RecipeMappingProfile>());
             services.AddSingleton<RecipeService>();
 
             return services;
