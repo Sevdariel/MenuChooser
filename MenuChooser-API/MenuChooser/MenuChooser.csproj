@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Recipes\Recipes.csproj" />
     <ProjectReference Include="..\Users\Users.csproj" />
     <ProjectReference Include="..\Products\Products.csproj" />
+    <ProjectReference Include="..\PdfCreator\PdfCreator.csproj" />
   </ItemGroup>
 
 </Project>
