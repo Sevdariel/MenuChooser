@@ -13,7 +13,6 @@ public class WeeklyMenu
     private WeeklyMenu() { }
 
     public static WeeklyMenu Generate(
-        Guid userId,
         DateOnly weekStart,
         IReadOnlyList<Recipe> availableRecipes,
         IMealSlotRandomizer randomizer)
@@ -25,7 +24,6 @@ public class WeeklyMenu
         return new WeeklyMenu
         {
             Id = Guid.NewGuid(),
-            UserId = userId,
             WeekStart = weekStart,
             Days = days,
             GeneratedAt = DateTime.UtcNow

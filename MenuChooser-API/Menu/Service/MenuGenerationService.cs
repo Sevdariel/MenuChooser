@@ -1,23 +1,23 @@
 using Menu.Entities;
 using Recipes.Service;
 
-namespace Menu;
+namespace Menu.Service;
 
-public class MenuGenerationService
+public class MenuGenerationService : IMenuGenerationService
 {
     private readonly IRecipeService _recipes;
     // private readonly IWeeklyMenuRepository _menus;
     private readonly IMealSlotRandomizer _randomizer;
 
-    public async Task<WeeklyMenuDto> GenerateAsync(Guid userId, CancellationToken ct)
+    public async Task<WeeklyMenuDto> GenerateAsync(CancellationToken cancellationToken)
     {
         var recipes = await _recipes.GetRecipesAsync();
 
         // if (recipes.Count < 4)
         //     throw new DomainException("Za mało przepisów – potrzebne minimum 4.");
 
-        var weekStart = DateOnly.FromDateTime(DateTime.Today).StartOfWeek();
-        var menu = WeeklyMenu.Generate(userId, weekStart, recipes, _randomizer);
+        var weekStart = DateOnly.FromDateTime(DateTime.Today);
+        var menu = WeeklyMenu.Generate(weekStart, recipes, _randomizer);
 
         // await _menus.SaveAsync(menu, ct);
 
