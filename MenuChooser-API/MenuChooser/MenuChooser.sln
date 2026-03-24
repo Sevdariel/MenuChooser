@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Products", "..\Products\Pro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes", "..\Recipes\Recipes.csproj", "{7E09737D-ACCD-4354-8213-41DC27D4F390}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfCreator", "..\PdfCreator\PdfCreator.csproj", "{CD8F5A76-9E7F-46A4-ADEE-4C747F6CFFBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{7E09737D-ACCD-4354-8213-41DC27D4F390}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E09737D-ACCD-4354-8213-41DC27D4F390}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E09737D-ACCD-4354-8213-41DC27D4F390}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD8F5A76-9E7F-46A4-ADEE-4C747F6CFFBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD8F5A76-9E7F-46A4-ADEE-4C747F6CFFBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD8F5A76-9E7F-46A4-ADEE-4C747F6CFFBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD8F5A76-9E7F-46A4-ADEE-4C747F6CFFBF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Products.Extensions;
 using Recipes.Extensions;
 using Users.Extensions;
+using PdfCreator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddUserService();
 builder.Services.AddProductServices();
 builder.Services.AddRecipeServices();
 builder.Services.AddAccountServices();
+builder.Services.AddPdfCreatorServices();
 
 var app = builder.Build();
 
