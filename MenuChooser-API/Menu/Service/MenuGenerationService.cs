@@ -1,26 +1,26 @@
 using Menu.Entities;
+using Menu.Mapper;
+using PdfCreator.Services;
 using Recipes.Service;
 
 namespace Menu.Service;
 
-public class MenuGenerationService : IMenuGenerationService
+public class MenuGenerationService(
+    IMealSlotRandomizer mealSlotRandomizer,
+    IPdfCreatorService pdfCreatorService,
+    IRecipeService recipeService)
+    : IMenuGenerationService
 {
-    private readonly IRecipeService _recipes;
     // private readonly IWeeklyMenuRepository _menus;
-    private readonly IMealSlotRandomizer _randomizer;
 
-    public async Task<WeeklyMenuDto> GenerateAsync(CancellationToken cancellationToken)
+    public async Task<byte[]> GenerateAsync(CancellationToken ct)
     {
-        var recipes = await _recipes.GetRecipesAsync();
-
-        // if (recipes.Count < 4)
-        //     throw new DomainException("Za mało przepisów – potrzebne minimum 4.");
+        var recipes = await recipeService.GetRecipesAsync();
 
         var weekStart = DateOnly.FromDateTime(DateTime.Today);
-        var menu = WeeklyMenu.Generate(weekStart, recipes, _randomizer);
+        var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer);
 
-        // await _menus.SaveAsync(menu, ct);
-
-        return WeeklyMenuDto.From(menu);
+        var pdfDocument = MenuPdfMapper.ToPdfDocument(menu);
+        return pdfCreatorService.Generate(pdfDocument);
     }
 }

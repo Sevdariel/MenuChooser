@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\PdfCreator\PdfCreator.csproj" />
       <ProjectReference Include="..\Recipes\Recipes.csproj" />
     </ItemGroup>
     

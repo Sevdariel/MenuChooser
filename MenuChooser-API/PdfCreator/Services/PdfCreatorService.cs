@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace PdfCreator.Services;
 
-public class PdfCreatorService
+public class PdfCreatorService : IPdfCreatorService
 {
     public byte[] Generate(PdfDocument document)
     {
