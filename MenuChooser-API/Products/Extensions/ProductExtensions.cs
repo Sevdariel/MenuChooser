@@ -10,7 +10,7 @@ namespace Products.Extensions
         )
         {
             services.AddAutoMapper(cfg => cfg.AddProfile<ProductMappingProfile>());
-            services.AddSingleton<ProductService>();
+            services.AddSingleton<IProductService, ProductService>();
 
             return services;
         }

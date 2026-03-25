@@ -9,7 +9,7 @@ public static class PdfCreatorExtensions
         this IServiceCollection services
     )
     {
-        services.AddSingleton<PdfCreatorService>();
+        services.AddSingleton<IPdfCreatorService, PdfCreatorService>();
 
         return services;
     }

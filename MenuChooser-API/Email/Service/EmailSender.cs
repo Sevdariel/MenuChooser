@@ -10,9 +10,9 @@ namespace Email.Service
     public class EmailSender : IEmailSender
     {
         private readonly IOptions<EmailConfiguration> _configuration;
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
         public EmailSender(IOptions<EmailConfiguration> configuration,
-            UserService userService)
+            IUserService userService)
         {
             _configuration = configuration;
             _userService = userService;

@@ -13,9 +13,11 @@ public class MenuGenerationService(
 {
     // private readonly IWeeklyMenuRepository _menus;
 
-    public async Task<byte[]> GenerateAsync(CancellationToken ct)
+    public async Task<byte[]> GenerateAsync(CancellationToken cancellationToken)
     {
-        var recipes = await recipeService.GetRecipesAsync();
+        var recipes = await recipeService.GetRecipesAsync(cancellationToken);
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         var weekStart = DateOnly.FromDateTime(DateTime.Today);
         var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer);

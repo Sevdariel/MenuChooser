@@ -9,7 +9,8 @@ public static class MenuExtensions
         this IServiceCollection services
     )
     {
-        services.AddSingleton<MenuGenerationService>();
+        services.AddSingleton<IMealSlotRandomizer, RandomMealSlotRandomizer>();
+        services.AddSingleton<IMenuGenerationService, MenuGenerationService>();
 
         return services;
     }

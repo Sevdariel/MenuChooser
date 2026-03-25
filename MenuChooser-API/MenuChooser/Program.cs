@@ -2,6 +2,7 @@ using System.Text.Json;
 using Account.Extensions;
 using Database.Extensions;
 using Email.Extensions;
+using Menu.Endpoints;
 using Menu.Extensions;
 using MenuChooser.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -46,6 +47,7 @@ app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyHeader().AllowAnyMeth
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.RegisterMenuEndpoints();
 
 app.MapControllers();
 

@@ -6,7 +6,7 @@ namespace Recipes.Service
     public interface IRecipeService
     {
         Task<Recipe> GetRecipeByIdAsync(string id);
-        Task<List<Recipe>> GetRecipesAsync();
+        Task<List<Recipe>> GetRecipesAsync(CancellationToken cancellationToken = default);
         Task<Recipe> CreateRecipeAsync(CreateRecipeDto createRecipeDto);
 
         Task DeleteRecipeAsync(string id);

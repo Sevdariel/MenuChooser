@@ -10,12 +10,12 @@ namespace Recipes.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [AllowAnonymous]
-    public class RecipeController(RecipeService recipeService, IMapper mapper, ProductService productService)
+    public class RecipeController(IRecipeService recipeService, IMapper mapper, IProductService productService)
         : ControllerBase
     {
-        private readonly RecipeService _recipeService = recipeService;
+        private readonly IRecipeService _recipeService = recipeService;
         private readonly IMapper _mapper = mapper;
-        private readonly ProductService _productService = productService;
+        private readonly IProductService _productService = productService;
 
         [HttpPost]
         [AllowAnonymous]
@@ -59,9 +59,9 @@ namespace Recipes.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<RecipeListItemDto>>> GetRecipes()
+        public async Task<ActionResult<List<RecipeListItemDto>>> GetRecipes(CancellationToken cancellationToken)
         {
-            var recipes = await _recipeService.GetRecipesAsync();
+            var recipes = await _recipeService.GetRecipesAsync(cancellationToken);
 
             var recipeListItems = _mapper.Map<List<RecipeListItemDto>>(recipes);
 

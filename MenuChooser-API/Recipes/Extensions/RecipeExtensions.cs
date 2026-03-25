@@ -11,7 +11,7 @@ namespace Recipes.Extensions
         )
         {
             services.AddAutoMapper(cfg => cfg.AddProfile<RecipeMappingProfile>());
-            services.AddSingleton<RecipeService>();
+            services.AddSingleton<IRecipeService, RecipeService>();
 
             return services;
         }
