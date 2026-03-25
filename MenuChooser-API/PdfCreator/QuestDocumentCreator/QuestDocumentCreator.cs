@@ -37,9 +37,9 @@ public class QuestDocumentCreator(PdfDocument pdfDocument) : IDocument
             if (pdfDocument.SubTitle is not null)
                 col.Item().Text(pdfDocument.SubTitle)
                     .FontSize(11).FontColor("#555555");
-        });
 
-        container.PaddingTop(8).LineHorizontal(1).LineColor("#2D6A4F");
+            col.Item().PaddingTop(8).LineHorizontal(1).LineColor("#2D6A4F");
+        });
     }
 
     private void ComposeContent(IContainer container)
