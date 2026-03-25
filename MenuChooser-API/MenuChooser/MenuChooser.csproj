@@ -20,6 +20,8 @@
     <ProjectReference Include="..\Users\Users.csproj" />
     <ProjectReference Include="..\Products\Products.csproj" />
     <ProjectReference Include="..\PdfCreator\PdfCreator.csproj" />
+    <ProjectReference Include="..\Menu\Menu.csproj" />
+    
   </ItemGroup>
 
 </Project>

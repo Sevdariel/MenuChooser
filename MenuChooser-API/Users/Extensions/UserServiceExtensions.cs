@@ -8,7 +8,7 @@ namespace Users.Extensions
         public static IServiceCollection AddUserService(
             this IServiceCollection services)
         {
-            services.AddSingleton<UserService>();
+            services.AddSingleton<IUserService, UserService>();
 
             return services;
         }

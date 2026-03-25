@@ -8,7 +8,7 @@ namespace Account.Extensions
         public static IServiceCollection AddAccountServices(
             this IServiceCollection services)
         {
-            services.AddSingleton<AccountService>();
+            services.AddSingleton<IAccountService, AccountService>();
             services.AddScoped<ITokenService, TokenService>();
 
             return services;

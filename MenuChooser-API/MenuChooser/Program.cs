@@ -2,6 +2,8 @@ using System.Text.Json;
 using Account.Extensions;
 using Database.Extensions;
 using Email.Extensions;
+using Menu.Endpoints;
+using Menu.Extensions;
 using MenuChooser.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Products.Extensions;
@@ -22,6 +24,7 @@ builder.Services.AddProductServices();
 builder.Services.AddRecipeServices();
 builder.Services.AddAccountServices();
 builder.Services.AddPdfCreatorServices();
+builder.Services.AddMenuServices();
 
 var app = builder.Build();
 
@@ -44,6 +47,7 @@ app.UseCors(corsPolicyBuilder => corsPolicyBuilder.AllowAnyHeader().AllowAnyMeth
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.RegisterMenuEndpoints();
 
 app.MapControllers();
 

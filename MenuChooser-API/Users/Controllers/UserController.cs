@@ -8,9 +8,9 @@ namespace Users.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public UserController(UserService userService) => _userService = userService;
+        public UserController(IUserService userService) => _userService = userService;
 
         [HttpGet]
         public async Task<List<User>> Get() => await _userService.GetUsersAsync();

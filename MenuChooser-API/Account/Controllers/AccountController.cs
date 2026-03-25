@@ -16,13 +16,13 @@ namespace Account.Controllers
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController(
-        AccountService accountService,
-        UserService userService,
+        IAccountService accountService,
+        IUserService userService,
         ITokenService tokenService,
         IEmailSender emailSender) : ControllerBase
     {
-        private readonly AccountService _accountService = accountService;
-        private readonly UserService _userService = userService;
+        private readonly IAccountService _accountService = accountService;
+        private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
         private readonly IEmailSender _emailSender = emailSender;
 

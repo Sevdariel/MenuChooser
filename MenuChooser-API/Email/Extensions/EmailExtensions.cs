@@ -13,8 +13,6 @@ namespace Email.Extensions
         {
             services.Configure<EmailConfiguration>(configuration.GetSection("EmailConfiguration"));
 
-            services.AddSingleton<EmailSender>();
-
             services.AddScoped<IEmailSender, EmailSender>();
 
             return services;

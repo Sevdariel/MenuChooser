@@ -29,7 +29,8 @@ namespace Recipes.Service
 
         public async Task<Recipe> GetRecipeByIdAsync(string id) => await _recipeCollection.Find(recipe => recipe.Id == id).FirstOrDefaultAsync();
 
-        public async Task<List<Recipe>> GetRecipesAsync() => await _recipeCollection.Find(_ => true).ToListAsync();
+        public async Task<List<Recipe>> GetRecipesAsync(CancellationToken cancellationToken = default)
+            => await _recipeCollection.Find(_ => true).ToListAsync(cancellationToken);
 
         public async Task DeleteRecipeAsync(string id) => await _recipeCollection.DeleteOneAsync(recipe => recipe.Id == id);
 
