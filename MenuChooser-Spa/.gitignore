@@ -42,4 +42,4 @@ testem.log
 Thumbs.db
 
 /ssl
-/assets/mockups
+/src/assets/mockups
