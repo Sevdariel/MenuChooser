@@ -17,6 +17,9 @@ export interface IRecipeDto {
     createdBy: string;
     updatedBy: string;
     mealType: MealType;
+    servings?: number;
+    caloriesPerServing?: number;
+    tags?: string[];
 }
 
 export interface IGetRecipeProductDto {
@@ -39,6 +42,10 @@ export interface IUpdateRecipeDto {
     duration: number;
     steps: IStepDto[];
     updatedBy: string;
+    mealType: MealType;
+    servings?: number;
+    caloriesPerServing?: number;
+    tags?: string[];
 }
 
 export interface ICreateRecipeDto {
@@ -48,6 +55,9 @@ export interface ICreateRecipeDto {
     steps: IStepDto[];
     mealType: MealType;
     createdBy: string;
+    servings?: number;
+    caloriesPerServing?: number;
+    tags?: string[];
 }
 
 export interface IUpsertRecipeProductDto {

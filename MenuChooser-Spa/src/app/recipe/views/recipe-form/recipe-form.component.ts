@@ -4,8 +4,10 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
+  HostBinding,
   OnInit,
   Output,
+  computed,
   effect,
   inject,
   linkedSignal,
@@ -38,6 +40,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { OrderListModule } from 'primeng/orderlist';
 import { PopoverModule } from 'primeng/popover';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
@@ -55,6 +58,8 @@ import {
   IRecipeProduct,
   IStep,
   RecipeFormType,
+  MealType,
+  Unit,
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
 import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
@@ -72,6 +77,11 @@ export enum RecipeMode {
   EDIT = 'EDIT',
 }
 
+export enum RecipeViewMode {
+  PREVIEW = 'preview',
+  EDIT = 'edit',
+}
+
 @Component({
   selector: 'mc-recipe-form',
   imports: [
@@ -85,7 +95,6 @@ export enum RecipeMode {
     DividerModule,
     DragDropModule,
     DrawerModule,
-    FloatLabel,
     FormsModule,
     InputNumberModule,
     InputTextModule,
@@ -95,6 +104,7 @@ export enum RecipeMode {
     ReactiveFormsModule,
     RecipeProductComponent,
     SelectButtonModule,
+    SelectModule,
     TableModule,
     TagModule,
     TextareaModule,
@@ -102,6 +112,9 @@ export enum RecipeMode {
     TooltipModule,
     StepComponent,
   ],
+  host: {
+    class: 'edit-mode'
+  },
   templateUrl: './recipe-form.component.html',
   styleUrl: './recipe-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -117,6 +130,16 @@ export class RecipeFormComponent implements OnInit {
 
   @Output() public cancelRequested = new EventEmitter<void>();
   @Output() public saveCompleted = new EventEmitter<void>();
+
+  // Mode management
+  public viewMode = signal<RecipeViewMode>(RecipeViewMode.EDIT);
+  public isEditMode = computed(() => this.viewMode() === RecipeViewMode.EDIT);
+  public isPreviewMode = computed(() => this.viewMode() === RecipeViewMode.PREVIEW);
+  
+  // Host binding for CSS classes
+  @HostBinding('class') get hostClasses(): string {
+    return this.isPreviewMode() ? 'preview-mode' : 'edit-mode';
+  }
 
   // Use NGXS state instead of local signal
   public recipe = this.store.selectSignal(RecipeFormState.recipe);
@@ -169,10 +192,14 @@ export class RecipeFormComponent implements OnInit {
   private initializeForm(): void {
     const currentRecipe = this.recipe() || defaultRecipe;
     this.formGroup = this.formBuilder.group<RecipeFormType>({
-      duration: new FormControl(currentRecipe.duration),
       name: new FormControl(currentRecipe.name),
+      duration: new FormControl(currentRecipe.duration),
       products: new FormControl<IRecipeProduct[]>(currentRecipe.products),
       steps: new FormControl<IStep[]>(currentRecipe.steps),
+      mealType: new FormControl<MealType | null>(currentRecipe.mealType || MealType.Dinner),
+      servings: new FormControl<number | null>(currentRecipe.servings || 4),
+      caloriesPerServing: new FormControl<number | null>(currentRecipe.caloriesPerServing || 520),
+      tags: new FormControl<string[] | null>(currentRecipe.tags || ['🌿 Wegetariańskie', 'Gluten-free', 'Włoska']),
     });
   }
 
@@ -183,6 +210,62 @@ export class RecipeFormComponent implements OnInit {
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
     const flat = flattenObject(recipeProduct);
     return flat[field];
+  }
+
+  // Helper methods for new fields
+  public getMealTypeName(mealType?: MealType): string {
+    switch (mealType) {
+      case MealType.Breakfast: return 'Śniadanie';
+      case MealType.Dinner: return 'Obiad';
+      case MealType.Lunch: return 'Kolacja';
+      case MealType.Appetizer: return 'Przystawka';
+      case MealType.Dessert: return 'Deser';
+      default: return 'Obiad';
+    }
+  }
+
+  public getUnitName(unit: string): string {
+    switch (unit) {
+      case 'g': return 'g';
+      case 'kg': return 'kg';
+      case 'ml': return 'ml';
+      case 'l': return 'l';
+      case 'szt': return 'szt.';
+      default: return unit;
+    }
+  }
+
+  public getMealTypeOptions() {
+    return [
+      { label: 'Śniadanie', value: MealType.Breakfast },
+      { label: 'Obiad', value: MealType.Dinner },
+      { label: 'Kolacja', value: MealType.Lunch },
+      { label: 'Przystawka', value: MealType.Appetizer },
+      { label: 'Deser', value: MealType.Dessert },
+    ];
+  }
+
+  public getUnitOptions() {
+    return [
+      { label: 'g', value: Unit.GRAM },
+      { label: 'kg', value: Unit.KILOGRAM },
+      { label: 'ml', value: Unit.MILLILITER },
+      { label: 'l', value: Unit.LITER },
+      { label: 'szt.', value: Unit.PIECE },
+    ];
+  }
+
+  public addTag() {
+    const currentTags = this.formGroup.controls.tags?.value || [];
+    const newTag = prompt('Wprowadź nowy tag:');
+    if (newTag && newTag.trim()) {
+      this.formGroup.controls.tags?.setValue([...currentTags, newTag.trim()]);
+    }
+  }
+
+  public removeTag(index: number) {
+    const currentTags = this.formGroup.controls.tags?.value || [];
+    this.formGroup.controls.tags?.setValue(currentTags.filter((_, i) => i !== index));
   }
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {
@@ -313,5 +396,14 @@ export class RecipeFormComponent implements OnInit {
         )
         .subscribe();
     }
+  }
+
+  // Mode switching methods
+  public switchToEditMode(): void {
+    this.viewMode.set(RecipeViewMode.EDIT);
+  }
+
+  public switchToPreviewMode(): void {
+    this.viewMode.set(RecipeViewMode.PREVIEW);
   }
 }

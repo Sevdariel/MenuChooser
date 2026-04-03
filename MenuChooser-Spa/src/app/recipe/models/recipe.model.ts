@@ -9,6 +9,10 @@ export interface IRecipe {
   steps: IStep[];
   createdBy: string;
   updatedBy: string;
+  mealType?: MealType;
+  servings?: number;
+  caloriesPerServing?: number;
+  tags?: string[];
 }
 
 export interface IStep {
@@ -29,6 +33,10 @@ export interface IRecipeForm {
   duration: number | null;
   products: IRecipeProduct[] | null;
   steps: IStep[] | null;
+  mealType?: MealType | null;
+  servings?: number | null;
+  caloriesPerServing?: number | null;
+  tags?: string[] | null;
 }
 
 export enum Unit {
@@ -54,6 +62,10 @@ export type RecipeFormType = {
   products: FormControl<IRecipeProduct[] | null>;
   steps: FormControl<IStep[] | null>;
   duration: FormControl<number | null>;
+  mealType?: FormControl<MealType | null>;
+  servings?: FormControl<number | null>;
+  caloriesPerServing?: FormControl<number | null>;
+  tags?: FormControl<string[] | null>;
 };
 
 export type RecipeProductFormType = {

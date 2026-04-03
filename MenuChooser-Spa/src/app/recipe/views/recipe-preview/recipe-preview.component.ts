@@ -1,21 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { SvgIconComponent } from 'angular-svg-icon';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
 import { DataViewModule } from 'primeng/dataview';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { IRecipe } from '../../models/recipe.model';
+import { IRecipe, MealType } from '../../models/recipe.model';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
 
 @Component({
   selector: 'mc-recipe-preview',
   standalone: true,
+  host: {
+    class: 'preview-mode'
+  },
   imports: [
     CommonModule,
-    SvgIconComponent,
     ButtonModule,
     CardModule,
     ChipModule,
@@ -43,5 +44,28 @@ export class RecipePreviewComponent {
 
   public switchToEditMode() {
     this.editRequested.emit();
+  }
+
+  // Helper methods for new fields
+  public getMealTypeName(mealType?: MealType): string {
+    switch (mealType) {
+      case MealType.Breakfast: return 'Śniadanie';
+      case MealType.Dinner: return 'Obiad';
+      case MealType.Lunch: return 'Kolacja';
+      case MealType.Appetizer: return 'Przystawka';
+      case MealType.Dessert: return 'Deser';
+      default: return 'Obiad';
+    }
+  }
+
+  public getUnitName(unit: string): string {
+    switch (unit) {
+      case 'g': return 'g';
+      case 'kg': return 'kg';
+      case 'ml': return 'ml';
+      case 'l': return 'l';
+      case 'szt': return 'szt.';
+      default: return unit;
+    }
   }
 }
