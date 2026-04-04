@@ -545,53 +545,11 @@
 
 /* edit-only elements */
 .edit-only {
-  display: none;
+  display: flex;
 }
 
 .preview-only {
   display: none;
-}
-
-/* Mode-specific visibility */
-:host(.preview-mode) .field-static {
-  display: block;
-}
-
-:host(.preview-mode) .field-input {
-  display: none;
-}
-
-:host(.preview-mode) .preview-only {
-  display: flex;
-}
-
-:host(.preview-mode) .edit-only {
-  display: none;
-}
-
-:host(.preview-mode) .edit-only-inline {
-  display: none;
-}
-
-/* For dynamic mode switching */
-:host(:not(.preview-mode)) .field-static {
-  display: none;
-}
-
-:host(:not(.preview-mode)) .field-input {
-  display: block;
-}
-
-:host(:not(.preview-mode)) .preview-only {
-  display: none;
-}
-
-:host(:not(.preview-mode)) .edit-only {
-  display: flex;
-}
-
-:host(:not(.preview-mode)) .edit-only-inline {
-  display: inline-flex;
 }
 
 /* Mode bar */

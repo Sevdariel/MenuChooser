@@ -4,10 +4,8 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
-  HostBinding,
   OnInit,
   Output,
-  computed,
   effect,
   inject,
   linkedSignal,
@@ -72,16 +70,6 @@ import {
 } from './store/recipe-form.actions';
 import { RecipeFormState } from './store/recipe-form.state';
 
-export enum RecipeMode {
-  CREATE = 'CREATE',
-  EDIT = 'EDIT',
-}
-
-export enum RecipeViewMode {
-  PREVIEW = 'preview',
-  EDIT = 'edit',
-}
-
 @Component({
   selector: 'mc-recipe-form',
   imports: [
@@ -130,16 +118,6 @@ export class RecipeFormComponent implements OnInit {
 
   @Output() public cancelRequested = new EventEmitter<void>();
   @Output() public saveCompleted = new EventEmitter<void>();
-
-  // Mode management
-  public viewMode = signal<RecipeViewMode>(RecipeViewMode.EDIT);
-  public isEditMode = computed(() => this.viewMode() === RecipeViewMode.EDIT);
-  public isPreviewMode = computed(() => this.viewMode() === RecipeViewMode.PREVIEW);
-  
-  // Host binding for CSS classes
-  @HostBinding('class') get hostClasses(): string {
-    return this.isPreviewMode() ? 'preview-mode' : 'edit-mode';
-  }
 
   // Use NGXS state instead of local signal
   public recipe = this.store.selectSignal(RecipeFormState.recipe);
@@ -396,14 +374,5 @@ export class RecipeFormComponent implements OnInit {
         )
         .subscribe();
     }
-  }
-
-  // Mode switching methods
-  public switchToEditMode(): void {
-    this.viewMode.set(RecipeViewMode.EDIT);
-  }
-
-  public switchToPreviewMode(): void {
-    this.viewMode.set(RecipeViewMode.PREVIEW);
   }
 }

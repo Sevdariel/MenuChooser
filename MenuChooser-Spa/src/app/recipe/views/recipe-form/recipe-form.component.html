@@ -3,51 +3,20 @@
   <button class="topbar-back" (click)="cancelEdit()">← Przepisy</button>
 
   <div class="topbar-title">
-    <!-- Title field that changes based on mode -->
-    @if (isPreviewMode()) {
-      <span class="field-static">{{ formGroup.controls.name.value || 'Nowy przepis' }}</span>
+    <!-- Edit mode: title input -->
+    @if (!recipe()?.id) {
+      <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name" placeholder="Nowy przepis">
     } @else {
-      @if (!recipe()?.id) {
-        <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name" placeholder="Nowy przepis">
-      } @else {
-        <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name">
-      }
+      <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name">
     }
-    
-    <!-- Mode switcher -->
-    <div class="mode-bar">
-      <button
-        class="mode-btn"
-        [class.active]="isPreviewMode()"
-        (click)="switchToPreviewMode()"
-      >
-        👁 Podgląd
-      </button>
-      <button 
-        class="mode-btn" 
-        [class.active]="isEditMode()"
-        (click)="switchToEditMode()"
-      >
-        ✏️ Edytuj
-      </button>
-    </div>
-    <small>{{ isPreviewMode() ? 'Tryb podglądu' : 'Tryb edycji' }}</small>
+    <small>Tryb edycji</small>
   </div>
 
-  <!-- Actions that change based on mode -->
-  @if (isPreviewMode()) {
-    <div class="preview-only flex-gap">
-      <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">
-        ✏️ Edytuj
-      </button>
-      <button class="btn btn-danger-ghost btn-sm">🗑 Usuń</button>
-    </div>
-  } @else {
-    <div class="edit-only flex-gap">
-      <button class="btn btn-ghost btn-sm" (click)="switchToPreviewMode()">Anuluj</button>
-      <button class="btn btn-primary btn-sm" (click)="saveRecipe()">Zapisz</button>
-    </div>
-  }
+  <!-- Edit actions -->
+  <div class="flex-gap">
+    <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Anuluj</button>
+    <button class="btn btn-primary btn-sm" (click)="saveRecipe()">Zapisz</button>
+  </div>
 </div>
 
 <!-- CONTENT -->
@@ -57,48 +26,32 @@
   <div class="meta-row">
     <div class="meta-cell">
       <div class="meta-label">Kategoria</div>
-      @if (isPreviewMode()) {
-        <div class="field-static meta-value" style="font-size: 15px">{{ getMealTypeName(formGroup.controls.mealType.value ?? undefined) }}</div>
-      } @else {
-        <select class="field-input meta-input" style="font-size:14px;" formControlName="mealType">
-          @for (option of getMealTypeOptions(); track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
-          }
-        </select>
-      }
+      <select class="field-input meta-input" style="font-size:14px;" formControlName="mealType">
+        @for (option of getMealTypeOptions(); track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
     </div>
     <div class="meta-cell">
       <div class="meta-label">Czas łączny</div>
-      @if (isPreviewMode()) {
-        <div class="field-static meta-value">{{ formGroup.controls.duration.value ?? 0 }} <small>min</small></div>
-      } @else {
-        <div class="field-input" style="display:flex;align-items:center;gap:6px;">
-          <input class="meta-input" type="number" formControlName="duration" style="width:70px;">
-          <span style="font-size:12px;color:var(--text-muted);">min</span>
-        </div>
-      }
+      <div class="field-input" style="display:flex;align-items:center;gap:6px;">
+        <input class="meta-input" type="number" formControlName="duration" style="width:70px;">
+        <span style="font-size:12px;color:var(--text-muted);">min</span>
+      </div>
     </div>
     <div class="meta-cell">
       <div class="meta-label">Porcje</div>
-      @if (isPreviewMode()) {
-        <div class="field-static meta-value">{{ formGroup.controls.servings.value ?? 0 }} <small>os.</small></div>
-      } @else {
-        <div class="field-input" style="display:flex;align-items:center;gap:6px;">
-          <input class="meta-input" type="number" formControlName="servings" style="width:60px;">
-          <span style="font-size:12px;color:var(--text-muted);">os.</span>
-        </div>
-      }
+      <div class="field-input" style="display:flex;align-items:center;gap:6px;">
+        <input class="meta-input" type="number" formControlName="servings" style="width:60px;">
+        <span style="font-size:12px;color:var(--text-muted);">os.</span>
+      </div>
     </div>
     <div class="meta-cell">
       <div class="meta-label">Kalorie / porcję</div>
-      @if (isPreviewMode()) {
-        <div class="field-static meta-value">{{ formGroup.controls.caloriesPerServing.value ?? 0 }} <small>kcal</small></div>
-      } @else {
-        <div class="field-input" style="display:flex;align-items:center;gap:6px;">
-          <input class="meta-input" type="number" formControlName="caloriesPerServing" style="width:80px;">
-          <span style="font-size:12px;color:var(--text-muted);">kcal</span>
-        </div>
-      }
+      <div class="field-input" style="display:flex;align-items:center;gap:6px;">
+        <input class="meta-input" type="number" formControlName="caloriesPerServing" style="width:80px;">
+        <span style="font-size:12px;color:var(--text-muted);">kcal</span>
+      </div>
     </div>
   </div>
 
@@ -107,14 +60,10 @@
     @for (tag of formGroup.controls.tags?.value || []; track tag; let i = $index) {
       <span class="tag tag-sage" [class]="'tag ' + (tag.includes('Wegetariańskie') ? 'tag-sage' : tag.includes('Gluten') ? 'tag-white' : 'tag-brown')">
         {{ tag }}
-        @if (isEditMode()) {
-          <span class="tag-remove" (click)="removeTag(i)">×</span>
-        }
+        <span class="tag-remove" (click)="removeTag(i)">×</span>
       </span>
     }
-    @if (isEditMode()) {
-      <button class="btn-icon-sm edit-only" style="font-size:12px;" (click)="addTag()">+ tag</button>
-    }
+    <button class="btn-icon-sm edit-only" style="font-size:12px;" (click)="addTag()">+ tag</button>
   </div>
 
   <!-- TWO COLUMNS -->
@@ -124,9 +73,7 @@
     <div class="section-card">
       <div class="section-head">
         <div class="section-head-title">🧂 Składniki</div>
-        @if (isEditMode()) {
-          <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="openRecipeProductPreview(null)">+ Dodaj składnik</button>
-        }
+        <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="openRecipeProductPreview(null)">+ Dodaj składnik</button>
       </div>
       <div class="section-body">
 
@@ -141,31 +88,19 @@
         @for (product of recipe()?.products || []; track product.product.id) {
           <div class="ing-row">
             <div class="ing-cell">
-              @if (isPreviewMode()) {
-                <span class="field-static">{{ product.product.name }}</span>
-              } @else {
-                <input class="field-input ing-input" type="text" [value]="product.product.name" readonly>
-              }
+              <input class="field-input ing-input" type="text" [value]="product.product.name" readonly>
             </div>
             <div class="ing-cell">
-              @if (isPreviewMode()) {
-                <span class="field-static">{{ product.quantity }}</span>
-              } @else {
-                <input class="field-input ing-input" type="number" [value]="product.quantity" readonly>
-              }
+              <input class="field-input ing-input" type="number" [value]="product.quantity" readonly>
             </div>
             <div class="ing-cell" style="display:flex;align-items:center;justify-content:space-between;">
-              @if (isPreviewMode()) {
-                <span class="field-static muted">{{ getUnitName(product.unit) }}</span>
-              } @else {
-                <span class="field-static muted">{{ getUnitName(product.unit) }}</span>
-                <select class="field-input ing-input" style="width:52px;">
-                  @for (unit of getUnitOptions(); track unit.value) {
-                    <option [value]="unit.value" [selected]="unit.value === product.unit">{{ unit.label }}</option>
-                  }
-                </select>
-                <button class="btn-icon-sm edit-only" style="margin-left:6px;">🗑</button>
-              }
+              <span class="field-static muted">{{ getUnitName(product.unit) }}</span>
+              <select class="field-input ing-input" style="width:52px;">
+                @for (unit of getUnitOptions(); track unit.value) {
+                  <option [value]="unit.value" [selected]="unit.value === product.unit">{{ unit.label }}</option>
+                }
+              </select>
+              <button class="btn-icon-sm edit-only" style="margin-left:6px;">🗑</button>
             </div>
           </div>
         }
@@ -179,9 +114,7 @@
         <div class="section-head-title">👨‍🍳 Kroki przygotowania</div>
         <div style="display:flex;gap:6px;align-items:center;">
           <span class="tag tag-terracotta">{{ formGroup.controls.duration.value ?? 0 }} min łącznie</span>
-          @if (isEditMode()) {
-            <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="openStepPreview(null)">+ Dodaj krok</button>
-          }
+          <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="openStepPreview(null)">+ Dodaj krok</button>
         </div>
       </div>
 
@@ -191,30 +124,22 @@
           <div class="step-row">
             <div class="step-num">{{ step.order }}</div>
             <div class="step-body">
-              @if (isPreviewMode()) {
-                <div class="field-static step-desc">{{ step.content }}</div>
-              } @else {
-                <textarea class="field-input step-desc-input" rows="2" [value]="step.content" readonly></textarea>
-              }
+              <div class="field-static step-desc">{{ step.content }}</div>
+              <textarea class="field-input step-desc-input" rows="2" [value]="step.content" readonly></textarea>
               <div class="step-meta">
                 @if (step.duration > 0) {
-                  @if (isPreviewMode()) {
-                    <span class="step-time-badge field-static">⏱ {{ step.duration }} min</span>
-                  } @else {
-                    <input class="field-input step-time-input" type="number" [value]="step.duration" placeholder="min" readonly>
-                  }
+                  <span class="step-time-badge field-static">⏱ {{ step.duration }} min</span>
+                  <input class="field-input step-time-input" type="number" [value]="step.duration" placeholder="min" readonly>
                 }
                 @for (product of step.products || []; track product.product.id) {
                   <span class="step-prod-tag">{{ product.product.name }}</span>
                 }
-                @if (isEditMode()) {
-                  <div class="prod-dropdown edit-only-inline">
-                    <button class="step-prod-add">+ produkt</button>
-                  </div>
-                  <div class="step-actions edit-only">
-                    <button class="btn-icon-sm" (click)="openStepPreview(step)">✏️</button>
-                  </div>
-                }
+                <div class="prod-dropdown edit-only-inline">
+                  <button class="step-prod-add">+ produkt</button>
+                </div>
+                <div class="step-actions edit-only">
+                  <button class="btn-icon-sm" (click)="openStepPreview(step)">✏️</button>
+                </div>
               </div>
             </div>
           </div>
