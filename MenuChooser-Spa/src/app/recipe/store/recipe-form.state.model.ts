@@ -1,4 +1,4 @@
-import { IRecipe } from '../../../../recipe/models/recipe.model';
+import { IRecipe } from '../models/recipe.model';
 
 export interface RecipeFormStateModel {
   recipe: IRecipe | null;

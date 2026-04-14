@@ -4,6 +4,7 @@ import {
   Component,
   DestroyRef,
   EventEmitter,
+  HostBinding,
   OnInit,
   Output,
   effect,
@@ -67,11 +68,16 @@ import {
   SaveRecipe,
   UpdateRecipe,
   UpdateRecipeLocally,
-} from './store/recipe-form.actions';
-import { RecipeFormState } from './store/recipe-form.state';
+} from '../../store/recipe-form.actions';
+import { RecipeFormState } from '../../store/recipe-form.state';
+
+export enum RecipeViewMode {
+  PREVIEW = 'preview',
+  EDIT = 'edit',
+}
 
 @Component({
-  selector: 'mc-recipe-form',
+  selector: 'mc-recipe-view',
   imports: [
     AutoCompleteModule,
     ButtonModule,
@@ -100,14 +106,11 @@ import { RecipeFormState } from './store/recipe-form.state';
     TooltipModule,
     StepComponent,
   ],
-  host: {
-    class: 'edit-mode'
-  },
-  templateUrl: './recipe-form.component.html',
-  styleUrl: './recipe-form.component.scss',
+  templateUrl: './recipe-view.component.html',
+  styleUrl: './recipe-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecipeFormComponent implements OnInit {
+export class RecipeViewComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   public readonly drawerService = inject(DrawerService);
   private readonly recipeMapperService = inject(RecipeMapperService);
@@ -144,6 +147,22 @@ export class RecipeFormComponent implements OnInit {
 
   public formGroup!: FormGroup<RecipeFormType>;
 
+  // View mode control
+  public viewMode = signal<RecipeViewMode>(RecipeViewMode.PREVIEW);
+  
+  // Linked signals to determine mode based on recipe existence
+  // New recipes (no ID) start in edit mode
+  // Existing recipes start in preview mode
+  public isEditMode = linkedSignal(() => {
+    const hasId = !!this.recipe()?.id;
+    return !hasId || this.viewMode() === RecipeViewMode.EDIT;
+  });
+  
+  public isPreviewMode = linkedSignal(() => !this.isEditMode());
+
+  @HostBinding('class.edit-mode') get editMode() { return this.isEditMode(); }
+  @HostBinding('class.preview-mode') get previewMode() { return this.isPreviewMode(); }
+
   constructor() {
     effect(() => {
       const currentRecipe = this.recipe();
@@ -159,12 +178,21 @@ export class RecipeFormComponent implements OnInit {
   public ngOnInit(): void {
     this.loadRecipeFromResolver();
     this.initializeForm();
+    this.initializeMode();
   }
 
   private loadRecipeFromResolver(): void {
     const routeData = this.activatedRoute.snapshot.data['recipe'] as IRecipe;
+    if (routeData) {
+      this.store.dispatch(new GetRecipeSuccess(routeData));
+    }
+  }
 
-    this.store.dispatch(new GetRecipeSuccess(routeData));
+  private initializeMode(): void {
+    // New recipes (no ID) start in edit mode
+    // Existing recipes start in preview mode
+    const hasId = !!this.recipe()?.id;
+    this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
   }
 
   private initializeForm(): void {
@@ -181,8 +209,25 @@ export class RecipeFormComponent implements OnInit {
     });
   }
 
+  public switchToEditMode(): void {
+    this.viewMode.set(RecipeViewMode.EDIT);
+  }
+
+  public switchToPreviewMode(): void {
+    this.viewMode.set(RecipeViewMode.PREVIEW);
+  }
+
   public cancelEdit(): void {
-    this.cancelRequested.emit();
+    if (this.recipe()?.id) {
+      this.switchToPreviewMode();
+    } else {
+      this.cancelRequested.emit();
+    }
+  }
+
+  public deleteRecipe(): void {
+    // TODO: Implement delete functionality
+    console.log('Delete recipe:', this.recipe()?.id);
   }
 
   public displayValue(recipeProduct: IRecipeProduct, field: string) {
@@ -367,6 +412,8 @@ export class RecipeFormComponent implements OnInit {
               id: recipeId,
             } as IRecipe;
             this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+            // Switch to preview mode after save
+            this.switchToPreviewMode();
             // Notify parent that save is completed
             this.saveCompleted.emit();
           }),
