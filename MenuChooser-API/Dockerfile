@@ -1,5 +1,5 @@
 # Etap 1: budowanie aplikacji
-FROM mcr.microsoft.com/dotnet/sdk:8.0.412 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.201 AS build
 WORKDIR /src
 
 # Kopiowanie solution i wszystkich projektów
