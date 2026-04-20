@@ -44,8 +44,8 @@
 
   /* ── APP SHELL ── */
   .app-layout {
-    display: grid;
-    grid-template-columns: 220px 1fr;
+    display: flex;
+    flex-direction: column;
     max-width: 1200px;
     margin: 0 auto;
     background: white;
@@ -54,66 +54,6 @@
     border: 1px solid var(--border-light);
     overflow: hidden;
     min-height: calc(100vh - 64px);
-  }
-
-  /* ── SIDEBAR ── */
-  .sidebar {
-    background: var(--cream-100);
-    border-right: 1px solid var(--border-light);
-    padding: 24px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-
-    .sidebar-logo {
-      font-family: var(--font-display);
-      font-size: 18px;
-      color: var(--text-primary);
-      padding: 6px 10px 20px;
-      border-bottom: 1px solid var(--border-light);
-      margin-bottom: 10px;
-
-      span {
-        color: var(--terracotta-500);
-      }
-    }
-
-    .sidebar-item {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 8px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      transition: all .15s;
-
-      &:hover {
-        background: var(--cream-200);
-        color: var(--text-primary);
-      }
-
-      &.active {
-        background: var(--sage-500);
-        color: white;
-      }
-
-      .icon {
-        font-size: 15px;
-        width: 18px;
-        text-align: center;
-      }
-    }
-
-    .sidebar-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 14px 10px 4px;
-    }
   }
 
   /* ── MAIN ── */

@@ -1,43 +1,8 @@
 <div class="menu-generate-wrapper">
   <div class="app-layout">
-    
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-      <div class="sidebar-logo">🌿 Meal<span>Planner</span></div>
-      <div class="sidebar-item">
-        <span class="icon">📅</span>
-        <span>Planer</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="icon">📖</span>
-        <span>Przepisy</span>
-      </div>
-      <div class="sidebar-item active">
-        <span class="icon">⚡</span>
-        <span>Generuj menu</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="icon">🛒</span>
-        <span>Lista zakupów</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="icon">📦</span>
-        <span>Produkty</span>
-      </div>
-      <div class="sidebar-label">Konto</div>
-      <div class="sidebar-item">
-        <span class="icon">👤</span>
-        <span>Profil</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="icon">⚙️</span>
-        <span>Ustawienia</span>
-      </div>
-    </div>
-
     <!-- MAIN -->
     <div class="main">
-      
+
       <div class="topbar">
         <button class="topbar-back" (click)="goBack()">← Planer</button>
         <div class="topbar-title">
@@ -48,7 +13,7 @@
 
       <div class="content">
         <div class="form-wrap">
-          
+
           <!-- DATY -->
           <p-card class="form-card">
             <ng-template pTemplate="header">
@@ -64,22 +29,12 @@
               <div class="date-range">
                 <div class="date-field">
                   <label class="form-label" for="date-from">Od</label>
-                  <input 
-                    class="form-input" 
-                    type="date" 
-                    id="date-from" 
-                    [formControl]="formGroup.controls.dateFrom"
-                  >
+                  <input class="form-input" type="date" id="date-from" [formControl]="formGroup.controls.dateFrom">
                 </div>
                 <div class="date-range-sep">→</div>
                 <div class="date-field">
                   <label class="form-label" for="date-to">Do</label>
-                  <input 
-                    class="form-input" 
-                    type="date" 
-                    id="date-to" 
-                    [formControl]="formGroup.controls.dateTo"
-                  >
+                  <input class="form-input" type="date" id="date-to" [formControl]="formGroup.controls.dateTo">
                 </div>
               </div>
               <div class="form-hint">Wybrano {{ daysCount() }} {{ getDaysLabel() }}</div>
@@ -99,12 +54,8 @@
             </ng-template>
             <div class="form-card-body">
               <div class="meal-list">
-                <label 
-                  *ngFor="let meal of mealToggles()" 
-                  class="meal-row" 
-                  [class.on]="meal.enabled"
-                  (click)="toggleMeal(meal.type)"
-                >
+                <label *ngFor="let meal of mealToggles()" class="meal-row" [class.on]="meal.enabled"
+                  (click)="toggleMeal(meal.type)">
                   <div class="meal-info">
                     <div class="meal-icon" [style.background]="meal.iconBackground">
                       {{ meal.icon }}
@@ -114,16 +65,9 @@
                       <div class="meal-time">{{ meal.time }}</div>
                     </div>
                   </div>
-                  <p-toggleButton 
-                    [onLabel]="'Tak'" 
-                    [offLabel]="'Nie'" 
-                    [styleClass]="'meal-toggle'"
-                    [onIcon]="'pi pi-check'"
-                    [offIcon]="''"
-                    [(ngModel)]="meal.enabled"
-                    (onChange)="toggleMeal(meal.type)"
-                    (click)="$event.stopPropagation()"
-                  ></p-toggleButton>
+                  <p-toggleButton [onLabel]="'Tak'" [offLabel]="'Nie'" [styleClass]="'meal-toggle'"
+                    [onIcon]="'pi pi-check'" [offIcon]="''" [(ngModel)]="meal.enabled"
+                    (onChange)="toggleMeal(meal.type)" (click)="$event.stopPropagation()"></p-toggleButton>
                 </label>
               </div>
             </div>
@@ -146,13 +90,7 @@
           </div>
 
           <!-- GENERATE -->
-          <button 
-            pButton 
-            pRipple 
-            class="btn-generate" 
-            [disabled]="isLoading()" 
-            (click)="generateMenu()"
-          >
+          <button pButton pRipple class="btn-generate" [disabled]="isLoading()" (click)="generateMenu()">
             <span *ngIf="!isLoading()" class="btn-icon">⚡</span>
             <span *ngIf="isLoading()" class="spinner"></span>
             <span class="btn-label">{{ isLoading() ? 'Generowanie…' : 'Generuj i pobierz PDF' }}</span>

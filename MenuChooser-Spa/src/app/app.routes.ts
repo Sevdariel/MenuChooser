@@ -17,6 +17,11 @@ export const routes: Routes = [
           import('./recipe/recipe.routes').then((m) => m.routes),
       },
       {
+        path: 'menu',
+        loadChildren: () =>
+          import('./menu/menu.routes').then((m) => m.routes),
+      },
+      {
         path: 'home',
         loadChildren: () =>
           import('./home/home.module').then((m) => m.HomeModule),
