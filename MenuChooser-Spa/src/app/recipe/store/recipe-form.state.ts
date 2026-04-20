@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { catchError, exhaustMap } from 'rxjs/operators';
-import { RecipeService } from '../../../../recipe/services/recipe.service';
-import { RecipeMapperService } from '../../../../recipe/services/recipe-mapper.service';
-import { IRecipe, IRecipeForm } from '../../../../recipe/models/recipe.model';
-import { IRecipeDto } from '../../../../recipe/models/recipe-dto.model';
+import { RecipeService } from '../services/recipe.service';
+import { RecipeMapperService } from '../services/recipe-mapper.service';
+import { IRecipe, IRecipeForm } from '../models/recipe.model';
+import { IRecipeDto } from '../models/recipe-dto.model';
 import {
   ClearRecipeForm,
   DeleteRecipe,

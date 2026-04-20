@@ -1,5 +1,5 @@
-import { ICreateRecipeDto, IRecipeDto, IUpdateRecipeDto } from '../../../../recipe/models/recipe-dto.model';
-import { IRecipe } from '../../../../recipe/models/recipe.model';
+import { ICreateRecipeDto, IRecipeDto, IUpdateRecipeDto } from '../models/recipe-dto.model';
+import { IRecipe } from '../models/recipe.model';
 
 export class GetRecipe {
   static readonly type = '[Recipe Form] Get Recipe';

@@ -47,6 +47,10 @@ export class RecipeMapperService {
           }) as IStep,
       ),
       updatedBy: recipeDto.updatedBy,
+      mealType: recipeDto.mealType,
+      servings: recipeDto.servings,
+      caloriesPerServing: recipeDto.caloriesPerServing,
+      tags: recipeDto.tags,
     };
   }
 
@@ -92,8 +96,11 @@ export class RecipeMapperService {
             (product: IRecipeProduct) => product.product.id,
           ),
         })) || [],
-      mealType: MealType.Appetizer, // To do
+      mealType: recipe.mealType || MealType.Dinner,
       createdBy: this.authService.loggedUser()?.username || '',
+      servings: recipe.servings || undefined,
+      caloriesPerServing: recipe.caloriesPerServing || undefined,
+      tags: recipe.tags || undefined,
     };
   }
 
@@ -118,6 +125,10 @@ export class RecipeMapperService {
           ),
         })) || [],
       updatedBy: this.authService.loggedUser()?.username || '',
+      mealType: recipe.mealType || MealType.Dinner,
+      servings: recipe.servings || undefined,
+      caloriesPerServing: recipe.caloriesPerServing || undefined,
+      tags: recipe.tags || undefined,
     };
   }
 }
