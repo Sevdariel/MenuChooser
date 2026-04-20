@@ -4,7 +4,9 @@ import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { provideStore } from '@ngxs/store';
 
-bootstrapApplication(AppComponent, {...appConfig, providers: [provideZoneChangeDetection(), ...appConfig.providers, provideStore(
-[],
-)]})
+bootstrapApplication(AppComponent, {
+  ...appConfig, providers: [provideZoneChangeDetection(), ...appConfig.providers, provideStore(
+    [],
+  )]
+})
   .catch((err) => console.error(err));
