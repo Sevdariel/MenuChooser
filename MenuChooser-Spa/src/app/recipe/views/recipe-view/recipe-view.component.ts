@@ -22,7 +22,6 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { SvgIconComponent } from 'angular-svg-icon';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -32,14 +31,13 @@ import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { DragDropModule } from 'primeng/dragdrop';
 import { DrawerModule } from 'primeng/drawer';
-import { FloatLabel } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { OrderListModule } from 'primeng/orderlist';
 import { PopoverModule } from 'primeng/popover';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { SelectModule } from 'primeng/select';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
@@ -56,13 +54,11 @@ import {
   IRecipeForm,
   IRecipeProduct,
   IStep,
-  RecipeFormType,
   MealType,
+  RecipeFormType,
   Unit,
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
-import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
-import { StepComponent } from '../step/step.component';
 import {
   GetRecipeSuccess,
   SaveRecipe,
@@ -70,6 +66,8 @@ import {
   UpdateRecipeLocally,
 } from '../../store/recipe-form.actions';
 import { RecipeFormState } from '../../store/recipe-form.state';
+import { RecipeProductComponent } from '../recipe-product/recipe-product.component';
+import { StepComponent } from '../step/step.component';
 
 export enum RecipeViewMode {
   PREVIEW = 'preview',
