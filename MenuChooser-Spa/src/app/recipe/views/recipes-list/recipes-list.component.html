@@ -1,50 +1,138 @@
-<div class="flex flex-col items-center justify-center space-y-5 pt-5">
-  <div class="shadow-md border rounded-lg bg-clip-border p-4">
-    <p-table
-      [columns]="columns"
-      [value]="recipesList()"
-      [tableStyle]="{ 'min-width': '50rem' }"
-      stripedRows
-      [paginator]="true"
-      [size]="'small'"
-      [rows]="20"
-      [rowsPerPageOptions]="[5, 10, 20, 50, 100]"
-      [paginatorStyleClass]="'flex justify-end'"
-    >
-      <ng-template #caption>
-        <div class="flex flex-row justify-between">
-          <span class="text-xl font-bold">Recipes</span>
-          <p-button
-            icon="pi pi-plus"
-            iconPos="left"
-            label="Add"
-            (click)="addNewRecipe()"
-          />
+<div class="app-layout">
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title">
+        <h1>Przepisy</h1>
+        <small>{{ recipesList().length }} przepisów w bibliotece</small>
+      </div>
+      <button class="btn btn-terracotta btn-md" (click)="addNewRecipe()">+ Nowy przepis</button>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Szukaj przepisów…"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        >
+      </div>
+
+      <select class="filter-select" [value]="sortBy()" (change)="sortBy.set($any($event.target).value)">
+        <option value="name">Sortuj: A–Z</option>
+        <option value="time">Sortuj: Czas</option>
+        <option value="newest">Sortuj: Najnowsze</option>
+      </select>
+
+      <div class="toolbar-right">
+        <div class="view-toggle">
+          <button
+            class="view-toggle-btn"
+            [class.active]="viewMode() === 'list'"
+            (click)="viewMode.set('list')"
+            title="Lista"
+          >☰</button>
+          <button
+            class="view-toggle-btn"
+            [class.active]="viewMode() === 'grid'"
+            (click)="viewMode.set('grid')"
+            title="Siatka"
+          >⊞</button>
         </div>
-      </ng-template>
-      <ng-template #header let-columns>
-        <tr>
-          @for (column of columns; track column) {
-            <th>{{ column.header }}</th>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+      <!-- FILTER CHIPS -->
+      <div class="filter-chips">
+        <span
+          class="chip"
+          [class.chip-active-all]="activeCategory() === 'all'"
+          [class.chip-default]="activeCategory() !== 'all'"
+          (click)="setCategory('all')"
+        >Wszystkie <strong>{{ categoryCounts().all }}</strong></span>
+        <span
+          class="chip"
+          [class.chip-active-breakfast]="activeCategory() === 0"
+          [class.chip-default]="activeCategory() !== 0"
+          (click)="setCategory(0)"
+        >🌅 Śniadanie <strong>{{ categoryCounts()[0] }}</strong></span>
+        <span
+          class="chip"
+          [class.chip-active-lunch]="activeCategory() === 2"
+          [class.chip-default]="activeCategory() !== 2"
+          (click)="setCategory(2)"
+        >☀️ Obiad <strong>{{ categoryCounts()[2] }}</strong></span>
+        <span
+          class="chip"
+          [class.chip-active-dinner]="activeCategory() === 1"
+          [class.chip-default]="activeCategory() !== 1"
+          (click)="setCategory(1)"
+        >🌙 Kolacja <strong>{{ categoryCounts()[1] }}</strong></span>
+      </div>
+
+      <!-- TABLE -->
+      <div class="recipe-table">
+        <!-- HEAD -->
+        <div class="recipe-table-head">
+          <div></div>
+          <div class="recipe-table-head-cell" [class.sorted]="sortBy() === 'name'">Nazwa ↑</div>
+          <div class="recipe-table-head-cell">Kategoria</div>
+          <div class="recipe-table-head-cell">⏱ Czas</div>
+          <div></div>
+        </div>
+
+        <!-- ROWS -->
+        @if (paginatedRecipes().length > 0) {
+          @for (recipe of paginatedRecipes(); track recipe.id) {
+            <div class="recipe-row" (click)="openRecipePreview(recipe.id)">
+              <div class="recipe-thumb">🍽️</div>
+              <div class="recipe-name">
+                {{ recipe.name }}
+              </div>
+              <div class="recipe-cell">
+                @let cat = categoryLabels[recipe.mealType];
+                <span class="cat-tag {{ cat.cls }}">{{ cat.emoji }} {{ cat.label }}</span>
+              </div>
+              <div class="recipe-cell">{{ recipe.duration }} min</div>
+              <div class="row-actions" (click)="$event.stopPropagation()">
+                <button class="action-btn" title="Podgląd" (click)="openRecipePreview(recipe.id)">👁</button>
+                <button class="action-btn" title="Edytuj" (click)="editRecipe(recipe.id)">✏️</button>
+                <button class="action-btn danger" title="Usuń" (click)="deleteRecipe(recipe.id)">🗑</button>
+              </div>
+            </div>
           }
-          <th></th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-recipes let-columns="columns">
-        <tr>
-          @for (column of columns; track column) {
-            <td>{{ recipes[column.field] }}</td>
-          }
-          <td class="border-slate-200 flex justify-center items-center">
-            <button (click)="openRecipePreview(recipes.id)">
-              <svg-icon
-                src="assets\icons\preview.svg"
-                [svgStyle]="{ 'height.px': 25 }"
-              ></svg-icon>
-            </button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+        } @else {
+          <!-- EMPTY STATE -->
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">Brak wyników</div>
+            <div class="empty-desc">Żaden przepis nie pasuje do wyszukiwania. Spróbuj innej frazy lub zmień filtr.</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <div class="pagination-info">{{ paginationInfo() }}</div>
+      <div class="pagination-btns">
+        <button class="page-btn" [disabled]="currentPage() === 1" (click)="previousPage()">←</button>
+        @for (page of totalPagesArray(); track page) {
+          <button
+            class="page-btn"
+            [class.active]="currentPage() === page"
+            (click)="goToPage(page)"
+          >{{ page }}</button>
+        }
+        <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="nextPage()">→</button>
+      </div>
+    </div>
   </div>
 </div>
