@@ -18,6 +18,7 @@ import { defaultProduct } from '../../models/default-product.model';
 import { IUpdateProductDto } from '../../models/product-dto.model';
 import { IProductForm } from '../../models/product-form.model';
 import { ProductService } from '../../services/product.service';
+import { ProductCategory } from '../../models/product.model';
 
 @Component({
   selector: 'mc-product-edit',
@@ -36,6 +37,14 @@ export class ProductEditComponent {
   protected productModel = signal<IProductForm>({
     name: '',
     producent: '',
+    sub: '',
+    emoji: '',
+    category: ProductCategory.OTHER,
+    unit: '',
+    kcal: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
   });
 
   protected signalForm = form(this.productModel, (schemaPath) => {
@@ -52,6 +61,14 @@ export class ProductEditComponent {
       name: this.productModel().name,
       producent: this.productModel().producent,
       updatedBy: this.authService.loggedUser()!.username,
+      sub: this.productModel().sub,
+      emoji: this.productModel().emoji,
+      category: this.productModel().category,
+      unit: this.productModel().unit,
+      kcal: this.productModel().kcal,
+      protein: this.productModel().protein,
+      carbs: this.productModel().carbs,
+      fat: this.productModel().fat,
     };
 
     this.productService
