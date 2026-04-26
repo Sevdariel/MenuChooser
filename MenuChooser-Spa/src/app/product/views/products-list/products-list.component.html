@@ -1,33 +1,113 @@
-<div class="flex flex-col items-center justify-center space-y-5 pt-5">
-    <div class="shadow-md border rounded-lg bg-clip-border p-4">
-        <p-table [columns]="columns" [value]="products()" [tableStyle]="{'min-width': '50rem'}" stripedRows
-            [paginator]="true" [rows]="20" [rowsPerPageOptions]="[5, 10, 20, 50, 100]" [paginatorStyleClass]="'flex justify-end'">
-            <ng-template #caption>
-                <div class="flex flex-row justify-between">
-                    <span class="text-xl font-bold">Products</span>
-                    <p-button icon="pi pi-plus" iconPos="left" label="Add" (click)="addNewProduct()"/>
-                </div>
-            </ng-template>
-            <ng-template #header let-columns>
-                <tr>
-                    @for (column of columns; track column) {
-                    <th>{{column.header}}</th>
-                    }
-                    <th></th>
-                </tr>
-            </ng-template>
-            <ng-template #body let-products let-columns="columns">
-                <tr>
-                    @for (column of columns; track column) {
-                    <td>{{products[column.field]}}</td>
-                    }
-                    <td class="p-4 border-b border-slate-200 flex justify-center items-center">
-                        <button (click)="openProductPreview(products.id)">
-                            <svg-icon src="assets\icons\preview.svg" [svgStyle]="{'height.px': 20}"></svg-icon>
-                        </button>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Produkty</h1>
+      <small>{{ products().length }} produktów w bazie</small>
     </div>
+    <button class="btn btn-terracotta btn-md" (click)="addNewProduct()">+ Nowy produkt</button>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input
+        class="search-input"
+        type="text"
+        placeholder="Szukaj produktów…"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+      >
+    </div>
+    <p-select
+      class="filter-select"
+      [options]="sortOptions"
+      [(ngModel)]="sortBy"
+      optionLabel="label"
+      optionValue="value"
+    ></p-select>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <!-- CHIPS -->
+    <div class="filter-chips">
+      <span
+        class="chip"
+        [class]="getCategoryChipClass('all')"
+        (click)="setCategory('all')"
+      >
+        {{ categoryMeta.all.emoji }} {{ categoryMeta.all.label }} <strong>{{ categoryCounts().all }}</strong>
+      </span>
+      @for (cat of [ProductCategory.VEGETABLES, ProductCategory.MEAT, ProductCategory.DAIRY, ProductCategory.GRAINS, ProductCategory.OTHER]; track cat) {
+        <span
+          class="chip"
+          [class]="getCategoryChipClass(cat)"
+          (click)="setCategory(cat)"
+        >
+          {{ getCategoryMeta(cat).emoji }} {{ getCategoryMeta(cat).label }} <strong>{{ getCategoryCount(cat) }}</strong>
+        </span>
+      }
+    </div>
+
+    <!-- TABLE -->
+    <div class="product-table">
+      <div class="product-table-head">
+        <div></div>
+        <div class="head-cell sorted">Nazwa ↑</div>
+        <div class="head-cell">Kategoria</div>
+        <div class="head-cell">Jednostka</div>
+        <div class="head-cell">🔥 Kcal</div>
+        <div class="head-cell">💪 Białko</div>
+        <div class="head-cell">🍞 Węglow.</div>
+        <div></div>
+      </div>
+
+      @for (product of filteredProducts(); track product.id) {
+        <div class="product-row" (click)="openProduct(product.id)">
+          <div class="product-icon" [style.background]="getCategoryBackground(product.category)">
+            {{ product.emoji }}
+          </div>
+          <div class="product-name">
+            {{ product.name }}
+            <small>{{ product.sub }}</small>
+          </div>
+          <div class="product-cell">
+            <span class="cat-badge" [class]="getCategoryBadgeClass(product.category)">
+              {{ categoryMeta[product.category].emoji }} {{ categoryMeta[product.category].label }}
+            </span>
+          </div>
+          <div class="product-cell mono">na 100 {{ product.unit }}</div>
+          <div class="product-cell mono">{{ product.kcal }} kcal</div>
+          <div class="product-cell mono">{{ product.protein.toFixed(1) }} g</div>
+          <div class="product-cell mono">{{ product.carbs.toFixed(1) }} g</div>
+          <div class="row-actions" (click)="$event.stopPropagation()">
+            <button class="action-btn" title="Edytuj" (click)="editProduct(product.id)">✏️</button>
+            <button class="action-btn danger" title="Usuń" (click)="deleteProduct(product.id)">🗑</button>
+          </div>
+        </div>
+      }
+
+      @if (filteredProducts().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Brak wyników</div>
+          <div class="empty-desc">Żaden produkt nie pasuje do wyszukiwania. Spróbuj innej frazy lub zmień kategorię.</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <div class="pagination-info">
+      Wyświetlanie 1–{{ filteredProducts().length }} z {{ filteredProducts().length }} produktów
+    </div>
+    <div class="pagination-btns">
+      <button class="page-btn" disabled>←</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn" disabled>→</button>
+    </div>
+  </div>
 </div>

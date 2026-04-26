@@ -17,6 +17,7 @@ import { AuthService } from '../../../core/authorization/auth.service';
 import { IAddProductDto } from '../../models/product-dto.model';
 import { IProductForm } from '../../models/product-form.model';
 import { ProductService } from '../../services/product.service';
+import { ProductCategory } from '../../models/product.model';
 
 @Component({
   selector: 'mc-add-product',
@@ -40,6 +41,14 @@ export class AddProductComponent {
   protected productModel = signal<IProductForm>({
     name: '',
     producent: '',
+    sub: '',
+    emoji: '',
+    category: ProductCategory.OTHER,
+    unit: '',
+    kcal: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
   });
 
   protected signalForm = form(this.productModel, (schemaPath) => {
@@ -53,6 +62,14 @@ export class AddProductComponent {
       createdBy: this.authService.loggedUser()!.username,
       name: this.productModel().name,
       producent: this.productModel().producent,
+      sub: this.productModel().sub,
+      emoji: this.productModel().emoji,
+      category: this.productModel().category,
+      unit: this.productModel().unit,
+      kcal: this.productModel().kcal,
+      protein: this.productModel().protein,
+      carbs: this.productModel().carbs,
+      fat: this.productModel().fat,
     };
 
     this.productService
