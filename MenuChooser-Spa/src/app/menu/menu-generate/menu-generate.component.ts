@@ -2,9 +2,8 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
-  signal,
+  signal
 } from '@angular/core';
 import {
   FormBuilder,
@@ -18,22 +17,10 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { MenuDefault } from '../models/menu-default';
+import { Menu } from '../models/menu.model';
 
-export enum MealType {
-  Breakfast = 'breakfast',
-  Lunch = 'lunch',
-  Snack = 'snack',
-  Dinner = 'dinner',
-}
 
-export interface MealToggle {
-  type: MealType;
-  name: string;
-  time: string;
-  icon: string;
-  iconBackground: string;
-  enabled: boolean;
-}
 
 @Component({
   selector: 'mc-menu-generate',
@@ -61,40 +48,7 @@ export class MenuGenerateComponent {
     dateTo: FormControl<string | null>;
   }>;
 
-  public mealToggles = signal<MealToggle[]>([
-    {
-      type: MealType.Breakfast,
-      name: 'Śniadanie',
-      time: '7:00 – 9:00',
-      icon: '🌅',
-      iconBackground: 'rgba(212,132,90,0.1)',
-      enabled: true,
-    },
-    {
-      type: MealType.Lunch,
-      name: 'Obiad',
-      time: '12:00 – 14:00',
-      icon: '☀️',
-      iconBackground: 'rgba(106,145,99,0.1)',
-      enabled: true,
-    },
-    {
-      type: MealType.Snack,
-      name: 'Podwieczorek',
-      time: '15:00 – 17:00',
-      icon: '🍎',
-      iconBackground: 'rgba(160,112,96,0.08)',
-      enabled: false,
-    },
-    {
-      type: MealType.Dinner,
-      name: 'Kolacja',
-      time: '18:00 – 20:00',
-      icon: '🌙',
-      iconBackground: 'rgba(92,61,46,0.08)',
-      enabled: true,
-    },
-  ]);
+  public menu = signal<Menu[]>(MenuDefault);
 
   public daysCount = signal<number>(7);
   public mealsPerDay = signal<number>(3);
@@ -103,10 +57,6 @@ export class MenuGenerateComponent {
   constructor() {
     this.initializeForm();
     this.updateSummary();
-
-    effect(() => {
-      console.log('Meal toggles:', this.mealToggles());
-    });
   }
 
   private initializeForm(): void {
@@ -134,18 +84,6 @@ export class MenuGenerateComponent {
     return date.toISOString().split('T')[0];
   }
 
-  // public toggleMeal(type: MealType): void {
-  //   const currentToggles = this.mealToggles();
-  //   console.log('Current toggles:', currentToggles);
-  //   const updatedToggles = currentToggles.map((toggle) =>
-  //     toggle.type === type ? { ...toggle, enabled: !toggle.enabled } : toggle,
-  //   );
-  //   console.log('Updated toggles:', updatedToggles);
-  //   this.mealToggles.set(updatedToggles);
-  //   console.log('Meal toggles updated:', this.mealToggles());
-  //   this.updateSummary();
-  // }
-
   private updateSummary(): void {
     const dateFrom = this.formGroup.value.dateFrom;
     const dateTo = this.formGroup.value.dateTo;
@@ -157,7 +95,7 @@ export class MenuGenerateComponent {
       this.daysCount.set(days);
     }
 
-    const enabledMeals = this.mealToggles().filter((m) => m.enabled).length;
+    const enabledMeals = this.menu().filter((m) => m.enabled).length;
     this.mealsPerDay.set(enabledMeals);
 
     this.totalRecipes.set(this.daysCount() * this.mealsPerDay());
@@ -185,12 +123,10 @@ export class MenuGenerateComponent {
 
     const dateFrom = this.formGroup.value.dateFrom;
     const dateTo = this.formGroup.value.dateTo;
-    const enabledMealTypes = this.mealToggles()
+    const enabledMealTypes = this.menu()
       .filter((m) => m.enabled)
       .map((m) => m.type);
 
-    console.log('Enabled meal types:', enabledMealTypes);
-    console.log('this.mealToggles():', this.mealToggles());
     try {
       // TODO: Implement actual API call
       // const response = await this.http.post('/api/menu/generate', {

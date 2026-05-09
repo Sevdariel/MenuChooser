@@ -74,8 +74,8 @@
             </ng-template>
             <div class="form-card-body">
               <div class="meal-list">
+                @for (meal of menu(); track meal.name) {
                 <label
-                  *ngFor="let meal of mealToggles()"
                   class="meal-row"
                   [class.on]="meal.enabled"
                 >
@@ -93,6 +93,9 @@
                   </div>
                   <p-toggleSwitch [(ngModel)]="meal.enabled"></p-toggleSwitch>
                 </label>
+                } @empty {
+                <div class="empty-state">Brak posiłków</div>
+                }
               </div>
             </div>
           </p-card>
@@ -127,8 +130,11 @@
             [disabled]="isLoading()"
             (click)="generateMenu()"
           >
-            <span *ngIf="!isLoading()" class="btn-icon">⚡</span>
-            <span *ngIf="isLoading()" class="spinner"></span>
+            @if (!isLoading()) {
+            <span class="btn-icon">⚡</span>
+            } @else {
+            <span class="spinner"></span>
+            }
             <span class="btn-label">{{
               isLoading() ? "Generowanie…" : "Generuj i pobierz PDF"
             }}</span>
