@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   signal,
 } from '@angular/core';
@@ -16,7 +17,7 @@ import {
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { ToggleButtonModule } from 'primeng/togglebutton';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 export enum MealType {
   Breakfast = 'breakfast',
@@ -42,7 +43,7 @@ export interface MealToggle {
     ReactiveFormsModule,
     ButtonModule,
     CardModule,
-    ToggleButtonModule,
+    ToggleSwitchModule,
   ],
   templateUrl: './menu-generate.component.html',
   styleUrl: './menu-generate.component.scss',
@@ -102,6 +103,10 @@ export class MenuGenerateComponent {
   constructor() {
     this.initializeForm();
     this.updateSummary();
+
+    effect(() => {
+      console.log('Meal toggles:', this.mealToggles());
+    });
   }
 
   private initializeForm(): void {
@@ -129,14 +134,17 @@ export class MenuGenerateComponent {
     return date.toISOString().split('T')[0];
   }
 
-  public toggleMeal(type: MealType): void {
-    const currentToggles = this.mealToggles();
-    const updatedToggles = currentToggles.map((toggle) =>
-      toggle.type === type ? { ...toggle, enabled: !toggle.enabled } : toggle,
-    );
-    this.mealToggles.set(updatedToggles);
-    this.updateSummary();
-  }
+  // public toggleMeal(type: MealType): void {
+  //   const currentToggles = this.mealToggles();
+  //   console.log('Current toggles:', currentToggles);
+  //   const updatedToggles = currentToggles.map((toggle) =>
+  //     toggle.type === type ? { ...toggle, enabled: !toggle.enabled } : toggle,
+  //   );
+  //   console.log('Updated toggles:', updatedToggles);
+  //   this.mealToggles.set(updatedToggles);
+  //   console.log('Meal toggles updated:', this.mealToggles());
+  //   this.updateSummary();
+  // }
 
   private updateSummary(): void {
     const dateFrom = this.formGroup.value.dateFrom;
@@ -181,6 +189,8 @@ export class MenuGenerateComponent {
       .filter((m) => m.enabled)
       .map((m) => m.type);
 
+    console.log('Enabled meal types:', enabledMealTypes);
+    console.log('this.mealToggles():', this.mealToggles());
     try {
       // TODO: Implement actual API call
       // const response = await this.http.post('/api/menu/generate', {
