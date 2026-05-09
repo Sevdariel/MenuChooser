@@ -1,6 +1,8 @@
+using Menu.Entities;
+
 namespace Menu;
 
 public interface IMenuGenerationService
 {
-    Task<byte[]> GenerateAsync(CancellationToken cancellationToken);
+    Task<byte[]> GenerateAsync(MenuGenerateRequest menuGenerateRequest, CancellationToken cancellationToken);
 }

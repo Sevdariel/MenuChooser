@@ -13,7 +13,8 @@ public class MenuGenerationService(
 {
     // private readonly IWeeklyMenuRepository _menus;
 
-    public async Task<byte[]> GenerateAsync(CancellationToken cancellationToken)
+    public async Task<byte[]> GenerateAsync(MenuGenerateRequest menuGenerateRequest,
+        CancellationToken cancellationToken)
     {
         var recipes = await recipeService.GetRecipesAsync(cancellationToken);
 
