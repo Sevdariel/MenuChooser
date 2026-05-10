@@ -1,10 +1,30 @@
 using Products.Dto;
+using Products.Service;
 
-namespace Database.Seeder.SeedData;
+namespace Products.Seeder;
 
-public static class ProductSeedData
+public class ProductSeeder(IProductService productService)
 {
-    public static List<CreateProductDto> GetProducts()
+    public async Task SeedAsync()
+    {
+        var existingProducts = await productService.GetProductsAsync();
+        if (existingProducts.Any())
+        {
+            Console.WriteLine("Products already seeded. Skipping...");
+            return;
+        }
+
+        var products = GetProducts();
+
+        foreach (var product in products)
+        {
+            await productService.CreateProductAsync(product);
+        }
+
+        Console.WriteLine($"Seeded {products.Count} products");
+    }
+
+    private static List<CreateProductDto> GetProducts()
     {
         return new List<CreateProductDto>
         {

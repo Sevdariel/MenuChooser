@@ -1,12 +1,32 @@
 using System.Security.Cryptography;
 using System.Text;
 using Users.Entities;
+using Users.Service;
 
-namespace Database.Seeder.SeedData;
+namespace Users.Seeder;
 
-public static class UserSeedData
+public class UserSeeder(IUserService userService)
 {
-    public static List<User> GetUsers()
+    public async Task SeedAsync()
+    {
+        var existingUsers = await userService.GetUsersAsync();
+        if (existingUsers.Any())
+        {
+            Console.WriteLine("Users already seeded. Skipping...");
+            return;
+        }
+
+        var users = GetUsers();
+
+        foreach (var user in users)
+        {
+            await userService.CreateUserAsync(user);
+        }
+
+        Console.WriteLine($"Seeded {users.Count} users");
+    }
+
+    private static List<User> GetUsers()
     {
         var users = new List<User>();
 

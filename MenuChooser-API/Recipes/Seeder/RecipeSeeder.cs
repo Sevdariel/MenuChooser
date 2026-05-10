@@ -1,11 +1,35 @@
+using Products.Service;
 using Recipes.Dto;
 using Recipes.Entities;
+using Recipes.Service;
 
-namespace Database.Seeder.SeedData;
+namespace Recipes.Seeder;
 
-public static class RecipeSeedData
+public class RecipeSeeder(IRecipeService recipeService, IProductService productService)
 {
-    public static List<CreateRecipeDto> GetRecipes(Dictionary<string, string> productDict)
+    public async Task SeedAsync()
+    {
+        var existingRecipes = await recipeService.GetRecipesAsync();
+        if (existingRecipes.Any())
+        {
+            Console.WriteLine("Recipes already seeded. Skipping...");
+            return;
+        }
+
+        var products = await productService.GetProductsAsync();
+        var productDict = products.ToDictionary(p => p.Name, p => p.Id!);
+
+        var recipes = GetRecipes(productDict);
+
+        foreach (var recipe in recipes)
+        {
+            await recipeService.CreateRecipeAsync(recipe);
+        }
+
+        Console.WriteLine($"Seeded {recipes.Count} recipes");
+    }
+
+    private static List<CreateRecipeDto> GetRecipes(Dictionary<string, string> productDict)
     {
         return new List<CreateRecipeDto>
         {
