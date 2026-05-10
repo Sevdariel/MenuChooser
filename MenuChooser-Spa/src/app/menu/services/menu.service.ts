@@ -1,15 +1,20 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { MenuGenerateRequest } from '../models/menu-dto.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root',
 })
 export class MenuService {
-    private readonly httpClient = inject(HttpClient);
+  private readonly httpClient = inject(HttpClient);
 
-    private readonly baseUrl = 'api/menus';
+  private readonly baseUrl = 'api/menus';
 
-    public generateMenu() {
-        return this.httpClient.post(`${this.baseUrl}/generate`, {});
-    }
+  public generateMenu(menuGenerateRequest: MenuGenerateRequest) {
+    return this.httpClient.post<Blob>(
+      `${this.baseUrl}/generate`,
+      menuGenerateRequest,
+      { responseType: 'blob' as 'json' },
+    );
+  }
 }

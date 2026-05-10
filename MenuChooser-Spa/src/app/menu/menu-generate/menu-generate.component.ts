@@ -19,6 +19,8 @@ import { CardModule } from 'primeng/card';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { MenuDefault } from '../models/menu-default';
 import { Menu } from '../models/menu.model';
+import { MenuService } from '../services/menu.service';
+import { MenuGenerateMapper } from '../mappers/menu-generate-mapper';
 
 
 
@@ -39,6 +41,7 @@ import { Menu } from '../models/menu.model';
 export class MenuGenerateComponent {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly menuService = inject(MenuService);
 
   public isLoading = signal<boolean>(false);
   public errorMessage = signal<string>('');
@@ -112,7 +115,7 @@ export class MenuGenerateComponent {
     this.router.navigate(['/recipes']);
   }
 
-  public async generateMenu(): Promise<void> {
+  public generateMenu(): void {
     if (this.formGroup.invalid) {
       this.formGroup.markAllAsTouched();
       return;
@@ -123,37 +126,24 @@ export class MenuGenerateComponent {
 
     const dateFrom = this.formGroup.value.dateFrom;
     const dateTo = this.formGroup.value.dateTo;
-    const enabledMealTypes = this.menu()
-      .filter((m) => m.enabled)
-      .map((m) => m.type);
 
-    try {
-      // TODO: Implement actual API call
-      // const response = await this.http.post('/api/menu/generate', {
-      //   dateFrom,
-      //   dateTo,
-      //   mealTypes: enabledMealTypes,
-      // }).toPromise();
+    const request = MenuGenerateMapper.toDto(this.menu(), dateFrom!, dateTo!);
 
-      // Simulation for mockup
-      await new Promise((resolve) => setTimeout(resolve, 2200));
-
-      alert(
-        `✅ PDF pobrany!\n\nZakres: ${dateFrom} → ${dateTo}\nPosiłki: ${enabledMealTypes.join(', ')}`,
-      );
-
-      // TODO: Handle PDF download
-      // const blob = response as Blob;
-      // const url = URL.createObjectURL(blob);
-      // const a = document.createElement('a');
-      // a.href = url;
-      // a.download = `menu-${dateFrom}-${dateTo}.pdf`;
-      // a.click();
-      // URL.revokeObjectURL(url);
-    } catch (error) {
-      this.errorMessage.set('Nie udało się wygenerować menu. Spróbuj ponownie.');
-    } finally {
-      this.isLoading.set(false);
-    }
+    this.menuService.generateMenu(request).subscribe({
+      next: (response: Blob) => {
+        // Handle PDF download
+        const url = URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `menu-${dateFrom}-${dateTo}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set('Nie udało się wygenerować menu. Spróbuj ponownie.');
+        this.isLoading.set(false);
+      },
+    });
   }
 }
