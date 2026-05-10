@@ -18,6 +18,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipes", "..\Recipes\Recipes.csproj", "{7E09737D-ACCD-4354-8213-41DC27D4F390}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfCreator", "..\PdfCreator\PdfCreator.csproj", "{CD8F5A76-9E7F-46A4-ADEE-4C747F6CFFBF}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Menu", "..\Menu\Menu.csproj", "{09AD46F4-9045-4972-90D3-EDCA08B2CA6A}"
 EndProject
 Global

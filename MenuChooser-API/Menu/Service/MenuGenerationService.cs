@@ -21,7 +21,7 @@ public class MenuGenerationService(
         cancellationToken.ThrowIfCancellationRequested();
 
         var weekStart = DateOnly.FromDateTime(DateTime.Today);
-        var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer);
+        var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer, menuGenerateRequest.Meals);
 
         var pdfDocument = MenuPdfMapper.ToPdfDocument(menu);
         return pdfCreatorService.Generate(pdfDocument);

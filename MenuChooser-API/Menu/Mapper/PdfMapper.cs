@@ -11,13 +11,7 @@ public static class MenuPdfMapper
         SubTitle: $"Tydzień od {menu.WeekStart:dd.MM.yyyy}",
         Sections: menu.Days.Select(day => new PdfSection(
             Header: day.Date.ToString("dddd, dd.MM.yyyy", new CultureInfo("pl-PL")),
-            Rows:
-            [
-                new PdfRow("Śniadanie", day.Breakfast.Name),
-                new PdfRow("Obiad", day.Lunch.Name),
-                new PdfRow("Kolacja", day.Dinner.Name),
-                new PdfRow("Podwiecz.", day.Supper.Name)
-            ]
+            Rows: day.Meals.Select(meal => new PdfRow(meal.Name, meal.Recipe.Name)).ToList()
         )).ToList()
     );
 }
