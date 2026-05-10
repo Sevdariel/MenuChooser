@@ -1,0 +1,56 @@
+using System.Security.Cryptography;
+using System.Text;
+using Users.Entities;
+
+namespace Database.Seeder.SeedData;
+
+public static class UserSeedData
+{
+    public static List<User> GetUsers()
+    {
+        var users = new List<User>();
+
+        // Admin user
+        users.Add(CreateUser(
+            email: "admin@menuchooser.com",
+            username: "Admin",
+            password: "Admin123!"
+        ));
+
+        // Test users
+        users.Add(CreateUser(
+            email: "user1@test.com",
+            username: "TestUser1",
+            password: "Test123!"
+        ));
+
+        users.Add(CreateUser(
+            email: "user2@test.com",
+            username: "TestUser2",
+            password: "Test123!"
+        ));
+
+        users.Add(CreateUser(
+            email: "demo@menuchooser.com",
+            username: "DemoUser",
+            password: "Demo123!"
+        ));
+
+        return users;
+    }
+
+    private static User CreateUser(string email, string username, string password)
+    {
+        using var hmac = new HMACSHA512();
+
+        return new User
+        {
+            Email = email,
+            Username = username,
+            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password)),
+            PasswordSalt = hmac.Key,
+            TermsOfUse = true,
+            PrivacyPolicy = true
+        };
+    }
+}

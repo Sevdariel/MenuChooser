@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Account.Extensions;
 using Database.Extensions;
+using Database.Seeder;
 using Email.Extensions;
 using Menu.Endpoints;
 using Menu.Extensions;
@@ -26,9 +27,19 @@ builder.Services.AddAccountServices();
 builder.Services.AddPdfCreatorServices();
 builder.Services.AddMenuServices();
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDatabaseSeeder();
+}
+
 var app = builder.Build();
 
 app.Services.AppInitializer();
+
+if (app.Environment.IsDevelopment())
+{
+    await app.Services.SeedDatabaseAsync();
+}
 
 if (!app.Environment.IsDevelopment())
 {
