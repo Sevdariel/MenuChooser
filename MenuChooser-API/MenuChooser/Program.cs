@@ -7,8 +7,11 @@ using Menu.Extensions;
 using MenuChooser.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Products.Extensions;
+using Products.Seeder;
 using Recipes.Extensions;
+using Recipes.Seeder;
 using Users.Extensions;
+using Users.Seeder;
 using PdfCreator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,9 +29,23 @@ builder.Services.AddAccountServices();
 builder.Services.AddPdfCreatorServices();
 builder.Services.AddMenuServices();
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddUserSeeder();
+    builder.Services.AddProductSeeder();
+    builder.Services.AddRecipeSeeder();
+}
+
 var app = builder.Build();
 
 app.Services.AppInitializer();
+
+if (app.Environment.IsDevelopment())
+{
+    await app.Services.SeedUsersAsync();
+    await app.Services.SeedProductsAsync();
+    await app.Services.SeedRecipesAsync();
+}
 
 if (!app.Environment.IsDevelopment())
 {
