@@ -15,10 +15,11 @@ public class WeeklyMenu
     public static WeeklyMenu Generate(
         DateOnly weekStart,
         IReadOnlyList<Recipe> availableRecipes,
-        IMealSlotRandomizer randomizer)
+        IMealSlotRandomizer randomizer,
+        IReadOnlyList<MealConfig> mealConfigs)
     {
         var days = Enumerable.Range(0, 7)
-            .Select(d => DailyMenu.Generate(weekStart.AddDays(d), availableRecipes, randomizer))
+            .Select(d => DailyMenu.Generate(weekStart.AddDays(d), availableRecipes, randomizer, mealConfigs))
             .ToList();
 
         return new WeeklyMenu

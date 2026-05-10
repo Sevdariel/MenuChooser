@@ -13,14 +13,15 @@ public class MenuGenerationService(
 {
     // private readonly IWeeklyMenuRepository _menus;
 
-    public async Task<byte[]> GenerateAsync(CancellationToken cancellationToken)
+    public async Task<byte[]> GenerateAsync(MenuGenerateRequest menuGenerateRequest,
+        CancellationToken cancellationToken)
     {
         var recipes = await recipeService.GetRecipesAsync(cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
 
         var weekStart = DateOnly.FromDateTime(DateTime.Today);
-        var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer);
+        var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer, menuGenerateRequest.Meals);
 
         var pdfDocument = MenuPdfMapper.ToPdfDocument(menu);
         return pdfCreatorService.Generate(pdfDocument);

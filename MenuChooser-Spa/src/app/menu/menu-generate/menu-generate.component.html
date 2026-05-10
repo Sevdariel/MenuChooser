@@ -2,7 +2,6 @@
   <div class="app-layout">
     <!-- MAIN -->
     <div class="main">
-
       <div class="topbar">
         <button class="topbar-back" (click)="goBack()">← Planer</button>
         <div class="topbar-title">
@@ -13,12 +12,16 @@
 
       <div class="content">
         <div class="form-wrap">
-
           <!-- DATY -->
           <p-card class="form-card">
             <ng-template pTemplate="header">
               <div class="form-card-head">
-                <div class="form-card-icon" [style.background]="'rgba(192,107,63,0.1)'">📅</div>
+                <div
+                  class="form-card-icon"
+                  [style.background]="'rgba(192,107,63,0.1)'"
+                >
+                  📅
+                </div>
                 <div>
                   <div class="form-card-title">Zakres dat</div>
                   <div class="form-card-sub">Na ile dni generujemy menu?</div>
@@ -29,15 +32,27 @@
               <div class="date-range">
                 <div class="date-field">
                   <label class="form-label" for="date-from">Od</label>
-                  <input class="form-input" type="date" id="date-from" [formControl]="formGroup.controls.dateFrom">
+                  <input
+                    class="form-input"
+                    type="date"
+                    id="date-from"
+                    [formControl]="formGroup.controls.dateFrom"
+                  />
                 </div>
                 <div class="date-range-sep">→</div>
                 <div class="date-field">
                   <label class="form-label" for="date-to">Do</label>
-                  <input class="form-input" type="date" id="date-to" [formControl]="formGroup.controls.dateTo">
+                  <input
+                    class="form-input"
+                    type="date"
+                    id="date-to"
+                    [formControl]="formGroup.controls.dateTo"
+                  />
                 </div>
               </div>
-              <div class="form-hint">Wybrano {{ daysCount() }} {{ getDaysLabel() }}</div>
+              <div class="form-hint">
+                Wybrano {{ daysCount() }} {{ getDaysLabel() }}
+              </div>
             </div>
           </p-card>
 
@@ -45,7 +60,12 @@
           <p-card class="form-card">
             <ng-template pTemplate="header">
               <div class="form-card-head">
-                <div class="form-card-icon" [style.background]="'rgba(106,145,99,0.1)'">🍽</div>
+                <div
+                  class="form-card-icon"
+                  [style.background]="'rgba(106,145,99,0.1)'"
+                >
+                  🍽
+                </div>
                 <div>
                   <div class="form-card-title">Posiłki dziennie</div>
                   <div class="form-card-sub">Które posiłki uwzględnić?</div>
@@ -54,10 +74,16 @@
             </ng-template>
             <div class="form-card-body">
               <div class="meal-list">
-                <label *ngFor="let meal of mealToggles()" class="meal-row" [class.on]="meal.enabled"
-                  (click)="toggleMeal(meal.type)">
+                @for (meal of menu(); track meal.name) {
+                <label
+                  class="meal-row"
+                  [class.on]="meal.enabled"
+                >
                   <div class="meal-info">
-                    <div class="meal-icon" [style.background]="meal.iconBackground">
+                    <div
+                      class="meal-icon"
+                      [style.background]="meal.iconBackground"
+                    >
                       {{ meal.icon }}
                     </div>
                     <div>
@@ -65,10 +91,11 @@
                       <div class="meal-time">{{ meal.time }}</div>
                     </div>
                   </div>
-                  <p-toggleButton [onLabel]="'Tak'" [offLabel]="'Nie'" [styleClass]="'meal-toggle'"
-                    [onIcon]="'pi pi-check'" [offIcon]="''" [(ngModel)]="meal.enabled"
-                    (onChange)="toggleMeal(meal.type)" (click)="$event.stopPropagation()"></p-toggleButton>
+                  <p-toggleSwitch [(ngModel)]="meal.enabled"></p-toggleSwitch>
                 </label>
+                } @empty {
+                <div class="empty-state">Brak posiłków</div>
+                }
               </div>
             </div>
           </p-card>
@@ -76,11 +103,17 @@
           <!-- SUMMARY -->
           <div class="summary-strip">
             <span>📊</span>
-            <span><strong>{{ daysCount() }}</strong> dni</span>
+            <span
+              ><strong>{{ daysCount() }}</strong> dni</span
+            >
             <div class="summary-dot"></div>
-            <span><strong>{{ mealsPerDay() }}</strong> posiłki / dzień</span>
+            <span
+              ><strong>{{ mealsPerDay() }}</strong> posiłki / dzień</span
+            >
             <div class="summary-dot"></div>
-            <span><strong>{{ totalRecipes() }}</strong> przepisów</span>
+            <span
+              ><strong>{{ totalRecipes() }}</strong> przepisów</span
+            >
           </div>
 
           <!-- ERROR -->
@@ -90,17 +123,26 @@
           </div>
 
           <!-- GENERATE -->
-          <button pButton pRipple class="btn-generate" [disabled]="isLoading()" (click)="generateMenu()">
-            <span *ngIf="!isLoading()" class="btn-icon">⚡</span>
-            <span *ngIf="isLoading()" class="spinner"></span>
-            <span class="btn-label">{{ isLoading() ? 'Generowanie…' : 'Generuj i pobierz PDF' }}</span>
+          <button
+            pButton
+            pRipple
+            class="btn-generate"
+            [disabled]="isLoading()"
+            (click)="generateMenu()"
+          >
+            @if (!isLoading()) {
+            <span class="btn-icon">⚡</span>
+            } @else {
+            <span class="spinner"></span>
+            }
+            <span class="btn-label">{{
+              isLoading() ? "Generowanie…" : "Generuj i pobierz PDF"
+            }}</span>
           </button>
 
           <div class="btn-warning">Generowanie może potrwać kilka sekund</div>
-
         </div>
       </div>
-
     </div>
   </div>
 </div>
