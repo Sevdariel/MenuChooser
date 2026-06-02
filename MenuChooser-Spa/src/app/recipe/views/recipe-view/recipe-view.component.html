@@ -111,7 +111,7 @@
       <div class="section-head">
         <div class="section-head-title">🧂 Składniki</div>
         @if (isEditMode()) {
-          <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="openRecipeProductPreview(null)">+ Dodaj składnik</button>
+          <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="addEmptyProduct()">+ Dodaj składnik</button>
         }
       </div>
       <div class="section-body">
@@ -124,18 +124,18 @@
         </div>
 
         <!-- Ingredient rows -->
-        @for (product of recipe()?.products || []; track product.product.id) {
+        @for (product of recipe()?.products || []; track product.product.id; let i = $index) {
           <div class="ing-row">
             <div class="ing-cell">
               @if (isEditMode()) {
-                <input class="field-input ing-input" type="text" [value]="product.product.name" readonly>
+                <input class="field-input ing-input" type="text" [value]="recipe()!.products[i]!.product.name" (input)="updateProductField(i, 'name', $event)">
               } @else {
                 <span class="field-static">{{ product.product.name }}</span>
               }
             </div>
             <div class="ing-cell">
               @if (isEditMode()) {
-                <input class="field-input ing-input" type="number" [value]="product.quantity" readonly>
+                <input class="field-input ing-input" type="number" [value]="recipe()!.products[i]!.quantity" (input)="updateProductField(i, 'quantity', $event)">
               } @else {
                 <span class="field-static">{{ product.quantity }}</span>
               }
@@ -143,9 +143,9 @@
             <div class="ing-cell" style="display:flex;align-items:center;justify-content:space-between;">
               <span class="field-static muted">{{ getUnitName(product.unit) }}</span>
               @if (isEditMode()) {
-                <select class="field-input ing-input" style="width:52px;">
+                <select class="field-input ing-input" style="width:52px;" [value]="recipe()!.products[i]!.unit" (change)="updateProductField(i, 'unit', $event)">
                   @for (unit of getUnitOptions(); track unit.value) {
-                    <option [value]="unit.value" [selected]="unit.value === product.unit">{{ unit.label }}</option>
+                    <option [value]="unit.value">{{ unit.label }}</option>
                   }
                 </select>
                 <button class="btn-icon-sm edit-only" style="margin-left:6px;">🗑</button>

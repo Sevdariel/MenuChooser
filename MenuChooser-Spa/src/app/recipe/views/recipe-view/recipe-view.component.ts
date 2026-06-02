@@ -294,6 +294,60 @@ export class RecipeViewComponent implements OnInit {
     this.drawerService.toggleDrawerPannel(DrawerContent.RecipeProduct);
   }
 
+  public addEmptyProduct(): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const emptyProduct: IRecipeProduct = {
+      product: {
+        id: `temp-${Date.now()}`,
+        name: '',
+        producent: '',
+        sub: '',
+        emoji: '',
+        category: 'other' as any,
+        unit: 'g',
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        createdBy: '',
+        updatedBy: '',
+      },
+      quantity: 0,
+      unit: Unit.GRAM,
+    };
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      products: [...currentRecipe.products, emptyProduct],
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    
+    // Update form control directly
+    this.formGroup.controls.products?.setValue(updatedRecipe.products);
+  }
+
+  public updateProductField(index: number, field: string, event: Event): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const products = [...currentRecipe.products];
+    
+    if (field === 'name') {
+      products[index].product.name = (event.target as HTMLInputElement).value;
+    } else if (field === 'quantity') {
+      products[index].quantity = Number((event.target as HTMLInputElement).value);
+    } else if (field === 'unit') {
+      products[index].unit = (event.target as HTMLSelectElement).value as Unit;
+    }
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      products,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.products?.setValue(products);
+  }
+
   public openStepPreview(step: IStep | null) {
     if (!step) {
       // Nowy krok - znajdź najwyższy numer istniejących kroków
