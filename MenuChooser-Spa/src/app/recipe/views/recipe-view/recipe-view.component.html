@@ -184,6 +184,23 @@
                     <input class="meta-input" type="number" [value]="step.duration" (input)="updateStepField(step.order, 'duration', $event)" placeholder="min" style="width:70px;">
                     <span style="font-size:12px;color:var(--text-muted);">min</span>
                   </div>
+                  @for (product of step.products || []; track product.product.id) {
+                    <span class="step-prod-tag">{{ product.product.name }} <span class="step-prod-remove" (click)="removeProductFromStep(step.order, product.product.id)">×</span></span>
+                  }
+                  <p-autoComplete
+                    [suggestions]="availableProductsForStep()"
+                    (completeMethod)="stepProductSearch.set($event.query)"
+                    [ngModelOptions]="{standalone: true}"
+                    [(ngModel)]="selectedStepProduct"
+                    placeholder="Dodaj produkt..."
+                    [minLength]="0"
+                    (onSelect)="addProductToStep(step.order)"
+                    styleClass="step-product-autocomplete"
+                  >
+                    <ng-template let-product pTemplate="item">
+                      {{ product.product.name }}
+                    </ng-template>
+                  </p-autoComplete>
                   <div class="step-actions">
                     <button class="btn btn-ghost btn-sm" (click)="toggleStepExpansion(step.order)">Zamknij</button>
                     <button class="btn btn-danger-ghost btn-sm" (click)="deleteStep(step.order)">🗑 Usuń</button>
@@ -199,9 +216,6 @@
                   @for (product of step.products || []; track product.product.id) {
                     <span class="step-prod-tag">{{ product.product.name }}</span>
                   }
-                  <div class="step-actions edit-only">
-                    <button class="btn-icon-sm" (click)="toggleStepExpansion(step.order)">✏️</button>
-                  </div>
                 </div>
               } @else {
                 <!-- Preview mode -->

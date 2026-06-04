@@ -437,6 +437,31 @@
   cursor: default;
 }
 
+.step-prod-remove {
+  cursor: pointer;
+  opacity: .5;
+  margin-left: 2px;
+  font-size: 13px;
+  line-height: 1;
+  transition: opacity .15s;
+  padding: 0 2px;
+}
+
+.step-prod-remove:hover {
+  opacity: 1;
+}
+
+:global(.step-product-autocomplete) {
+  font-size: 12px;
+  padding: 4px 8px;
+  min-width: 150px;
+}
+
+:global(.step-product-autocomplete input) {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
 .step-actions {
   display: flex;
   gap: 6px;

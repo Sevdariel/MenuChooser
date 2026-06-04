@@ -7,6 +7,7 @@ import {
   HostBinding,
   OnInit,
   Output,
+  computed,
   effect,
   inject,
   linkedSignal,
@@ -131,6 +132,18 @@ export class RecipeViewComponent implements OnInit {
   public expandedStepOrder = signal<number | null>(null);
   public newStepContent = signal<string>('');
   public newStepDuration = signal<number>(0);
+  public stepProductSearch = signal<string>('');
+  public selectedStepProduct = signal<IRecipeProduct | null>(null);
+
+  public availableProductsForStep = computed(() => {
+    const currentRecipe = this.recipe();
+    if (!currentRecipe) return [];
+
+    const search = this.stepProductSearch().toLowerCase();
+    return currentRecipe.products.filter(p =>
+      p.product.name.toLowerCase().includes(search)
+    );
+  });
 
   public togglePanel = signal<boolean>(false);
   public toggleProductPanel = signal<boolean>(false);
@@ -168,15 +181,11 @@ export class RecipeViewComponent implements OnInit {
     effect(() => {
       const currentRecipe = this.recipe();
       if (currentRecipe) {
-        if (!this.formGroup) {
-          this.initializeForm();
-        } else {
-          this.formGroup.patchValue({
-            products: currentRecipe.products,
-            steps: currentRecipe.steps,
-          });
-        }
-        
+        this.formGroup.patchValue({
+          products: currentRecipe.products,
+          steps: currentRecipe.steps,
+        });
+
         // Initialize mode when recipe is loaded
         const hasId = !!currentRecipe.id;
         this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
@@ -185,6 +194,7 @@ export class RecipeViewComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.initializeForm();
     this.loadRecipeFromResolver();
   }
 
@@ -196,7 +206,7 @@ export class RecipeViewComponent implements OnInit {
   }
 
   private initializeForm(): void {
-    const currentRecipe = this.recipe()!;
+    const currentRecipe = this.recipe() || defaultRecipe;
     this.formGroup = this.formBuilder.group<RecipeFormType>({
       name: new FormControl(currentRecipe.name),
       duration: new FormControl(currentRecipe.duration),
@@ -422,6 +432,52 @@ export class RecipeViewComponent implements OnInit {
     this.newStepContent.set('');
     this.newStepDuration.set(0);
     this.expandedStepOrder.set(null);
+  }
+
+  public addProductToStep(stepOrder: number): void {
+    const selectedProduct = this.selectedStepProduct();
+    if (!selectedProduct) return;
+
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const steps = [...currentRecipe.steps];
+    const stepIndex = steps.findIndex(s => s.order === stepOrder);
+
+    if (stepIndex === -1) return;
+
+    // Check if product already exists in step
+    if (steps[stepIndex].products.some(p => p.product.id === selectedProduct.product.id)) {
+      return;
+    }
+
+    steps[stepIndex].products = [...steps[stepIndex].products, selectedProduct];
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      steps,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.steps?.setValue(steps);
+    this.selectedStepProduct.set(null);
+    this.stepProductSearch.set('');
+  }
+
+  public removeProductFromStep(stepOrder: number, productId: string): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const steps = [...currentRecipe.steps];
+    const stepIndex = steps.findIndex(s => s.order === stepOrder);
+
+    if (stepIndex === -1) return;
+
+    steps[stepIndex].products = steps[stepIndex].products.filter(p => p.product.id !== productId);
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      steps,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.steps?.setValue(steps);
   }
 
   public openStepPreview(step: IStep | null) {
