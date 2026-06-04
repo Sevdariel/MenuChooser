@@ -33,7 +33,7 @@
 </div>
 
 <!-- CONTENT -->
-<div class="content">
+<form [formGroup]="formGroup" class="content">
 
   <!-- META ROW -->
   <div class="meta-row">
@@ -209,7 +209,7 @@
 
   </div><!-- /two-col -->
 
-</div><!-- /content -->
+</form><!-- /content -->
 
 <!-- Drawer for Product/Step Editing -->
 @if (isEditMode()) {
