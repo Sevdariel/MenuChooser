@@ -19,7 +19,7 @@ COPY . .
 RUN dotnet publish "MenuChooser/MenuChooser.csproj" -c Release -o /app
 
 # # Obraz końcowy
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app ./
 
