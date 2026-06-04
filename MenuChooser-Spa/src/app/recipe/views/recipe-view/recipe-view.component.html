@@ -165,7 +165,7 @@
         <div style="display:flex;gap:6px;align-items:center;">
           <span class="tag tag-terracotta">{{ formGroup.controls.duration.value ?? 0 }} min łącznie</span>
           @if (isEditMode()) {
-            <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="openStepPreview(null)">+ Dodaj krok</button>
+            <button class="btn btn-ghost btn-sm" style="font-size:12px;" (click)="toggleStepExpansion(-1)">+ Dodaj krok</button>
           }
         </div>
       </div>
@@ -173,33 +173,67 @@
       <div class="section-body">
 
         @for (step of recipe()?.steps || []; track step.order) {
-          <div class="step-row">
-            <div class="step-num">{{ step.order }}</div>
+          <div class="step-row" [class.expanded]="expandedStepOrder() === step.order">
+            <div class="step-num" (click)="toggleStepExpansion(step.order)">{{ step.order }}</div>
             <div class="step-body">
-              @if (isEditMode()) {
+              @if (expandedStepOrder() === step.order && isEditMode()) {
+                <!-- Expanded edit mode -->
+                <textarea class="field-input step-desc-input" rows="3" [value]="step.content" (input)="updateStepField(step.order, 'content', $event)"></textarea>
+                <div class="step-meta">
+                  <div class="field-input" style="display:flex;align-items:center;gap:6px;">
+                    <input class="meta-input" type="number" [value]="step.duration" (input)="updateStepField(step.order, 'duration', $event)" placeholder="min" style="width:70px;">
+                    <span style="font-size:12px;color:var(--text-muted);">min</span>
+                  </div>
+                  <div class="step-actions">
+                    <button class="btn btn-ghost btn-sm" (click)="toggleStepExpansion(step.order)">Zamknij</button>
+                    <button class="btn btn-danger-ghost btn-sm" (click)="deleteStep(step.order)">🗑 Usuń</button>
+                  </div>
+                </div>
+              } @else if (isEditMode()) {
+                <!-- Collapsed edit mode -->
                 <textarea class="field-input step-desc-input" rows="2" [value]="step.content" readonly></textarea>
-              } @else {
-                <div class="field-static step-desc">{{ step.content }}</div>
-              }
-              <div class="step-meta">
-                @if (step.duration > 0) {
-                  @if (isEditMode()) {
+                <div class="step-meta">
+                  @if (step.duration > 0) {
                     <input class="field-input step-time-input" type="number" [value]="step.duration" placeholder="min" readonly>
-                  } @else {
+                  }
+                  @for (product of step.products || []; track product.product.id) {
+                    <span class="step-prod-tag">{{ product.product.name }}</span>
+                  }
+                  <div class="step-actions edit-only">
+                    <button class="btn-icon-sm" (click)="toggleStepExpansion(step.order)">✏️</button>
+                  </div>
+                </div>
+              } @else {
+                <!-- Preview mode -->
+                <div class="field-static step-desc">{{ step.content }}</div>
+                <div class="step-meta">
+                  @if (step.duration > 0) {
                     <span class="step-time-badge field-static">⏱ {{ step.duration }} min</span>
                   }
-                }
-                @for (product of step.products || []; track product.product.id) {
-                  <span class="step-prod-tag">{{ product.product.name }}</span>
-                }
-                @if (isEditMode()) {
-                  <div class="prod-dropdown edit-only-inline">
-                    <button class="step-prod-add">+ produkt</button>
-                  </div>
-                  <div class="step-actions edit-only">
-                    <button class="btn-icon-sm" (click)="openStepPreview(step)">✏️</button>
-                  </div>
-                }
+                  @for (product of step.products || []; track product.product.id) {
+                    <span class="step-prod-tag">{{ product.product.name }}</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- New step row (expanded) -->
+        @if (expandedStepOrder() === -1 && isEditMode()) {
+          <div class="step-row expanded new-step">
+            <div class="step-num">{{ (recipe()?.steps?.length || 0) + 1 }}</div>
+            <div class="step-body">
+              <textarea class="field-input step-desc-input" rows="3" placeholder="Opis kroku..." [(ngModel)]="newStepContent" [ngModelOptions]="{standalone: true}"></textarea>
+              <div class="step-meta">
+                <div class="field-input" style="display:flex;align-items:center;gap:6px;">
+                  <input class="meta-input" type="number" [(ngModel)]="newStepDuration" placeholder="min" style="width:70px;" [ngModelOptions]="{standalone: true}">
+                  <span style="font-size:12px;color:var(--text-muted);">min</span>
+                </div>
+                <div class="step-actions">
+                  <button class="btn btn-primary btn-sm" (click)="addNewStep()">Zapisz</button>
+                  <button class="btn btn-ghost btn-sm" (click)="toggleStepExpansion(-1)">Anuluj</button>
+                </div>
               </div>
             </div>
           </div>

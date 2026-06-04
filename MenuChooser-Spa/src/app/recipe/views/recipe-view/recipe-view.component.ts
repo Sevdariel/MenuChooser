@@ -128,6 +128,9 @@ export class RecipeViewComponent implements OnInit {
 
   public selectedProduct = signal<IRecipeProduct | null>(null);
   public selectedStep = signal<IStep | null>(null);
+  public expandedStepOrder = signal<number | null>(null);
+  public newStepContent = signal<string>('');
+  public newStepDuration = signal<number>(0);
 
   public togglePanel = signal<boolean>(false);
   public toggleProductPanel = signal<boolean>(false);
@@ -347,14 +350,88 @@ export class RecipeViewComponent implements OnInit {
     this.formGroup.controls.products?.setValue(products);
   }
 
+  public toggleStepExpansion(order: number): void {
+    if (this.expandedStepOrder() === order) {
+      this.expandedStepOrder.set(null);
+    } else {
+      this.expandedStepOrder.set(order);
+      if (order === -1) {
+        // Reset new step form when opening
+        this.newStepContent.set('');
+        this.newStepDuration.set(0);
+      }
+    }
+  }
+
+  public updateStepField(order: number, field: string, event: Event): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const steps = [...currentRecipe.steps];
+
+    const stepIndex = steps.findIndex(s => s.order === order);
+    if (stepIndex === -1) return;
+
+    if (field === 'content') {
+      steps[stepIndex].content = (event.target as HTMLTextAreaElement).value;
+    } else if (field === 'duration') {
+      steps[stepIndex].duration = Number((event.target as HTMLInputElement).value);
+    }
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      steps,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.steps?.setValue(steps);
+  }
+
+  public deleteStep(order: number): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const steps = currentRecipe.steps.filter(s => s.order !== order);
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      steps,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.steps?.setValue(steps);
+    this.expandedStepOrder.set(null);
+  }
+
+  public addNewStep(): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const maxOrder = currentRecipe.steps.length > 0
+      ? Math.max(...currentRecipe.steps.map(s => s.order || 0))
+      : 0;
+
+    const newStep: IStep = {
+      order: maxOrder + 1,
+      content: this.newStepContent(),
+      duration: this.newStepDuration(),
+      products: [],
+    };
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      steps: [...currentRecipe.steps, newStep],
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.steps?.setValue(updatedRecipe.steps);
+    this.newStepContent.set('');
+    this.newStepDuration.set(0);
+    this.expandedStepOrder.set(null);
+  }
+
   public openStepPreview(step: IStep | null) {
     if (!step) {
       // Nowy krok - znajdź najwyższy numer istniejących kroków
       const currentSteps = this.recipe()?.steps || [];
-      const maxOrder = currentSteps.length > 0 
+      const maxOrder = currentSteps.length > 0
         ? Math.max(...currentSteps.map(s => s.order || 0))
         : 0;
-      
+
       // Ustaw nowy krok z numerem maxOrder + 1 i unikalnym ID
       this.selectedStep.set({
         order: maxOrder + 1,
@@ -366,7 +443,7 @@ export class RecipeViewComponent implements OnInit {
       // Edycja istniejącego kroku - zachowaj numer i ID
       this.selectedStep.set(step);
     }
-    
+
     this.drawerService.toggleDrawerPannel(DrawerContent.Step);
   }
 

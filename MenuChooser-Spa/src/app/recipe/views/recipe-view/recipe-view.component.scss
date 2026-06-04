@@ -364,6 +364,32 @@
   color: var(--text-muted);
   border-right: 1px solid var(--border-light);
   background: white;
+  cursor: default;
+  transition: all .15s;
+}
+
+:host.edit-mode .step-num {
+  cursor: pointer;
+}
+
+:host.edit-mode .step-num:hover {
+  color: var(--sage-600);
+  background: var(--cream-100);
+}
+
+.step-row.expanded {
+  background: rgba(106,145,99,0.03);
+}
+
+.step-row.expanded .step-num {
+  color: var(--sage-600);
+  background: rgba(106,145,99,0.08);
+  font-weight: 600;
+}
+
+.step-row.new-step {
+  background: rgba(106,145,99,0.06);
+  border-top: 2px solid var(--sage-400);
 }
 
 .step-body {
