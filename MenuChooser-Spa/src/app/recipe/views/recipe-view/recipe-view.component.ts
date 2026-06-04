@@ -165,18 +165,24 @@ export class RecipeViewComponent implements OnInit {
     effect(() => {
       const currentRecipe = this.recipe();
       if (currentRecipe) {
-        this.formGroup?.patchValue({
-          products: currentRecipe.products,
-          steps: currentRecipe.steps,
-        });
+        if (!this.formGroup) {
+          this.initializeForm();
+        } else {
+          this.formGroup.patchValue({
+            products: currentRecipe.products,
+            steps: currentRecipe.steps,
+          });
+        }
+        
+        // Initialize mode when recipe is loaded
+        const hasId = !!currentRecipe.id;
+        this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
       }
     });
   }
 
   public ngOnInit(): void {
     this.loadRecipeFromResolver();
-    this.initializeForm();
-    this.initializeMode();
   }
 
   private loadRecipeFromResolver(): void {
@@ -186,15 +192,8 @@ export class RecipeViewComponent implements OnInit {
     }
   }
 
-  private initializeMode(): void {
-    // New recipes (no ID) start in edit mode
-    // Existing recipes start in preview mode
-    const hasId = !!this.recipe()?.id;
-    this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
-  }
-
   private initializeForm(): void {
-    const currentRecipe = this.recipe() || defaultRecipe;
+    const currentRecipe = this.recipe()!;
     this.formGroup = this.formBuilder.group<RecipeFormType>({
       name: new FormControl(currentRecipe.name),
       duration: new FormControl(currentRecipe.duration),

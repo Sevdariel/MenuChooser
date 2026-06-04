@@ -1,39 +1,40 @@
-<!-- TOP BAR -->
-<div class="topbar">
-  <button class="topbar-back" (click)="cancelEdit()">← Przepisy</button>
+<form [formGroup]="formGroup">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <button class="topbar-back" (click)="cancelEdit()">← Przepisy</button>
 
-  <div class="topbar-title">
-    @if (isEditMode()) {
-      <!-- Edit mode: title input -->
-      @if (!recipe()?.id) {
-        <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name" placeholder="Nowy przepis">
+    <div class="topbar-title">
+      @if (isEditMode()) {
+        <!-- Edit mode: title input -->
+        @if (!recipe()?.id) {
+          <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name" placeholder="Nowy przepis">
+        } @else {
+          <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name">
+        }
+        <small>Tryb edycji</small>
       } @else {
-        <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" formControlName="name">
+        <!-- Preview mode: static title -->
+        <span class="field-static">{{ recipe()?.name }}</span>
+        <small>Tryb podglądu</small>
       }
-      <small>Tryb edycji</small>
-    } @else {
-      <!-- Preview mode: static title -->
-      <span class="field-static">{{ recipe()?.name }}</span>
-      <small>Tryb podglądu</small>
-    }
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex-gap">
+      @if (isEditMode()) {
+        <!-- Edit actions -->
+        <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Anuluj</button>
+        <button class="btn btn-primary btn-sm" (click)="saveRecipe()">Zapisz</button>
+      } @else {
+        <!-- Preview actions -->
+        <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">✏️ Edytuj</button>
+        <button class="btn btn-danger-ghost btn-sm" (click)="deleteRecipe()">🗑 Usuń</button>
+      }
+    </div>
   </div>
 
-  <!-- Action buttons -->
-  <div class="flex-gap">
-    @if (isEditMode()) {
-      <!-- Edit actions -->
-      <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Anuluj</button>
-      <button class="btn btn-primary btn-sm" (click)="saveRecipe()">Zapisz</button>
-    } @else {
-      <!-- Preview actions -->
-      <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">✏️ Edytuj</button>
-      <button class="btn btn-danger-ghost btn-sm" (click)="deleteRecipe()">🗑 Usuń</button>
-    }
-  </div>
-</div>
-
-<!-- CONTENT -->
-<form [formGroup]="formGroup" class="content">
+  <!-- CONTENT -->
+  <div class="content">
 
   <!-- META ROW -->
   <div class="meta-row">
@@ -209,7 +210,8 @@
 
   </div><!-- /two-col -->
 
-</form><!-- /content -->
+</div><!-- /content -->
+</form><!-- /form -->
 
 <!-- Drawer for Product/Step Editing -->
 @if (isEditMode()) {
