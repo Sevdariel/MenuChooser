@@ -173,11 +173,11 @@
       <div class="section-body">
 
         @for (step of recipe()?.steps || []; track step.order) {
-          <div class="step-row" [class.expanded]="expandedStepOrder() === step.order">
-            <div class="step-num" (click)="toggleStepExpansion(step.order)">{{ step.order }}</div>
+          <div class="step-row">
+            <div class="step-num">{{ step.order }}</div>
             <div class="step-body">
-              @if (expandedStepOrder() === step.order && isEditMode()) {
-                <!-- Expanded edit mode -->
+              @if (isEditMode()) {
+                <!-- Edit mode -->
                 <textarea class="field-input step-desc-input" rows="3" [value]="step.content" (input)="updateStepField(step.order, 'content', $event)"></textarea>
                 <div class="step-meta">
                   <div class="field-input" style="display:flex;align-items:center;gap:6px;">
@@ -193,29 +193,19 @@
                     [ngModelOptions]="{standalone: true}"
                     [(ngModel)]="selectedStepProduct"
                     placeholder="Dodaj produkt..."
+                    optionLabel="product.name"
+                    [dropdown]="true"
                     [minLength]="0"
                     (onSelect)="addProductToStep(step.order)"
-                    styleClass="step-product-autocomplete"
+                    class="step-product-autocomplete"
                   >
                     <ng-template let-product pTemplate="item">
-                      {{ product.product.name }}
+                      <div>{{ product.product.name }}</div>
                     </ng-template>
                   </p-autoComplete>
                   <div class="step-actions">
-                    <button class="btn btn-ghost btn-sm" (click)="toggleStepExpansion(step.order)">Zamknij</button>
                     <button class="btn btn-danger-ghost btn-sm" (click)="deleteStep(step.order)">🗑 Usuń</button>
                   </div>
-                </div>
-              } @else if (isEditMode()) {
-                <!-- Collapsed edit mode -->
-                <textarea class="field-input step-desc-input" rows="2" [value]="step.content" readonly></textarea>
-                <div class="step-meta">
-                  @if (step.duration > 0) {
-                    <input class="field-input step-time-input" type="number" [value]="step.duration" placeholder="min" readonly>
-                  }
-                  @for (product of step.products || []; track product.product.id) {
-                    <span class="step-prod-tag">{{ product.product.name }}</span>
-                  }
                 </div>
               } @else {
                 <!-- Preview mode -->

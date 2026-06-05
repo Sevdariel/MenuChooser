@@ -137,7 +137,7 @@ export class RecipeViewComponent implements OnInit {
 
   public availableProductsForStep = computed(() => {
     const currentRecipe = this.recipe();
-    if (!currentRecipe) return [];
+    if (!currentRecipe || !currentRecipe.products) return [];
 
     const search = this.stepProductSearch().toLowerCase();
     return currentRecipe.products.filter(p =>
@@ -181,20 +181,22 @@ export class RecipeViewComponent implements OnInit {
     effect(() => {
       const currentRecipe = this.recipe();
       if (currentRecipe) {
-        this.formGroup.patchValue({
-          products: currentRecipe.products,
-          steps: currentRecipe.steps,
-        });
-
-        // Initialize mode when recipe is loaded
-        const hasId = !!currentRecipe.id;
-        this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
+        if (!this.formGroup) {
+          this.initializeForm();
+          // Initialize mode only on first load
+          const hasId = !!currentRecipe.id;
+          this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
+        } else {
+          this.formGroup.patchValue({
+            products: currentRecipe.products,
+            steps: currentRecipe.steps,
+          });
+        }
       }
     });
   }
 
   public ngOnInit(): void {
-    this.initializeForm();
     this.loadRecipeFromResolver();
   }
 

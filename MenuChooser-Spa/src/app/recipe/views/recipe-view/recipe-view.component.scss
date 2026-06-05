@@ -451,15 +451,15 @@
   opacity: 1;
 }
 
-:global(.step-product-autocomplete) {
-  font-size: 12px;
-  padding: 4px 8px;
-  min-width: 150px;
-}
+:host ::ng-deep .step-product-autocomplete {
+  display: inline-flex;
+  min-width: 160px;
 
-:global(.step-product-autocomplete input) {
-  font-size: 12px;
-  padding: 4px 8px;
+  input {
+    font-size: 12px;
+    padding: 4px 8px;
+    width: 160px;
+  }
 }
 
 .step-actions {
