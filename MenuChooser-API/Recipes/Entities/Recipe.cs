@@ -21,6 +21,9 @@ namespace Recipes.Entities
         [BsonElement("mealType")]
         public MealType? MealType { get; set; }
 
+        [BsonElement("tags")]
+        public List<RecipeTag>? Tags { get; set; }
+
         [BsonElement("steps")]
         public List<Step> Steps { get; set; } = null!;
 

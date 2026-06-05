@@ -11,5 +11,7 @@ namespace Recipes.Dto
         public int Duration { get; set; }
 
         public MealType MealType { get; set; }
+
+        public List<RecipeTag>? Tags { get; set; }
     }
 }

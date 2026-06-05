@@ -86,21 +86,24 @@
   </div>
 
   <!-- TAG ROW -->
-  <div class="flex-gap" style="margin-bottom:24px;">
-    @for (tag of formGroup.controls.tags?.value || []; track tag; let i = $index) {
-      @if (isEditMode()) {
-        <span class="tag tag-sage" [class]="'tag ' + (tag.includes('Wegetariańskie') ? 'tag-sage' : tag.includes('Gluten') ? 'tag-white' : 'tag-brown')">
-          {{ tag }}
-          <span class="tag-remove" (click)="removeTag(i)">×</span>
-        </span>
-      } @else {
-        <span class="tag tag-sage" [class]="'tag ' + (tag.includes('Wegetariańskie') ? 'tag-sage' : tag.includes('Gluten') ? 'tag-white' : 'tag-brown')">
-          {{ tag }}
-        </span>
-      }
-    }
+  <div class="flex-gap" style="margin-bottom:24px;align-items:center;">
     @if (isEditMode()) {
-      <button class="btn-icon-sm edit-only" style="font-size:12px;" (click)="addTag()">+ tag</button>
+      <p-multiSelect
+        [options]="getTagOptions()"
+        formControlName="tags"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Wybierz tagi..."
+        display="chip"
+        [showClear]="true"
+        styleClass="tag-multiselect"
+      ></p-multiSelect>
+    } @else {
+      @for (tag of formGroup.controls.tags?.value || []; track tag) {
+        <span class="tag tag-sage">{{ getTagName(tag) }}</span>
+      } @empty {
+        <span class="field-static" style="color:var(--text-muted);font-size:13px;">Brak tagów</span>
+      }
     }
   </div>
 

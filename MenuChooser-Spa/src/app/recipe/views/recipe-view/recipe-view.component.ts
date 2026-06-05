@@ -57,6 +57,7 @@ import {
   IStep,
   MealType,
   RecipeFormType,
+  RecipeTag,
   Unit,
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
@@ -190,6 +191,7 @@ export class RecipeViewComponent implements OnInit {
           this.formGroup.patchValue({
             products: currentRecipe.products,
             steps: currentRecipe.steps,
+            tags: currentRecipe.tags || [],
           });
         }
       }
@@ -217,7 +219,7 @@ export class RecipeViewComponent implements OnInit {
       mealType: new FormControl<MealType | null>(currentRecipe.mealType || MealType.Dinner),
       servings: new FormControl<number | null>(currentRecipe.servings || 4),
       caloriesPerServing: new FormControl<number | null>(currentRecipe.caloriesPerServing || 520),
-      tags: new FormControl<string[] | null>(currentRecipe.tags || ['🌿 Wegetariańskie', 'Gluten-free', 'Włoska']),
+      tags: new FormControl<RecipeTag[] | null>(currentRecipe.tags || []),
     });
   }
 
@@ -290,17 +292,25 @@ export class RecipeViewComponent implements OnInit {
     ];
   }
 
-  public addTag() {
-    const currentTags = this.formGroup.controls.tags?.value || [];
-    const newTag = prompt('Wprowadź nowy tag:');
-    if (newTag && newTag.trim()) {
-      this.formGroup.controls.tags?.setValue([...currentTags, newTag.trim()]);
-    }
+  public getTagOptions(): { label: string; value: RecipeTag }[] {
+    return [
+      { label: '🌿 Wegetariańskie', value: RecipeTag.Vegetarian },
+      { label: '🌱 Wegańskie', value: RecipeTag.Vegan },
+      { label: '🌾 Bezglutenowe', value: RecipeTag.GlutenFree },
+      { label: '🇮🇹 Włoskie', value: RecipeTag.Italian },
+      { label: '🌶 Pikantne', value: RecipeTag.Spicy },
+      { label: '⚡ Szybkie', value: RecipeTag.Quick },
+      { label: '💪 Zdrowe', value: RecipeTag.Healthy },
+    ];
   }
 
-  public removeTag(index: number) {
+  public getTagName(tag: RecipeTag): string {
+    return this.getTagOptions().find((option) => option.value === tag)?.label ?? '';
+  }
+
+  public removeTag(tag: RecipeTag) {
     const currentTags = this.formGroup.controls.tags?.value || [];
-    this.formGroup.controls.tags?.setValue(currentTags.filter((_, i) => i !== index));
+    this.formGroup.controls.tags?.setValue(currentTags.filter((t) => t !== tag));
   }
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {

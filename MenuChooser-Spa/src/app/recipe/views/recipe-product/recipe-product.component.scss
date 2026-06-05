@@ -1,3 +1,5 @@
+@import '../../../shared/styles/autocomplete.scss';
+
 /* Container styles */
 :host {
   display: block;
@@ -36,14 +38,10 @@
 
 /* PrimeNG overrides */
 :host ::ng-deep {
-  .p-autocomplete {
-    width: 100%;
-  }
-  
   .p-inputnumber {
     width: 100%;
   }
-  
+
   .p-button {
     display: inline-flex;
     align-items: center;

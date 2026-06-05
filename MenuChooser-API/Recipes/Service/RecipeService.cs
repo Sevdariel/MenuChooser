@@ -57,5 +57,13 @@ namespace Recipes.Service
 
             return result.ModifiedCount > 0;
         }
+
+        public async Task<int> MigrateTagsAsync()
+        {
+            var filter = Builders<Recipe>.Filter.Exists("tags", false);
+            var update = Builders<Recipe>.Update.Set("tags", new List<RecipeTag>());
+            var result = await _recipeCollection.UpdateManyAsync(filter, update);
+            return (int)result.ModifiedCount;
+        }
     }
 }

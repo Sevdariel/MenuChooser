@@ -10,6 +10,7 @@ namespace Recipes.Dto
         public List<RecipeProduct> RecipeProducts { get; set; } = null!;
         public List<Step> Steps { get; set; } = null!;
         public MealType? MealType { get; set; }
+        public List<RecipeTag>? Tags { get; set; }
         public string UpdatedBy { get; set; } = null!;
     }
 }
