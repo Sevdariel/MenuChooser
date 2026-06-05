@@ -192,6 +192,8 @@ export class RecipeViewComponent implements OnInit {
             products: currentRecipe.products,
             steps: currentRecipe.steps,
             tags: currentRecipe.tags || [],
+            servings: currentRecipe.servings,
+            caloriesPerServing: currentRecipe.caloriesPerServing,
           });
         }
       }

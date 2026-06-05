@@ -60,8 +60,13 @@ namespace Recipes.Service
 
         public async Task<int> MigrateTagsAsync()
         {
-            var filter = Builders<Recipe>.Filter.Exists("tags", false);
-            var update = Builders<Recipe>.Update.Set("tags", new List<RecipeTag>());
+            var filter = Builders<Recipe>.Filter.Or(
+                Builders<Recipe>.Filter.Exists("servings", false),
+                Builders<Recipe>.Filter.Exists("caloriesPerServing", false)
+            );
+            var update = Builders<Recipe>.Update
+                .Set("servings", 4)
+                .Set("caloriesPerServing", 520);
             var result = await _recipeCollection.UpdateManyAsync(filter, update);
             return (int)result.ModifiedCount;
         }

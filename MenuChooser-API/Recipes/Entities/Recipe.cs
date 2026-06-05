@@ -21,6 +21,12 @@ namespace Recipes.Entities
         [BsonElement("mealType")]
         public MealType? MealType { get; set; }
 
+        [BsonElement("servings")]
+        public int? Servings { get; set; }
+
+        [BsonElement("caloriesPerServing")]
+        public int? CaloriesPerServing { get; set; }
+
         [BsonElement("tags")]
         public List<RecipeTag>? Tags { get; set; }
 

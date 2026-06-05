@@ -69,7 +69,7 @@
           <span style="font-size:12px;color:var(--text-muted);">os.</span>
         </div>
       } @else {
-        <div class="field-static meta-value">{{ recipe()?.servings }} <small>os.</small></div>
+        <div class="field-static meta-value">{{ recipe()?.servings ?? '-' }} <small>os.</small></div>
       }
     </div>
     <div class="meta-cell">
@@ -80,7 +80,7 @@
           <span style="font-size:12px;color:var(--text-muted);">kcal</span>
         </div>
       } @else {
-        <div class="field-static meta-value">{{ recipe()?.caloriesPerServing }} <small>kcal</small></div>
+        <div class="field-static meta-value">{{ recipe()?.caloriesPerServing ?? '-' }} <small>kcal</small></div>
       }
     </div>
   </div>

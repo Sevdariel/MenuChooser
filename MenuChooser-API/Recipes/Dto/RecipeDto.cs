@@ -9,6 +9,8 @@ namespace Recipes.Dto
         public int Duration { get; set; }
         public List<RecipeProductDto> Products { get; set; } = null!;
         public MealType? MealType { get; set; }
+        public int? Servings { get; set; }
+        public int? CaloriesPerServing { get; set; }
         public List<RecipeTag>? Tags { get; set; }
         public List<Step> Steps { get; set; } = null!;
         public string CreatedBy { get; set; } = null!;
