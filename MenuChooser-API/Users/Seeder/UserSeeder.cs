@@ -51,9 +51,9 @@ public class UserSeeder(IUserService userService)
         ));
 
         users.Add(CreateUser(
-            email: "demo@menuchooser.com",
-            username: "DemoUser",
-            password: "Demo123!"
+            email: "zali2008@wp.pl",
+            username: "Sevdariel",
+            password: "nixdorf"
         ));
 
         return users;
