@@ -135,6 +135,7 @@ export class RecipeViewComponent implements OnInit {
   public newStepDuration = signal<number>(0);
   public stepProductSearch = signal<string>('');
   public selectedStepProduct = signal<IRecipeProduct | null>(null);
+  public newStepProducts = signal<IRecipeProduct[]>([]);
 
   public availableProductsForStep = computed(() => {
     const currentRecipe = this.recipe();
@@ -441,7 +442,7 @@ export class RecipeViewComponent implements OnInit {
       order: maxOrder + 1,
       content: this.newStepContent(),
       duration: this.newStepDuration(),
-      products: [],
+      products: this.newStepProducts(),
     };
 
     const updatedRecipe = {
@@ -453,6 +454,7 @@ export class RecipeViewComponent implements OnInit {
     this.formGroup.controls.steps?.setValue(updatedRecipe.steps);
     this.newStepContent.set('');
     this.newStepDuration.set(0);
+    this.newStepProducts.set([]);
     this.expandedStepOrder.set(null);
   }
 
@@ -482,6 +484,23 @@ export class RecipeViewComponent implements OnInit {
     this.formGroup.controls.steps?.setValue(steps);
     this.selectedStepProduct.set(null);
     this.stepProductSearch.set('');
+  }
+
+  public addProductToNewStep(): void {
+    const selectedProduct = this.selectedStepProduct();
+    if (!selectedProduct) return;
+
+    // Check if product already exists in new step
+    if (this.newStepProducts().some(p => p.product.id === selectedProduct.product.id)) {
+      return;
+    }
+
+    this.newStepProducts.update(products => [...products, selectedProduct]);
+    this.selectedStepProduct.set(null);
+  }
+
+  public removeProductFromNewStep(productId: string): void {
+    this.newStepProducts.update(products => products.filter(p => p.product.id !== productId));
   }
 
   public removeProductFromStep(stepOrder: number, productId: string): void {
