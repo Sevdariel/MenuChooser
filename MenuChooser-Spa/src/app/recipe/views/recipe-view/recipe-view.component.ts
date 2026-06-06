@@ -202,6 +202,10 @@ export class RecipeViewComponent implements OnInit {
 
   public ngOnInit(): void {
     this.loadRecipeFromResolver();
+    // Initialize form immediately for new recipes (no route data)
+    if (!this.formGroup) {
+      this.initializeForm();
+    }
   }
 
   private loadRecipeFromResolver(): void {
