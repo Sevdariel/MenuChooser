@@ -12,5 +12,6 @@ namespace Products.Service
         Task DeleteProductAsync(string id);
         Task<List<Product>> GetProductsByIdsAsync(List<string> ids);
         Task<List<Product>> SearchProductsByPattern(string pattern);
+        Task<int> MigrateProductFieldsAsync();
     }
 }

@@ -1,25 +1,195 @@
-<div class="flex flex-col items-center pt-4">
-    <div class="w-1/4 rounded-lg shadow p-4 space-y-5">
-        <div class="space-y-1">
-            <div class="flex flex-row justify-between">
-                <h1 class="text-2xl font-bold leading-tight">{{product().name}}</h1>
-                <button id="edit-button" (click)="togglePanel.set(true)">
-                    <svg-icon src="assets\icons\edit.svg" [svgStyle]="{'height.px': 20, 'width.px': 20 }"></svg-icon>
-                </button>
-            </div>
-            <p class="leading-none text-gray-400 font-extralight text-xs">Created by:
-                {{product().createdBy}}@if(product().updatedBy) {, updated by: {{product().updatedBy}}
-                }</p>
-        </div>
-        <div>
-            <div>
-                <label for="name" class="font-bold">Producent</label>
-                <p>{{product().producent}}</p>
-            </div>
-        </div>
-    </div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <button class="topbar-back" (click)="cancelEdit()">← Produkty</button>
+
+  <div class="topbar-title">
+    @if (isEditMode()) {
+      <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" [value]="product().name" placeholder="Nowy produkt">
+      <small>Tryb edycji</small>
+    } @else {
+      <span class="field-static">{{ product().name }}</span>
+      <small>Tryb podglądu</small>
+    }
+  </div>
+
+  <div class="flex-gap">
+    @if (isEditMode()) {
+      <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Anuluj</button>
+      <button class="btn btn-primary btn-sm" (click)="updateProduct(product())">Zapisz</button>
+    } @else {
+      <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">✏️ Edytuj</button>
+      <button class="btn btn-danger-ghost btn-sm" (click)="deleteProduct()">🗑 Usuń</button>
+    }
+  </div>
 </div>
 
-<p-drawer header="Right drawer" [(visible)]="togglePanel" position="right" dismissible="false" styleClass="md:!w-80 lg:!w-[30rem]">
-    <mc-product-edit (saved)="updateProduct($event)" [product]="product()"></mc-product-edit>
-</p-drawer>
+<!-- CONTENT -->
+<div class="content">
+  <div class="two-col">
+
+    <!-- LEFT COL -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+
+      <!-- PODSTAWOWE INFO -->
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">📋 Informacje podstawowe</div>
+        </div>
+        <div class="section-body">
+
+          <div class="field">
+            <div class="field-label">Kategoria</div>
+            @if (isEditMode()) {
+              <select class="field-input" [value]="product().category">
+                @for (cat of [ProductCategory.VEGETABLES, ProductCategory.MEAT, ProductCategory.DAIRY, ProductCategory.GRAINS, ProductCategory.OTHER]; track cat) {
+                  <option [value]="cat">{{ getCategoryName(cat) }}</option>
+                }
+              </select>
+            } @else {
+              <div class="field-value">
+                <span class="cat-badge badge-meat">{{ getCategoryEmoji(product().category) }} {{ getCategoryName(product().category) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="unit-row">
+            <div class="field">
+              <div class="field-label">Jednostka miary</div>
+              @if (isEditMode()) {
+                <select class="field-input" [value]="product().unit">
+                  <option [value]="'g'">gram (g)</option>
+                  <option [value]="'kg'">kilogram (kg)</option>
+                  <option [value]="'ml'">mililitr (ml)</option>
+                  <option [value]="'l'">litr (l)</option>
+                  <option [value]="'szt'">sztuka (szt.)</option>
+                </select>
+              } @else {
+                <div class="field-value">{{ product().unit }}</div>
+              }
+            </div>
+            <div class="field">
+              <div class="field-label">Opis</div>
+              @if (isEditMode()) {
+                <input class="field-input" type="text" [value]="product().sub" placeholder="np. świeży, mrożony...">
+              } @else {
+                <div class="field-value" style="color:var(--text-secondary);font-size:13.5px;">{{ product().sub || '-' }}</div>
+              }
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-label">Notatki</div>
+            @if (isEditMode()) {
+              <textarea class="field-input" rows="3" style="resize:vertical;" placeholder="Dodaj notatki..."></textarea>
+            } @else {
+              <div class="field-value" style="font-size:13.5px;color:var(--text-secondary);">Brak notatek</div>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- WARTOŚCI ODŻYWCZE -->
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">🥗 Wartości odżywcze <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px;">na 100 g</span></div>
+        </div>
+        <div class="section-body" style="padding:16px;">
+          <div class="macro-grid">
+
+            <div class="macro-cell">
+              <div class="macro-label">Kalorie</div>
+              @if (isEditMode()) {
+                <div class="macro-input-wrap">
+                  <input class="macro-input" type="number" [value]="product().kcal">
+                  <span class="macro-unit">kcal</span>
+                </div>
+              } @else {
+                <div class="macro-value">{{ product().kcal }} <small>kcal</small></div>
+              }
+            </div>
+
+            <div class="macro-cell">
+              <div class="macro-label">Białko</div>
+              @if (isEditMode()) {
+                <div class="macro-input-wrap">
+                  <input class="macro-input" type="number" [value]="product().protein" step="0.1">
+                  <span class="macro-unit">g</span>
+                </div>
+              } @else {
+                <div class="macro-value">{{ product().protein }} <small>g</small></div>
+              }
+            </div>
+
+            <div class="macro-cell">
+              <div class="macro-label">Węglowodany</div>
+              @if (isEditMode()) {
+                <div class="macro-input-wrap">
+                  <input class="macro-input" type="number" [value]="product().carbs" step="0.1">
+                  <span class="macro-unit">g</span>
+                </div>
+              } @else {
+                <div class="macro-value">{{ product().carbs }} <small>g</small></div>
+              }
+            </div>
+
+            <div class="macro-cell">
+              <div class="macro-label">Tłuszcze</div>
+              @if (isEditMode()) {
+                <div class="macro-input-wrap">
+                  <input class="macro-input" type="number" [value]="product().fat" step="0.1">
+                  <span class="macro-unit">g</span>
+                </div>
+              } @else {
+                <div class="macro-value">{{ product().fat }} <small>g</small></div>
+              }
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COL - PRZEPISY -->
+    <div class="section-card" style="align-self:start;">
+      <div class="section-head">
+        <div class="section-head-title">🍽️ Używany w przepisach <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px;">{{ recipes().length }} przepisów</span></div>
+      </div>
+      <div class="section-body">
+        @if (recipes().length === 0) {
+          <div class="empty-state" style="text-align:center;padding:32px 16px;">
+            <div style="font-size:48px;margin-bottom:12px;">🍽️</div>
+            <div style="color:var(--text-muted);font-size:14px;">Brak przepisów używających tego produktu</div>
+          </div>
+        } @else {
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            @for (recipe of recipes(); track recipe.id) {
+              <a [routerLink]="['/recipes', recipe.id]" class="recipe-item">
+                <div class="recipe-item-name">{{ recipe.name }}</div>
+                <div class="recipe-item-meta">{{ recipe.duration }} min</div>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Drawer for Editing -->
+@if (isEditMode()) {
+  <p-drawer
+    header="Edytuj produkt"
+    [(visible)]="togglePanel"
+    position="right"
+    dismissible="true"
+    styleClass="md:!w-80 lg:!w-[30rem]"
+  >
+    <mc-product-edit
+      [(product)]="productSignal"
+      (saved)="updateProduct($event)"
+    ></mc-product-edit>
+  </p-drawer>
+}
