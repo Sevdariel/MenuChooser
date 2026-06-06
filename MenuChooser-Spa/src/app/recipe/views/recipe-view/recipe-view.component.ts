@@ -234,10 +234,14 @@ export class RecipeViewComponent implements OnInit {
   }
 
   public cancelEdit(): void {
-    if (this.recipe()?.id) {
-      this.switchToPreviewMode();
+    if (this.isEditMode()) {
+      if (this.recipe()?.id) {
+        this.switchToPreviewMode();
+      } else {
+        this.router.navigate(['../'], { relativeTo: this.activatedRoute });
+      }
     } else {
-      this.cancelRequested.emit();
+      this.router.navigate(['../'], { relativeTo: this.activatedRoute });
     }
   }
 
