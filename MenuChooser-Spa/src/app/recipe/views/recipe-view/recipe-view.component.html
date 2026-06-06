@@ -201,6 +201,7 @@
                     [minLength]="0"
                     (onSelect)="addProductToStep(step.order)"
                     class="step-product-autocomplete"
+                    appendTo="body"
                   >
                     <ng-template let-product pTemplate="item">
                       <div>{{ product.product.name }}</div>
@@ -251,6 +252,7 @@
                   [minLength]="0"
                   (onSelect)="addProductToNewStep()"
                   class="step-product-autocomplete"
+                  appendTo="body"
                 >
                   <ng-template let-product pTemplate="item">
                     <div>{{ product.product.name }}</div>
