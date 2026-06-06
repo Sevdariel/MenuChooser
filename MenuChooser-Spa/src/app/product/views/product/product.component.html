@@ -154,13 +154,24 @@
     <!-- RIGHT COL - PRZEPISY -->
     <div class="section-card" style="align-self:start;">
       <div class="section-head">
-        <div class="section-head-title">🍽️ Używany w przepisach <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px;">0 przepisów</span></div>
+        <div class="section-head-title">🍽️ Używany w przepisach <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px;">{{ recipes().length }} przepisów</span></div>
       </div>
       <div class="section-body">
-        <div class="empty-state" style="text-align:center;padding:32px 16px;">
-          <div style="font-size:48px;margin-bottom:12px;">🍽️</div>
-          <div style="color:var(--text-muted);font-size:14px;">Brak przepisów używających tego produktu</div>
-        </div>
+        @if (recipes().length === 0) {
+          <div class="empty-state" style="text-align:center;padding:32px 16px;">
+            <div style="font-size:48px;margin-bottom:12px;">🍽️</div>
+            <div style="color:var(--text-muted);font-size:14px;">Brak przepisów używających tego produktu</div>
+          </div>
+        } @else {
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            @for (recipe of recipes(); track recipe.id) {
+              <a [routerLink]="['/recipes', recipe.id]" class="recipe-item">
+                <div class="recipe-item-name">{{ recipe.name }}</div>
+                <div class="recipe-item-meta">{{ recipe.duration }} min</div>
+              </a>
+            }
+          </div>
+        }
       </div>
     </div>
 

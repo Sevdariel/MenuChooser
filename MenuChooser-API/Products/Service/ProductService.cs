@@ -73,5 +73,30 @@ namespace Products.Service
 
             return await _productCollection.Find(filter).ToListAsync();
         }
+
+        public async Task<int> MigrateProductFieldsAsync()
+        {
+            var filter = Builders<Product>.Filter.Or(
+                Builders<Product>.Filter.Exists("sub", false),
+                Builders<Product>.Filter.Exists("emoji", false),
+                Builders<Product>.Filter.Exists("category", false),
+                Builders<Product>.Filter.Exists("unit", false),
+                Builders<Product>.Filter.Exists("kcal", false),
+                Builders<Product>.Filter.Exists("protein", false),
+                Builders<Product>.Filter.Exists("carbs", false),
+                Builders<Product>.Filter.Exists("fat", false)
+            );
+            var update = Builders<Product>.Update
+                .Set("sub", "")
+                .Set("emoji", "🥗")
+                .Set("category", ProductCategory.Other)
+                .Set("unit", "g")
+                .Set("kcal", 100)
+                .Set("protein", 0.0)
+                .Set("carbs", 0.0)
+                .Set("fat", 0.0);
+            var result = await _productCollection.UpdateManyAsync(filter, update);
+            return (int)result.ModifiedCount;
+        }
     }
 }

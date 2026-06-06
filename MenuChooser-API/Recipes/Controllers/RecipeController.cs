@@ -36,7 +36,10 @@ namespace Recipes.Controllers
 
             var products =
                 await _productService.GetProductsByIdsAsync(recipe.RecipeProducts
-                    .Select(recipeProduct => recipeProduct.ProductId).ToList());
+                    .Select(recipeProduct => recipeProduct.ProductId)
+                    .Where(id => id != null)
+                    .Select(id => id!)
+                    .ToList());
 
             var recipeDto = _mapper.Map<RecipeDto>(recipe);
             
@@ -95,6 +98,14 @@ namespace Recipes.Controllers
         {
             var result = await _recipeService.MigrateTagsAsync();
             return Ok($"Migrated {result} recipes");
+        }
+
+        [HttpGet("by-product/{productId}")]
+        public async Task<ActionResult<List<RecipeListItemDto>>> GetRecipesByProductId(string productId)
+        {
+            var recipes = await _recipeService.GetRecipesByProductIdAsync(productId);
+            var recipeListItems = _mapper.Map<List<RecipeListItemDto>>(recipes);
+            return recipeListItems;
         }
     }
 }

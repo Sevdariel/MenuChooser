@@ -12,6 +12,8 @@ services:
       DatabaseConfiguration__DatabaseName: "MenuChooser"
       DatabaseConfiguration__CollectionsNames__0: "Menu"
       DatabaseConfiguration__CollectionsNames__1: "User"
+      DatabaseConfiguration__CollectionsNames__2: "Product"
+      DatabaseConfiguration__CollectionsNames__3: "Recipe"
     depends_on:
       - mongo
     networks:

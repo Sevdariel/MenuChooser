@@ -12,5 +12,6 @@ namespace Recipes.Service
         Task DeleteRecipeAsync(string id);
         Task<bool> UpdateRecipeAsync(UpdateRecipeDto updateRecipeDto, Recipe recipe);
         Task<int> MigrateTagsAsync();
+        Task<List<Recipe>> GetRecipesByProductIdAsync(string productId);
     }
 }

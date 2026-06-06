@@ -69,5 +69,12 @@ namespace Products.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("migrate-fields")]
+        public async Task<IActionResult> MigrateProductFields()
+        {
+            var result = await _productService.MigrateProductFieldsAsync();
+            return Ok($"Migrated {result} products");
+        }
     }
 }

@@ -321,6 +321,35 @@
   text-align: center;
 }
 
+/* ── RECIPE ITEM ── */
+.recipe-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all .15s;
+}
+
+.recipe-item:hover {
+  border-color: var(--sage-400);
+  background: var(--cream-50);
+}
+
+.recipe-item-name {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.recipe-item-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 /* ── FIELD STATIC ── */
 .field-static {
   font-size: 14px;

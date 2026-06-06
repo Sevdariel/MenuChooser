@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { tap } from 'rxjs';
 import { defaultProduct } from '../../models/default-product.model';
@@ -16,6 +16,8 @@ import { IUpdateProductDto } from '../../models/product-dto.model';
 import { IProduct } from '../../models/product.model';
 import { ProductCategory } from '../../models/product.model';
 import { ProductEditComponent } from '../product-edit/product-edit.component';
+import { RecipeService } from '../../../recipe/services/recipe.service';
+import { IRecipeListItem } from '../../../recipe/models/recipe-dto.model';
 
 export enum ProductViewMode {
   PREVIEW = 'preview',
@@ -24,7 +26,7 @@ export enum ProductViewMode {
 
 @Component({
   selector: 'mc-product',
-  imports: [DrawerModule, ProductEditComponent],
+  imports: [DrawerModule, ProductEditComponent, RouterModule],
   templateUrl: './product.component.html',
   styleUrl: './product.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,10 +36,13 @@ export class ProductComponent {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly recipeService = inject(RecipeService);
 
   protected productSignal = signal<IProduct>(defaultProduct);
   protected product = this.productSignal.asReadonly();
   protected togglePanel = signal(false);
+  protected recipesSignal = signal<IRecipeListItem[]>([]);
+  protected recipes = this.recipesSignal.asReadonly();
 
   protected viewMode = signal<ProductViewMode>(ProductViewMode.PREVIEW);
 
@@ -63,7 +68,18 @@ export class ProductComponent {
         this.productSignal.set(routeData);
         const hasId = !!routeData.id;
         this.viewMode.set(hasId ? ProductViewMode.PREVIEW : ProductViewMode.EDIT);
+
+        if (hasId) {
+          this.loadRecipes(routeData.id);
+        }
       }
+    });
+  }
+
+  private loadRecipes(productId: string): void {
+    this.recipeService.getRecipesByProductId(productId).subscribe({
+      next: (recipes) => this.recipesSignal.set(recipes),
+      error: (error) => console.error('Failed to load recipes:', error)
     });
   }
 

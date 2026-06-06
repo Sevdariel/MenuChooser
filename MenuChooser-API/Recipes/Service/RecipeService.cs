@@ -70,5 +70,14 @@ namespace Recipes.Service
             var result = await _recipeCollection.UpdateManyAsync(filter, update);
             return (int)result.ModifiedCount;
         }
+
+        public async Task<List<Recipe>> GetRecipesByProductIdAsync(string productId)
+        {
+            var filter = Builders<Recipe>.Filter.ElemMatch(
+                recipe => recipe.RecipeProducts,
+                rp => rp.ProductId == productId
+            );
+            return await _recipeCollection.Find(filter).ToListAsync();
+        }
     }
 }

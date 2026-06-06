@@ -27,4 +27,8 @@ export class RecipeService {
   public createRecipe(createRecipeDto: ICreateRecipeDto): Observable<IRecipe> {
     return this.httpClient.post<IRecipe>(`${this.baseUrl}`, createRecipeDto);
   }
+
+  public getRecipesByProductId(productId: string) {
+    return this.httpClient.get<IRecipeListItem[]>(`${this.baseUrl}/by-product/${productId}`);
+  }
 }
