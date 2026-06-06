@@ -429,7 +429,19 @@ export class RecipeViewComponent implements OnInit {
 
     this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
     this.formGroup.controls.steps?.setValue(steps);
-    this.expandedStepOrder.set(null);
+  }
+
+  public deleteProduct(index: number): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const products = currentRecipe.products.filter((_, i) => i !== index);
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      products,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.products?.setValue(products);
   }
 
   public addNewStep(): void {

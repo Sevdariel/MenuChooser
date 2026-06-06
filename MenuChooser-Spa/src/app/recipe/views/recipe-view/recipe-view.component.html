@@ -152,7 +152,7 @@
                     <option [value]="unit.value">{{ unit.label }}</option>
                   }
                 </select>
-                <button class="btn-icon-sm edit-only" style="margin-left:6px;">🗑</button>
+                <button class="btn-icon-sm edit-only" style="margin-left:6px;" (click)="deleteProduct(i)">🗑</button>
               }
             </div>
           </div>
