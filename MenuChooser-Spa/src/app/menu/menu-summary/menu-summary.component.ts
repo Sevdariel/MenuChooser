@@ -8,7 +8,9 @@ import { MenuGenerateRequest } from '../models/menu-dto.model';
 import { RecipeService } from '../../recipe/services/recipe.service';
 import { IRecipe } from '../../recipe/models/recipe.model';
 import { Store } from '@ngxs/store';
-import { GetRecipeSuccess } from '../../recipe/store/recipe-form.actions';
+import { GetRecipe } from '../../recipe/store/recipe-form.actions';
+import { RecipeViewComponent } from '../../recipe/views/recipe-view/recipe-view.component';
+import { RecipeFormState } from '../../recipe/store/recipe-form.state';
 
 interface Meal {
   id: string;
@@ -35,7 +37,7 @@ enum MealType {
 
 @Component({
   selector: 'mc-menu-summary',
-  imports: [ButtonModule, CardModule, DialogModule],
+  imports: [ButtonModule, CardModule, DialogModule, RecipeViewComponent],
   templateUrl: './menu-summary.component.html',
   styleUrl: './menu-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,7 +56,7 @@ export class MenuSummaryComponent {
   public menuDays = signal<MenuDay[]>([]);
 
   public isRecipeDialogVisible = signal<boolean>(false);
-  public selectedRecipe = signal<IRecipe | null>(null);
+  public recipeLoaded = this.store.selectSignal(RecipeFormState.recipe);
 
   constructor() {
     // Retrieve stored data from sessionStorage
@@ -205,49 +207,30 @@ export class MenuSummaryComponent {
   }
 
   public viewRecipe(mealId: string): void {
+    console.log('viewRecipe called with mealId:', mealId);
     // Use the meal ID directly as recipe ID (now using valid MongoDB ObjectId format)
     const recipeId = mealId;
-    if (!recipeId) return;
+    if (!recipeId) {
+      console.log('No recipeId provided');
+      this.errorMessage.set('Brak ID przepisu.');
+      setTimeout(() => this.errorMessage.set(''), 3000);
+      return;
+    }
 
     this.isLoading.set(true);
-    this.recipeService.getRecipe(recipeId).subscribe({
-      next: (recipeDto) => {
-        // Convert DTO products to IRecipeProduct
-        const recipeProducts = recipeDto.products.map(p => ({
-          product: p.product,
-          quantity: p.quantity,
-          unit: p.unit,
-        }));
-
-        // Convert DTO steps to IStep (map productIds to actual products)
-        const steps = recipeDto.steps.map(step => ({
-          order: step.order,
-          content: step.content,
-          duration: step.duration,
-          products: step.productIds
-            .map(productId => recipeProducts.find(p => p.product.id === productId))
-            .filter((p): p is NonNullable<typeof p> => p !== undefined),
-        }));
-
-        // Convert DTO to IRecipe
-        const recipe: IRecipe = {
-          id: recipeDto.id,
-          name: recipeDto.name,
-          duration: recipeDto.duration,
-          products: recipeProducts,
-          steps,
-          createdBy: recipeDto.createdBy,
-          updatedBy: recipeDto.updatedBy,
-          mealType: recipeDto.mealType,
-          servings: recipeDto.servings,
-          caloriesPerServing: recipeDto.caloriesPerServing,
-          tags: recipeDto.tags,
-        };
-        this.selectedRecipe.set(recipe);
-        this.isRecipeDialogVisible.set(true);
-        this.isLoading.set(false);
+    console.log('Dispatching GetRecipe with ID:', recipeId);
+    // Dispatch GetRecipe action to properly load recipe through NGXS state
+    this.store.dispatch(new GetRecipe(recipeId)).subscribe({
+      next: () => {
+        console.log('GetRecipe action completed');
+        // Wait a tick to ensure state is updated before opening dialog
+        setTimeout(() => {
+          this.isRecipeDialogVisible.set(true);
+          this.isLoading.set(false);
+        });
       },
-      error: () => {
+      error: (err) => {
+        console.error('GetRecipe error:', err);
         this.errorMessage.set('Nie udało się załadować przepisu. Przepis może nie istnieć w bazie danych.');
         this.isLoading.set(false);
         setTimeout(() => this.errorMessage.set(''), 3000);
@@ -257,7 +240,6 @@ export class MenuSummaryComponent {
 
   public closeRecipeDialog(): void {
     this.isRecipeDialogVisible.set(false);
-    this.selectedRecipe.set(null);
   }
 
   public swapRecipe(mealId: string): void {

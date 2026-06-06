@@ -343,7 +343,7 @@
   display: flex;
   gap: 5px;
   align-items: center;
-  opacity: 0;
+  opacity: 1;
   transition: opacity .15s;
   justify-content: flex-end;
 }
@@ -448,143 +448,8 @@
   align-items: center;
 }
 
-/* ── RECIPE PREVIEW DIALOG ── */
-.recipe-preview-wrapper {
-  padding: 20px;
-}
-
-.recipe-preview-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.recipe-preview-header {
-  border-bottom: 1px solid var(--border-light);
-  padding-bottom: 16px;
-}
-
-.recipe-preview-header h2 {
-  font-family: var(--font-display);
-  font-size: 24px;
-  color: var(--text-primary);
-  margin: 0 0 12px 0;
-}
-
-.recipe-preview-meta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.recipe-preview-meta span {
-  font-size: 13px;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.recipe-preview-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.recipe-preview-section h3 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.recipe-preview-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.recipe-preview-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: var(--cream-50);
-  border-radius: var(--radius-sm);
-}
-
-.ingredient-name {
-  font-size: 14px;
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.ingredient-amount {
-  font-size: 13px;
+.loading-spinner {
+  padding: 40px;
+  text-align: center;
   color: var(--text-muted);
-}
-
-.recipe-preview-steps {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.recipe-preview-steps li {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-left: 24px;
-  position: relative;
-}
-
-.recipe-preview-steps li::before {
-  content: counter(list-item);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 20px;
-  height: 20px;
-  background: var(--sage-500);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.step-content {
-  font-size: 14px;
-  color: var(--text-primary);
-  line-height: 1.6;
-}
-
-.step-time {
-  font-size: 12px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.step-products {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.step-product-tag {
-  font-size: 11px;
-  color: var(--sage-600);
-  background: rgba(106,145,99,0.1);
-  padding: 3px 8px;
-  border-radius: 100px;
 }
