@@ -75,13 +75,13 @@
           </div>
           <div class="product-cell">
             <span class="cat-badge" [class]="getCategoryBadgeClass(product.category)">
-              {{ categoryMeta[product.category].emoji }} {{ categoryMeta[product.category].label }}
+              {{ categoryMeta[product.category]?.emoji }} {{ categoryMeta[product.category]?.label }}
             </span>
           </div>
           <div class="product-cell mono">na 100 {{ product.unit }}</div>
           <div class="product-cell mono">{{ product.kcal }} kcal</div>
-          <div class="product-cell mono">{{ product.protein.toFixed(1) }} g</div>
-          <div class="product-cell mono">{{ product.carbs.toFixed(1) }} g</div>
+          <div class="product-cell mono">{{ product.protein?.toFixed(1) ?? '0.0' }} g</div>
+          <div class="product-cell mono">{{ product.carbs?.toFixed(1) ?? '0.0' }} g</div>
           <div class="row-actions" (click)="$event.stopPropagation()">
             <button class="action-btn" title="Edytuj" (click)="editProduct(product.id)">✏️</button>
             <button class="action-btn danger" title="Usuń" (click)="deleteProduct(product.id)">🗑</button>
