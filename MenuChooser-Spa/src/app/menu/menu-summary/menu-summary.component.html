@@ -102,4 +102,70 @@
       </div>
     </div>
   </div>
+
+  <!-- Recipe Preview Dialog -->
+  <p-dialog
+    [visible]="isRecipeDialogVisible()"
+    (visibleChange)="isRecipeDialogVisible.set($event)"
+    [modal]="true"
+    [style]="{ width: '90vw', maxWidth: '1200px' }"
+    [closable]="true"
+    (onHide)="closeRecipeDialog()"
+    header="Podgląd przepisu"
+  >
+    @if (selectedRecipe()) {
+      <div class="recipe-preview-wrapper">
+        <div class="recipe-preview-content">
+          <!-- Recipe header -->
+          <div class="recipe-preview-header">
+            <h2>{{ selectedRecipe()!.name }}</h2>
+            <div class="recipe-preview-meta">
+              <span>⏱ {{ selectedRecipe()!.duration }} min</span>
+              @if (selectedRecipe()!.servings) {
+                <span>👥 {{ selectedRecipe()!.servings }} porcji</span>
+              }
+              @if (selectedRecipe()!.caloriesPerServing) {
+                <span>🔥 {{ selectedRecipe()!.caloriesPerServing }} kcal/porcja</span>
+              }
+            </div>
+          </div>
+
+          <!-- Ingredients -->
+          <div class="recipe-preview-section">
+            <h3>🧂 Składniki</h3>
+            <ul class="recipe-preview-list">
+              @for (product of selectedRecipe()!.products; track product.product.id) {
+                <li>
+                  <span class="ingredient-name">{{ product.product.name }}</span>
+                  <span class="ingredient-amount">{{ product.quantity }} {{ product.unit }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Steps -->
+          <div class="recipe-preview-section">
+            <h3>👨‍🍳 Kroki przygotowania</h3>
+            <ol class="recipe-preview-steps">
+              @for (step of selectedRecipe()!.steps; track step.order) {
+                <li>
+                  <div class="step-content">{{ step.content }}</div>
+                  @if (step.duration > 0) {
+                    <div class="step-time">⏱ {{ step.duration }} min</div>
+                  }
+                  @if (step.products && step.products.length > 0) {
+                    <div class="step-products">
+                      @for (product of step.products; track product.product.id) {
+                        <span class="step-product-tag">{{ product.product.name }}</span>
+                      }
+                    </div>
+                  }
+                </li>
+              }
+            </ol>
+          </div>
+        </div>
+      </div>
+    }
+  </p-dialog>
 </div>

@@ -2,8 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { DialogModule } from 'primeng/dialog';
 import { MenuService } from '../services/menu.service';
 import { MenuGenerateRequest } from '../models/menu-dto.model';
+import { RecipeService } from '../../recipe/services/recipe.service';
+import { IRecipe } from '../../recipe/models/recipe.model';
+import { Store } from '@ngxs/store';
+import { GetRecipeSuccess } from '../../recipe/store/recipe-form.actions';
 
 interface Meal {
   id: string;
@@ -30,7 +35,7 @@ enum MealType {
 
 @Component({
   selector: 'mc-menu-summary',
-  imports: [ButtonModule, CardModule],
+  imports: [ButtonModule, CardModule, DialogModule],
   templateUrl: './menu-summary.component.html',
   styleUrl: './menu-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +43,8 @@ enum MealType {
 export class MenuSummaryComponent {
   private readonly router = inject(Router);
   private readonly menuService = inject(MenuService);
+  private readonly recipeService = inject(RecipeService);
+  private readonly store = inject(Store);
 
   public isLoading = signal<boolean>(false);
   public errorMessage = signal<string>('');
@@ -45,6 +52,9 @@ export class MenuSummaryComponent {
   public dateFrom = signal<string>('');
   public dateTo = signal<string>('');
   public menuDays = signal<MenuDay[]>([]);
+
+  public isRecipeDialogVisible = signal<boolean>(false);
+  public selectedRecipe = signal<IRecipe | null>(null);
 
   constructor() {
     // Retrieve stored data from sessionStorage
@@ -61,22 +71,47 @@ export class MenuSummaryComponent {
     this.dateFrom.set(dateFrom);
     this.dateTo.set(dateTo);
 
-    // Generate mock data for now - in real implementation, this would come from the API
-    this.generateMockMenuData(dateFrom, dateTo);
+    // Fetch real recipes from API for mock data
+    this.loadRecipesAndGenerateMockData(dateFrom, dateTo);
   }
 
-  private generateMockMenuData(dateFrom: string, dateTo: string): void {
+  private loadRecipesAndGenerateMockData(dateFrom: string, dateTo: string): void {
+    this.recipeService.getRecipes().subscribe({
+      next: (recipes) => {
+        this.generateMockMenuData(dateFrom, dateTo, recipes);
+      },
+      error: () => {
+        // Fallback to empty mock data if API fails
+        this.generateMockMenuData(dateFrom, dateTo, []);
+      },
+    });
+  }
+
+  private generateMockMenuData(dateFrom: string, dateTo: string, availableRecipes: any[] = []): void {
     const days: MenuDay[] = [];
     const startDate = new Date(dateFrom);
     const endDate = new Date(dateTo);
     const dayNames = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
     const months = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
 
-    const mockMeals: Meal[] = [
-      { id: '1', type: MealType.Breakfast, name: 'Owsianka z owocami', ingredients: 'Płatki owsiane, mleko, banan', time: 10, calories: 340 },
-      { id: '2', type: MealType.Lunch, name: 'Spaghetti Bolognese', ingredients: 'Makaron, wołowina, pomidory', time: 45, calories: 520 },
-      { id: '3', type: MealType.Dinner, name: 'Sałatka grecka z fetą', ingredients: 'Pomidory, ogórek, feta, oliwki', time: 15, calories: 280 },
-    ];
+    // Use real recipes if available, otherwise use mock data
+    let mockMeals: Meal[] = [];
+
+    if (availableRecipes.length >= 3) {
+      // Use real recipes from API
+      mockMeals = [
+        { id: availableRecipes[0].id, type: MealType.Breakfast, name: availableRecipes[0].name, ingredients: 'Składniki z przepisu', time: availableRecipes[0].duration, calories: 340 },
+        { id: availableRecipes[1].id, type: MealType.Lunch, name: availableRecipes[1].name, ingredients: 'Składniki z przepisu', time: availableRecipes[1].duration, calories: 520 },
+        { id: availableRecipes[2].id, type: MealType.Dinner, name: availableRecipes[2].name, ingredients: 'Składniki z przepisu', time: availableRecipes[2].duration, calories: 280 },
+      ];
+    } else {
+      // Fallback to mock data with valid MongoDB ObjectId-like strings
+      mockMeals = [
+        { id: '507f1f77bcf86cd799439011', type: MealType.Breakfast, name: 'Owsianka z owocami', ingredients: 'Płatki owsiane, mleko, banan', time: 10, calories: 340 },
+        { id: '507f1f77bcf86cd799439012', type: MealType.Lunch, name: 'Spaghetti Bolognese', ingredients: 'Makaron, wołowina, pomidory', time: 45, calories: 520 },
+        { id: '507f1f77bcf86cd799439013', type: MealType.Dinner, name: 'Sałatka grecka z fetą', ingredients: 'Pomidory, ogórek, feta, oliwki', time: 15, calories: 280 },
+      ];
+    }
 
     let currentDate = new Date(startDate);
     let dayIndex = startDate.getDay();
@@ -90,7 +125,7 @@ export class MenuSummaryComponent {
         dayName,
         dateFormatted,
         totalCalories: mockMeals.reduce((sum, meal) => sum + meal.calories, 0),
-        meals: mockMeals.map(meal => ({ ...meal, id: `${dayName}-${meal.id}` })),
+        meals: mockMeals.map(meal => ({ ...meal, id: meal.id })),
       };
 
       days.push(day);
@@ -170,8 +205,59 @@ export class MenuSummaryComponent {
   }
 
   public viewRecipe(mealId: string): void {
-    // TODO: Navigate to recipe view
-    console.log('View recipe:', mealId);
+    // Use the meal ID directly as recipe ID (now using valid MongoDB ObjectId format)
+    const recipeId = mealId;
+    if (!recipeId) return;
+
+    this.isLoading.set(true);
+    this.recipeService.getRecipe(recipeId).subscribe({
+      next: (recipeDto) => {
+        // Convert DTO products to IRecipeProduct
+        const recipeProducts = recipeDto.products.map(p => ({
+          product: p.product,
+          quantity: p.quantity,
+          unit: p.unit,
+        }));
+
+        // Convert DTO steps to IStep (map productIds to actual products)
+        const steps = recipeDto.steps.map(step => ({
+          order: step.order,
+          content: step.content,
+          duration: step.duration,
+          products: step.productIds
+            .map(productId => recipeProducts.find(p => p.product.id === productId))
+            .filter((p): p is NonNullable<typeof p> => p !== undefined),
+        }));
+
+        // Convert DTO to IRecipe
+        const recipe: IRecipe = {
+          id: recipeDto.id,
+          name: recipeDto.name,
+          duration: recipeDto.duration,
+          products: recipeProducts,
+          steps,
+          createdBy: recipeDto.createdBy,
+          updatedBy: recipeDto.updatedBy,
+          mealType: recipeDto.mealType,
+          servings: recipeDto.servings,
+          caloriesPerServing: recipeDto.caloriesPerServing,
+          tags: recipeDto.tags,
+        };
+        this.selectedRecipe.set(recipe);
+        this.isRecipeDialogVisible.set(true);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set('Nie udało się załadować przepisu. Przepis może nie istnieć w bazie danych.');
+        this.isLoading.set(false);
+        setTimeout(() => this.errorMessage.set(''), 3000);
+      },
+    });
+  }
+
+  public closeRecipeDialog(): void {
+    this.isRecipeDialogVisible.set(false);
+    this.selectedRecipe.set(null);
   }
 
   public swapRecipe(mealId: string): void {
