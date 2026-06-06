@@ -1,0 +1,105 @@
+<div class="menu-summary-wrapper">
+  <div class="app-layout">
+    <!-- MAIN -->
+    <div class="main">
+      <!-- TOPBAR -->
+      <div class="topbar">
+        <button class="topbar-back" (click)="goBack()">← Generuj menu</button>
+        <div class="topbar-title">
+          <h1>Podsumowanie menu</h1>
+          <small>{{ dateRange() }}</small>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+        <!-- PARAMS -->
+        <div class="params-row">
+          <span class="param-chip">📅 <strong>{{ dateFromFormatted() }}</strong> → <strong>{{ dateToFormatted() }}</strong></span>
+          <span class="param-chip highlight">📊 <strong>{{ daysCount() }}</strong> dni</span>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Łącznie przepisów</div>
+            <div class="stat-value">{{ totalRecipes() }}</div>
+            <div class="stat-sub">w {{ daysCount() }} dniach</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Śr. czas / dzień</div>
+            <div class="stat-value">{{ avgTime() }}</div>
+            <div class="stat-sub">minut gotowania</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Śr. kcal / dzień</div>
+            <div class="stat-value">{{ avgCalories() }}</div>
+            <div class="stat-sub">kalorii</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Różnych przepisów</div>
+            <div class="stat-value">{{ uniqueRecipes() }}</div>
+            <div class="stat-sub">unikalne dania</div>
+          </div>
+        </div>
+
+        <!-- MEALS TABLE -->
+        <div class="meals-card">
+          <div class="meals-card-head">
+            <div class="meals-card-title">🗓 Plan posiłków</div>
+          </div>
+          <div class="meals-table-head">
+            <div class="meals-head-cell">Posiłek</div>
+            <div class="meals-head-cell">Przepis</div>
+            <div class="meals-head-cell">Składniki</div>
+            <div class="meals-head-cell">⏱ Czas</div>
+            <div class="meals-head-cell">🔥 Kcal</div>
+            <div></div>
+          </div>
+
+          @for (day of menuDays(); track day.date) {
+            <div class="day-group">
+              <div class="day-header">
+                <div class="day-label">{{ day.dayName }} <span class="day-date">{{ day.dateFormatted }}</span></div>
+                <div></div><div></div><div></div>
+                <div class="day-total">{{ day.totalCalories }} kcal</div>
+              </div>
+              @for (meal of day.meals; track meal.id) {
+                <div class="meal-row">
+                  <div><span class="meal-type-badge" [class]="getMealTypeBadgeClass(meal.type)">{{ getMealTypeIcon(meal.type) }} {{ getMealTypeName(meal.type) }}</span></div>
+                  <div class="meal-name">{{ meal.name }}</div>
+                  <div class="meal-cell">{{ meal.ingredients }}</div>
+                  <div class="meal-cell mono">{{ meal.time }} min</div>
+                  <div class="meal-cell mono">{{ meal.calories }} kcal</div>
+                  <div class="row-actions">
+                    <button class="action-btn" (click)="viewRecipe(meal.id)">👁 Podgląd</button>
+                    <button class="action-btn swap" (click)="swapRecipe(meal.id)">⇄ Zamień</button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- DOWNLOAD FOOTER -->
+      <div class="download-footer">
+        <div class="download-footer-info">
+          <span>📄</span>
+          <span>Menu gotowe do pobrania · <strong>{{ fileName() }}</strong></span>
+        </div>
+        <div class="download-actions">
+          <button class="btn btn-ghost btn-md" (click)="goBack()">← Wróć i zmień</button>
+          <button class="btn btn-terracotta btn-lg" [disabled]="isLoading()" (click)="downloadPdf()">
+            @if (!isLoading()) {
+              <span>�</span>
+            } @else {
+              <span class="spinner"></span>
+            }
+            <span>{{ isLoading() ? "Pobieranie…" : "Pobierz PDF" }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

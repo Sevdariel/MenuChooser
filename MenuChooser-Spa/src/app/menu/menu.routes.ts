@@ -8,4 +8,11 @@ export const routes: Routes = [
                 (m) => m.MenuGenerateComponent,
             ),
     },
+    {
+        path: 'summary',
+        loadComponent: () =>
+            import('./menu-summary/menu-summary.component').then(
+                (m) => m.MenuSummaryComponent,
+            ),
+    },
 ];
