@@ -1,5 +1,5 @@
 <div class="p-4">
-  <form (submit)="save($event)">
+  <form [formGroup]="productForm" (submit)="save($event)">
     <div class="space-y-4 flex flex-col">
       <div>
         <p-floatlabel variant="on">
@@ -8,7 +8,7 @@
             type="text"
             class="w-full"
             pInputText
-            [formField]="signalForm.name"
+            formControlName="name"
           />
           <label for="name">Name</label>
         </p-floatlabel>
@@ -20,7 +20,7 @@
             type="text"
             class="w-full"
             pInputText
-            [formField]="signalForm.producent"
+            formControlName="producent"
           />
           <label for="producent">Producent</label>
         </p-floatlabel>

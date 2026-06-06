@@ -3,19 +3,22 @@ import {
   Component,
   DestroyRef,
   inject,
-  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ReactiveFormsModule } from '@angular/forms';
-import { form, FormField, required } from '@angular/forms/signals';
-import { Router, RouterModule } from '@angular/router';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabel } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { tap } from 'rxjs';
 import { AuthService } from '../../../core/authorization/auth.service';
 import { IAddProductDto } from '../../models/product-dto.model';
-import { IProductForm } from '../../models/product-form.model';
 import { ProductService } from '../../services/product.service';
 import { ProductCategory } from '../../models/product.model';
 
@@ -26,50 +29,62 @@ import { ProductCategory } from '../../models/product.model';
     FloatLabel,
     ButtonModule,
     RouterModule,
-    FormField,
+    ReactiveFormsModule,
   ],
   templateUrl: './add-product.component.html',
   styleUrl: './add-product.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddProductComponent {
+  public readonly ProductCategory = ProductCategory;
   private readonly productService = inject(ProductService);
   private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly router = inject(Router);
+  public readonly router = inject(Router);
+  public readonly activatedRoute = inject(ActivatedRoute);
+  private readonly formBuilder = inject(FormBuilder);
 
-  protected productModel = signal<IProductForm>({
-    name: '',
-    producent: '',
-    sub: '',
-    emoji: '',
-    category: ProductCategory.OTHER,
-    unit: '',
-    kcal: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-  });
+  protected productForm!: FormGroup;
 
-  protected signalForm = form(this.productModel, (schemaPath) => {
-    required(schemaPath.name);
-    required(schemaPath.producent);
-  });
+  constructor() {
+    this.productForm = this.formBuilder.group({
+      name: this.formBuilder.control('', Validators.required),
+      producent: this.formBuilder.control('', Validators.required),
+      sub: this.formBuilder.control(''),
+      emoji: this.formBuilder.control(''),
+      category: this.formBuilder.control(ProductCategory.OTHER),
+      unit: this.formBuilder.control(''),
+      kcal: this.formBuilder.control(0),
+      protein: this.formBuilder.control(0),
+      carbs: this.formBuilder.control(0),
+      fat: this.formBuilder.control(0),
+    });
+  }
 
-  public add(event: Event) {
+  protected cancel() {
+    this.router.navigate(['../'], { relativeTo: this.activatedRoute });
+  }
+
+  protected add(event: Event) {
     event.preventDefault();
+
+    if (this.productForm.invalid) {
+      return;
+    }
+
+    const formValue = this.productForm.getRawValue();
     const addProductDto: IAddProductDto = {
       createdBy: this.authService.loggedUser()!.username,
-      name: this.productModel().name,
-      producent: this.productModel().producent,
-      sub: this.productModel().sub,
-      emoji: this.productModel().emoji,
-      category: this.productModel().category,
-      unit: this.productModel().unit,
-      kcal: this.productModel().kcal,
-      protein: this.productModel().protein,
-      carbs: this.productModel().carbs,
-      fat: this.productModel().fat,
+      name: formValue.name,
+      producent: formValue.producent,
+      sub: formValue.sub,
+      emoji: formValue.emoji,
+      category: formValue.category,
+      unit: formValue.unit,
+      kcal: formValue.kcal,
+      protein: formValue.protein,
+      carbs: formValue.carbs,
+      fat: formValue.fat,
     };
 
     this.productService
