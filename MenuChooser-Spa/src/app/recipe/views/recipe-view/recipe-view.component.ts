@@ -57,6 +57,7 @@ import {
   IStep,
   MealType,
   RecipeFormType,
+  RecipeTag,
   Unit,
 } from '../../models/recipe.model';
 import { RecipeMapperService } from '../../services/recipe-mapper.service';
@@ -134,6 +135,7 @@ export class RecipeViewComponent implements OnInit {
   public newStepDuration = signal<number>(0);
   public stepProductSearch = signal<string>('');
   public selectedStepProduct = signal<IRecipeProduct | null>(null);
+  public newStepProducts = signal<IRecipeProduct[]>([]);
 
   public availableProductsForStep = computed(() => {
     const currentRecipe = this.recipe();
@@ -190,6 +192,9 @@ export class RecipeViewComponent implements OnInit {
           this.formGroup.patchValue({
             products: currentRecipe.products,
             steps: currentRecipe.steps,
+            tags: currentRecipe.tags || [],
+            servings: currentRecipe.servings,
+            caloriesPerServing: currentRecipe.caloriesPerServing,
           });
         }
       }
@@ -198,6 +203,10 @@ export class RecipeViewComponent implements OnInit {
 
   public ngOnInit(): void {
     this.loadRecipeFromResolver();
+    // Initialize form immediately for new recipes (no route data)
+    if (!this.formGroup) {
+      this.initializeForm();
+    }
   }
 
   private loadRecipeFromResolver(): void {
@@ -217,7 +226,7 @@ export class RecipeViewComponent implements OnInit {
       mealType: new FormControl<MealType | null>(currentRecipe.mealType || MealType.Dinner),
       servings: new FormControl<number | null>(currentRecipe.servings || 4),
       caloriesPerServing: new FormControl<number | null>(currentRecipe.caloriesPerServing || 520),
-      tags: new FormControl<string[] | null>(currentRecipe.tags || ['🌿 Wegetariańskie', 'Gluten-free', 'Włoska']),
+      tags: new FormControl<RecipeTag[] | null>(currentRecipe.tags || []),
     });
   }
 
@@ -230,10 +239,14 @@ export class RecipeViewComponent implements OnInit {
   }
 
   public cancelEdit(): void {
-    if (this.recipe()?.id) {
-      this.switchToPreviewMode();
+    if (this.isEditMode()) {
+      if (this.recipe()?.id) {
+        this.switchToPreviewMode();
+      } else {
+        this.router.navigate(['../'], { relativeTo: this.activatedRoute });
+      }
     } else {
-      this.cancelRequested.emit();
+      this.router.navigate(['../'], { relativeTo: this.activatedRoute });
     }
   }
 
@@ -290,17 +303,25 @@ export class RecipeViewComponent implements OnInit {
     ];
   }
 
-  public addTag() {
-    const currentTags = this.formGroup.controls.tags?.value || [];
-    const newTag = prompt('Wprowadź nowy tag:');
-    if (newTag && newTag.trim()) {
-      this.formGroup.controls.tags?.setValue([...currentTags, newTag.trim()]);
-    }
+  public getTagOptions(): { label: string; value: RecipeTag }[] {
+    return [
+      { label: '🌿 Wegetariańskie', value: RecipeTag.Vegetarian },
+      { label: '🌱 Wegańskie', value: RecipeTag.Vegan },
+      { label: '🌾 Bezglutenowe', value: RecipeTag.GlutenFree },
+      { label: '🇮🇹 Włoskie', value: RecipeTag.Italian },
+      { label: '🌶 Pikantne', value: RecipeTag.Spicy },
+      { label: '⚡ Szybkie', value: RecipeTag.Quick },
+      { label: '💪 Zdrowe', value: RecipeTag.Healthy },
+    ];
   }
 
-  public removeTag(index: number) {
+  public getTagName(tag: RecipeTag): string {
+    return this.getTagOptions().find((option) => option.value === tag)?.label ?? '';
+  }
+
+  public removeTag(tag: RecipeTag) {
     const currentTags = this.formGroup.controls.tags?.value || [];
-    this.formGroup.controls.tags?.setValue(currentTags.filter((_, i) => i !== index));
+    this.formGroup.controls.tags?.setValue(currentTags.filter((t) => t !== tag));
   }
 
   public openRecipeProductPreview(recipeProduct: IRecipeProduct | null) {
@@ -408,7 +429,19 @@ export class RecipeViewComponent implements OnInit {
 
     this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
     this.formGroup.controls.steps?.setValue(steps);
-    this.expandedStepOrder.set(null);
+  }
+
+  public deleteProduct(index: number): void {
+    const currentRecipe = this.recipe() || defaultRecipe;
+    const products = currentRecipe.products.filter((_, i) => i !== index);
+
+    const updatedRecipe = {
+      ...currentRecipe,
+      products,
+    };
+
+    this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
+    this.formGroup.controls.products?.setValue(products);
   }
 
   public addNewStep(): void {
@@ -421,7 +454,7 @@ export class RecipeViewComponent implements OnInit {
       order: maxOrder + 1,
       content: this.newStepContent(),
       duration: this.newStepDuration(),
-      products: [],
+      products: this.newStepProducts(),
     };
 
     const updatedRecipe = {
@@ -433,6 +466,7 @@ export class RecipeViewComponent implements OnInit {
     this.formGroup.controls.steps?.setValue(updatedRecipe.steps);
     this.newStepContent.set('');
     this.newStepDuration.set(0);
+    this.newStepProducts.set([]);
     this.expandedStepOrder.set(null);
   }
 
@@ -462,6 +496,23 @@ export class RecipeViewComponent implements OnInit {
     this.formGroup.controls.steps?.setValue(steps);
     this.selectedStepProduct.set(null);
     this.stepProductSearch.set('');
+  }
+
+  public addProductToNewStep(): void {
+    const selectedProduct = this.selectedStepProduct();
+    if (!selectedProduct) return;
+
+    // Check if product already exists in new step
+    if (this.newStepProducts().some(p => p.product.id === selectedProduct.product.id)) {
+      return;
+    }
+
+    this.newStepProducts.update(products => [...products, selectedProduct]);
+    this.selectedStepProduct.set(null);
+  }
+
+  public removeProductFromNewStep(productId: string): void {
+    this.newStepProducts.update(products => products.filter(p => p.product.id !== productId));
   }
 
   public removeProductFromStep(stepOrder: number, productId: string): void {

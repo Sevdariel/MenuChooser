@@ -12,7 +12,7 @@ export interface IRecipe {
   mealType?: MealType;
   servings?: number;
   caloriesPerServing?: number;
-  tags?: string[];
+  tags?: RecipeTag[];
 }
 
 export interface IStep {
@@ -36,7 +36,7 @@ export interface IRecipeForm {
   mealType?: MealType | null;
   servings?: number | null;
   caloriesPerServing?: number | null;
-  tags?: string[] | null;
+  tags?: RecipeTag[] | null;
 }
 
 export enum Unit {
@@ -57,6 +57,16 @@ export enum MealType {
   Dessert,
 }
 
+export enum RecipeTag {
+  Vegetarian = 0,
+  Vegan,
+  GlutenFree,
+  Italian,
+  Spicy,
+  Quick,
+  Healthy,
+}
+
 export type RecipeFormType = {
   name: FormControl<string | null>;
   products: FormControl<IRecipeProduct[] | null>;
@@ -65,7 +75,7 @@ export type RecipeFormType = {
   mealType?: FormControl<MealType | null>;
   servings?: FormControl<number | null>;
   caloriesPerServing?: FormControl<number | null>;
-  tags?: FormControl<string[] | null>;
+  tags?: FormControl<RecipeTag[] | null>;
 };
 
 export type RecipeProductFormType = {

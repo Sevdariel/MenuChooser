@@ -88,5 +88,13 @@ namespace Recipes.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("migrate-tags")]
+        [AllowAnonymous]
+        public async Task<IActionResult> MigrateTags()
+        {
+            var result = await _recipeService.MigrateTagsAsync();
+            return Ok($"Migrated {result} recipes");
+        }
     }
 }

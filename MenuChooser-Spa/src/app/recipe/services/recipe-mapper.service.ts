@@ -100,7 +100,7 @@ export class RecipeMapperService {
       createdBy: this.authService.loggedUser()?.username || '',
       servings: recipe.servings || undefined,
       caloriesPerServing: recipe.caloriesPerServing || undefined,
-      tags: recipe.tags || undefined,
+      tags: recipe.tags || [],
     };
   }
 
@@ -128,7 +128,7 @@ export class RecipeMapperService {
       mealType: recipe.mealType || MealType.Dinner,
       servings: recipe.servings || undefined,
       caloriesPerServing: recipe.caloriesPerServing || undefined,
-      tags: recipe.tags || undefined,
+      tags: recipe.tags || [],
     };
   }
 }

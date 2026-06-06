@@ -69,7 +69,7 @@
           <span style="font-size:12px;color:var(--text-muted);">os.</span>
         </div>
       } @else {
-        <div class="field-static meta-value">{{ recipe()?.servings }} <small>os.</small></div>
+        <div class="field-static meta-value">{{ recipe()?.servings ?? '-' }} <small>os.</small></div>
       }
     </div>
     <div class="meta-cell">
@@ -80,27 +80,30 @@
           <span style="font-size:12px;color:var(--text-muted);">kcal</span>
         </div>
       } @else {
-        <div class="field-static meta-value">{{ recipe()?.caloriesPerServing }} <small>kcal</small></div>
+        <div class="field-static meta-value">{{ recipe()?.caloriesPerServing ?? '-' }} <small>kcal</small></div>
       }
     </div>
   </div>
 
   <!-- TAG ROW -->
-  <div class="flex-gap" style="margin-bottom:24px;">
-    @for (tag of formGroup.controls.tags?.value || []; track tag; let i = $index) {
-      @if (isEditMode()) {
-        <span class="tag tag-sage" [class]="'tag ' + (tag.includes('Wegetariańskie') ? 'tag-sage' : tag.includes('Gluten') ? 'tag-white' : 'tag-brown')">
-          {{ tag }}
-          <span class="tag-remove" (click)="removeTag(i)">×</span>
-        </span>
-      } @else {
-        <span class="tag tag-sage" [class]="'tag ' + (tag.includes('Wegetariańskie') ? 'tag-sage' : tag.includes('Gluten') ? 'tag-white' : 'tag-brown')">
-          {{ tag }}
-        </span>
-      }
-    }
+  <div class="flex-gap" style="margin-bottom:24px;align-items:center;">
     @if (isEditMode()) {
-      <button class="btn-icon-sm edit-only" style="font-size:12px;" (click)="addTag()">+ tag</button>
+      <p-multiSelect
+        [options]="getTagOptions()"
+        formControlName="tags"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Wybierz tagi..."
+        display="chip"
+        [showClear]="true"
+        styleClass="tag-multiselect"
+      ></p-multiSelect>
+    } @else {
+      @for (tag of formGroup.controls.tags?.value || []; track tag) {
+        <span class="tag tag-sage">{{ getTagName(tag) }}</span>
+      } @empty {
+        <span class="field-static" style="color:var(--text-muted);font-size:13px;">Brak tagów</span>
+      }
     }
   </div>
 
@@ -149,7 +152,7 @@
                     <option [value]="unit.value">{{ unit.label }}</option>
                   }
                 </select>
-                <button class="btn-icon-sm edit-only" style="margin-left:6px;">🗑</button>
+                <button class="btn-icon-sm edit-only" style="margin-left:6px;" (click)="deleteProduct(i)">🗑</button>
               }
             </div>
           </div>
@@ -198,6 +201,7 @@
                     [minLength]="0"
                     (onSelect)="addProductToStep(step.order)"
                     class="step-product-autocomplete"
+                    appendTo="body"
                   >
                     <ng-template let-product pTemplate="item">
                       <div>{{ product.product.name }}</div>
@@ -234,6 +238,26 @@
                   <input class="meta-input" type="number" [(ngModel)]="newStepDuration" placeholder="min" style="width:70px;" [ngModelOptions]="{standalone: true}">
                   <span style="font-size:12px;color:var(--text-muted);">min</span>
                 </div>
+                @for (product of newStepProducts(); track product.product.id) {
+                  <span class="step-prod-tag">{{ product.product.name }} <span class="step-prod-remove" (click)="removeProductFromNewStep(product.product.id)">×</span></span>
+                }
+                <p-autoComplete
+                  [suggestions]="availableProductsForStep()"
+                  (completeMethod)="stepProductSearch.set($event.query)"
+                  [ngModelOptions]="{standalone: true}"
+                  [(ngModel)]="selectedStepProduct"
+                  placeholder="Dodaj produkt..."
+                  optionLabel="product.name"
+                  [dropdown]="true"
+                  [minLength]="0"
+                  (onSelect)="addProductToNewStep()"
+                  class="step-product-autocomplete"
+                  appendTo="body"
+                >
+                  <ng-template let-product pTemplate="item">
+                    <div>{{ product.product.name }}</div>
+                  </ng-template>
+                </p-autoComplete>
                 <div class="step-actions">
                   <button class="btn btn-primary btn-sm" (click)="addNewStep()">Zapisz</button>
                   <button class="btn btn-ghost btn-sm" (click)="toggleStepExpansion(-1)">Anuluj</button>

@@ -6,24 +6,33 @@ WORKDIR /src
 COPY ["Account/Account.csproj", "Account/"]
 COPY ["Database/Database.csproj", "Database/"]
 COPY ["Email/Email.csproj", "Email/"]
+COPY ["Menu/Menu.csproj", "Menu/"]
+COPY ["MenuChooser/MenuChooser.csproj", "MenuChooser/"]
+COPY ["PdfCreator/PdfCreator.csproj", "PdfCreator/"]
 COPY ["Products/Products.csproj", "Products/"]
 COPY ["Recipes/Recipes.csproj", "Recipes/"]
 COPY ["Users/Users.csproj", "Users/"]
-COPY ["MenuChooser/MenuChooser.csproj", "MenuChooser/"]
 
 # # Kopiowanie kodu źródłowego
 COPY . .
 
 # RUN dotnet restore "MenuChooser/MenuChooser.csproj"
 # # Publikacja aplikacji
-RUN dotnet publish "MenuChooser/MenuChooser.csproj" -c Release -o /app
+RUN dotnet publish "MenuChooser/MenuChooser.csproj" -c Debug -o /app
 
 # # Obraz końcowy
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app ./
 
+# Copy appsettings.Development.json to final image
+COPY ["MenuChooser/appsettings.Development.json", "/app/"]
+
+RUN apt-get update && apt-get install -y curl unzip && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
 ENV ASPNETCORE_URLS=http://+:80
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
 EXPOSE 80
 EXPOSE 7103
 

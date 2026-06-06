@@ -1,5 +1,5 @@
 import { IProduct } from "../../product/models/product.model";
-import { MealType, Unit } from "./recipe.model";
+import { MealType, RecipeTag, Unit } from "./recipe.model";
 
 export interface IRecipeListItem {
     id: string;
@@ -19,7 +19,7 @@ export interface IRecipeDto {
     mealType: MealType;
     servings?: number;
     caloriesPerServing?: number;
-    tags?: string[];
+    tags?: RecipeTag[];
 }
 
 export interface IGetRecipeProductDto {
@@ -45,7 +45,7 @@ export interface IUpdateRecipeDto {
     mealType: MealType;
     servings?: number;
     caloriesPerServing?: number;
-    tags?: string[];
+    tags?: RecipeTag[];
 }
 
 export interface ICreateRecipeDto {
@@ -57,7 +57,7 @@ export interface ICreateRecipeDto {
     createdBy: string;
     servings?: number;
     caloriesPerServing?: number;
-    tags?: string[];
+    tags?: RecipeTag[];
 }
 
 export interface IUpsertRecipeProductDto {

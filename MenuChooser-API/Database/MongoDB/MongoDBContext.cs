@@ -23,7 +23,6 @@ namespace Database.Data
             return _mongoDatabase;
         }
 
-
         private void CreateDatabase()
         {
             _mongoDatabase = _mongoClient.GetDatabase(_databaseSettings.Value.DatabaseName);
