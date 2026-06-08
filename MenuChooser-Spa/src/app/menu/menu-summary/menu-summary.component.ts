@@ -10,18 +10,19 @@ import { SelectModule } from 'primeng/select';
 import { forkJoin } from 'rxjs';
 import { RecipeService } from '../../recipe/services/recipe.service';
 import { RecipeViewComponent } from '../../recipe/views/recipe-view/recipe-view.component';
-import { MenuGenerateRequest } from '../models/menu-dto.model';
+import { MenuGenerateRequest, MenuPreviewDto } from '../models/menu-dto.model';
 import { MenuService } from '../services/menu.service';
 import { RecipeMapperService } from '../../recipe/services/recipe-mapper.service';
 import { IRecipe } from '../../recipe/models/recipe.model';
 import { IRecipeListItem } from '../../recipe/models/recipe-dto.model';
-import { MealType, RecipeTag } from '../../recipe/models/recipe.model';
+import { MealType as MenuMealType } from '../models/menu.model';
+import { MealType as RecipeMealType, RecipeTag } from '../../recipe/models/recipe.model';
 import { UpdateRecipeLocally } from '../../recipe/store/recipe-form.actions';
 import { Store } from '@ngxs/store';
 
 interface Meal {
   id: string;
-  type: MealType;
+  type: MenuMealType;
   name: string;
   ingredients: string;
   time: number;
@@ -67,7 +68,7 @@ export class MenuSummaryComponent {
   public availableRecipes = signal<IRecipe[]>([]);
   public selectedSwapRecipe: IRecipe | null = null;
   public recipeSearchQuery = signal<string>('');
-  public selectedMealTypeFilter = signal<MealType | null>(null);
+  public selectedMealTypeFilter = signal<RecipeMealType | null>(null);
   public selectedTagFilter = signal<RecipeTag | null>(null);
 
   constructor() {
@@ -85,90 +86,58 @@ export class MenuSummaryComponent {
     this.dateFrom.set(dateFrom);
     this.dateTo.set(dateTo);
 
-    // Fetch real recipes from API for mock data
-    this.loadRecipesAndGenerateMockData(dateFrom, dateTo);
+    // Fetch menu preview from backend (same data that will be in PDF)
+    this.loadMenuPreviewFromBackend(menuRequest);
   }
 
-  private loadRecipesAndGenerateMockData(dateFrom: string, dateTo: string): void {
-    this.recipeService.getRecipes().subscribe({
-      next: (recipes) => {
-        this.generateMockMenuData(dateFrom, dateTo, recipes);
+  private loadMenuPreviewFromBackend(menuRequest: string): void {
+    const request: MenuGenerateRequest = JSON.parse(menuRequest);
+    this.isLoading.set(true);
+
+    this.menuService.previewMenu(request).subscribe({
+      next: (preview) => {
+        // Store preview so PDF can use the exact same menu
+        sessionStorage.setItem('menuPreview', JSON.stringify(preview));
+        this.menuDays.set(this.mapPreviewToMenuDays(preview));
+        this.isLoading.set(false);
       },
       error: () => {
-        // Fallback to empty mock data if API fails
-        this.generateMockMenuData(dateFrom, dateTo, []);
+        this.errorMessage.set('Nie udało się załadować podglądu menu. Spróbuj ponownie.');
+        this.isLoading.set(false);
+        setTimeout(() => this.errorMessage.set(''), 3000);
       },
     });
   }
 
-  private generateMockMenuData(dateFrom: string, dateTo: string, availableRecipes: any[] = []): void {
-    const days: MenuDay[] = [];
-    const startDate = new Date(dateFrom);
-    const endDate = new Date(dateTo);
+  private mapPreviewToMenuDays(preview: MenuPreviewDto): MenuDay[] {
     const dayNames = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
     const months = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
 
-    let currentDate = new Date(startDate);
-    let dayIndex = startDate.getDay();
-
-    // Fallback mock recipes if none available
-    const fallbackRecipes = [
-      { id: '507f1f77bcf86cd799439011', name: 'Owsianka z owocami', duration: 10 },
-      { id: '507f1f77bcf86cd799439012', name: 'Spaghetti Bolognese', duration: 45 },
-      { id: '507f1f77bcf86cd799439013', name: 'Sałatka grecka z fetą', duration: 15 },
-      { id: '507f1f77bcf86cd799439014', name: 'Jajecznica z boczkiem', duration: 15 },
-      { id: '507f1f77bcf86cd799439015', name: 'Kurczak curry', duration: 35 },
-      { id: '507f1f77bcf86cd799439016', name: 'Zupa pomidorowa', duration: 25 },
-    ];
-
-    const recipes = availableRecipes.length > 0 ? availableRecipes : fallbackRecipes;
-    const mealTypes = [MealType.Breakfast, MealType.Lunch, MealType.Dinner];
-
-    while (currentDate <= endDate) {
+    return preview.days.map((day, index) => {
+      const date = new Date(day.date);
+      const dayIndex = date.getDay();
       const dayName = dayNames[dayIndex];
-      const dateFormatted = `${currentDate.getDate()} ${months[currentDate.getMonth()]}`;
+      const dateFormatted = `${date.getDate()} ${months[date.getMonth()]}`;
 
-      // Pick distinct random recipes for this day (same algorithm as backend)
-      const dayMeals: Meal[] = [];
-      const shuffledRecipes = this.shuffleArray([...recipes]);
-      const selectedRecipes = shuffledRecipes.slice(0, mealTypes.length);
+      const meals: Meal[] = day.meals.map(meal => ({
+        id: `${meal.recipe.id}-${day.date}-${meal.type}`,
+        type: meal.type,
+        name: meal.recipe.name,
+        ingredients: 'Składniki z przepisu',
+        time: meal.recipe.duration,
+        calories: meal.type === MenuMealType.Breakfast ? 340 : meal.type === MenuMealType.Lunch ? 520 : 280,
+      }));
 
-      mealTypes.forEach((mealType, index) => {
-        const recipe = selectedRecipes[index] || shuffledRecipes[index % shuffledRecipes.length];
-        dayMeals.push({
-          id: recipe.id,
-          type: mealType,
-          name: recipe.name,
-          ingredients: 'Składniki z przepisu',
-          time: recipe.duration,
-          calories: mealType === MealType.Breakfast ? 340 : mealType === MealType.Lunch ? 520 : 280,
-        });
-      });
-
-      const day: MenuDay = {
-        date: currentDate.toISOString().split('T')[0],
+      return {
+        date: day.date,
         dayName,
         dateFormatted,
-        totalCalories: dayMeals.reduce((sum, meal) => sum + meal.calories, 0),
-        meals: dayMeals.map(meal => ({ ...meal, id: `${meal.id}-${currentDate.toISOString().split('T')[0]}-${meal.type}` })),
+        totalCalories: meals.reduce((sum, meal) => sum + meal.calories, 0),
+        meals,
       };
-
-      days.push(day);
-      currentDate.setDate(currentDate.getDate() + 1);
-      dayIndex = (dayIndex + 1) % 7;
-    }
-
-    this.menuDays.set(days);
+    });
   }
 
-  private shuffleArray<T>(array: T[]): T[] {
-    // Fisher-Yates shuffle algorithm (same as backend's OrderBy(_ => Random.Shared.Next()))
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
 
   public dateRange(): string {
     return `${this.dateFromFormatted()} – ${this.dateToFormatted()}`;
@@ -211,29 +180,29 @@ export class MenuSummaryComponent {
     return uniqueNames.size;
   }
 
-  public getMealTypeBadgeClass(type: MealType): string {
+  public getMealTypeBadgeClass(type: MenuMealType): string {
     switch (type) {
-      case MealType.Breakfast: return 'badge-breakfast';
-      case MealType.Lunch: return 'badge-lunch';
-      case MealType.Dinner: return 'badge-dinner';
+      case MenuMealType.Breakfast: return 'badge-breakfast';
+      case MenuMealType.Lunch: return 'badge-lunch';
+      case MenuMealType.Dinner: return 'badge-dinner';
       default: return '';
     }
   }
 
-  public getMealTypeIcon(type: MealType): string {
+  public getMealTypeIcon(type: MenuMealType): string {
     switch (type) {
-      case MealType.Breakfast: return '🌅';
-      case MealType.Lunch: return '☀️';
-      case MealType.Dinner: return '🌙';
+      case MenuMealType.Breakfast: return '🌅';
+      case MenuMealType.Lunch: return '☀️';
+      case MenuMealType.Dinner: return '🌙';
       default: return '';
     }
   }
 
-  public getMealTypeName(type: MealType): string {
+  public getMealTypeName(type: MenuMealType): string {
     switch (type) {
-      case MealType.Breakfast: return 'Śniadanie';
-      case MealType.Lunch: return 'Obiad';
-      case MealType.Dinner: return 'Kolacja';
+      case MenuMealType.Breakfast: return 'Śniadanie';
+      case MenuMealType.Lunch: return 'Obiad';
+      case MenuMealType.Dinner: return 'Kolacja';
       default: return '';
     }
   }
@@ -355,11 +324,11 @@ export class MenuSummaryComponent {
   });
 
   public mealTypeOptions = [
-    { label: 'Śniadanie', value: MealType.Breakfast },
-    { label: 'Obiad', value: MealType.Lunch },
-    { label: 'Kolacja', value: MealType.Dinner },
-    { label: 'Przekąska', value: MealType.Appetizer },
-    { label: 'Deser', value: MealType.Dessert },
+    { label: 'Śniadanie', value: RecipeMealType.Breakfast },
+    { label: 'Obiad', value: RecipeMealType.Lunch },
+    { label: 'Kolacja', value: RecipeMealType.Dinner },
+    { label: 'Przekąska', value: RecipeMealType.Appetizer },
+    { label: 'Deser', value: RecipeMealType.Dessert },
   ];
 
   public tagOptions = [
@@ -410,20 +379,21 @@ export class MenuSummaryComponent {
     this.errorMessage.set('');
     this.isLoading.set(true);
 
-    // Retrieve the stored request data
-    const menuRequestStr = sessionStorage.getItem('menuRequest');
+    // Retrieve the stored preview menu (same data shown in summary)
+    const menuPreviewStr = sessionStorage.getItem('menuPreview');
     const dateFrom = sessionStorage.getItem('dateFrom');
     const dateTo = sessionStorage.getItem('dateTo');
 
-    if (!menuRequestStr || !dateFrom || !dateTo) {
+    if (!menuPreviewStr || !dateFrom || !dateTo) {
       this.errorMessage.set('Brak danych do wygenerowania PDF. Wróć i wygeneruj jadłospis ponownie.');
       this.isLoading.set(false);
       return;
     }
 
-    const request: MenuGenerateRequest = JSON.parse(menuRequestStr);
+    const preview: MenuPreviewDto = JSON.parse(menuPreviewStr);
 
-    this.menuService.generateMenu(request).subscribe({
+    // Generate PDF from the exact same menu preview shown in summary
+    this.menuService.generateMenuFromPreview(preview).subscribe({
       next: (response: Blob) => {
         const url = URL.createObjectURL(response);
         const a = document.createElement('a');

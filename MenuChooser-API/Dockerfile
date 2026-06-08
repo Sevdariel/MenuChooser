@@ -28,7 +28,7 @@ COPY --from=build /app ./
 # Copy appsettings.Development.json to final image
 COPY ["MenuChooser/appsettings.development.json", "/app/"]
 
-RUN apt-get update && apt-get install -y curl unzip && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+# RUN apt-get update && apt-get install -y curl unzip && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
 
 ENV ASPNETCORE_URLS=http://+:80
 ENV ASPNETCORE_ENVIRONMENT=Development

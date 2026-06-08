@@ -9,7 +9,7 @@ export class MenuGenerateMapper {
   static toDto(meals: Menu[], dateFrom: string, dateTo: string): MenuGenerateRequest {
     return {
       meals: meals.map((meal: Menu): MealConfigDto => ({
-        mealType: meal.type,
+        type: meal.type,
         name: meal.name,
         enabled: meal.enabled,
         time: meal.time,
