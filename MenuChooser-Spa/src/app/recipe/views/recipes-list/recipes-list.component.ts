@@ -4,9 +4,15 @@ import { Store } from '@ngxs/store';
 import { IRecipeListItem } from '../../models/recipe-dto.model';
 import { MealType } from '../../models/recipe.model';
 import { RecipeState } from './store/recipe.store';
+import { RecipeService } from '../../services/recipe.service';
+import { GetRecipes } from './store/recipe.actions';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmPopup } from 'primeng/confirmpopup';
 
 @Component({
   selector: 'mc-recipes-list',
+  imports: [ConfirmPopup],
+  providers: [ConfirmationService],
   templateUrl: './recipes-list.component.html',
   styleUrl: './recipes-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +20,8 @@ import { RecipeState } from './store/recipe.store';
 export class RecipesListComponent {
   private readonly router = inject(Router);
   private readonly store = inject(Store);
+  private readonly recipeService = inject(RecipeService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   protected recipesList = this.store.selectSignal(RecipeState.getRecipes);
 
@@ -98,13 +106,24 @@ export class RecipesListComponent {
     this.router.navigate([`${this.router.url}/${recipeId}`]);
   }
 
-  protected editRecipe(recipeId: string) {
-    this.router.navigate([`${this.router.url}/${recipeId}/edit`]);
-  }
-
-  protected deleteRecipe(recipeId: string) {
-    // TODO: Implement delete logic
-    console.log('Delete recipe:', recipeId);
+  protected deleteRecipe(event: Event, recipeId: string) {
+    this.confirmationService.confirm({
+      target: event.target as HTMLElement,
+      message: 'Czy na pewno chcesz usunąć ten przepis?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Tak',
+      rejectLabel: 'Nie',
+      accept: () => {
+        this.recipeService.deleteRecipe(recipeId).subscribe({
+          next: () => {
+            this.store.dispatch(new GetRecipes());
+          },
+          error: (error) => {
+            console.error('Error deleting recipe:', error);
+          }
+        });
+      }
+    });
   }
 
   protected addNewRecipe() {
@@ -125,5 +144,12 @@ export class RecipesListComponent {
 
   protected goToPage(page: number) {
     this.currentPage.set(page);
+  }
+
+  protected getCategoryLabel(mealType: MealType | null | undefined) {
+    if (mealType === null || mealType === undefined) {
+      return null;
+    }
+    return this.categoryLabels[mealType] || null;
   }
 }
