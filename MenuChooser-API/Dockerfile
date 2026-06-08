@@ -25,8 +25,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app ./
 
-# Copy appsettings.Development.json to final image
-COPY ["MenuChooser/appsettings.development.json", "/app/"]
+# Copy appsettings file - handle case sensitivity between Windows and macOS
+COPY ["MenuChooser/appsettings.*.json", "/app/"]
 
 # RUN apt-get update && apt-get install -y curl unzip && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
 

@@ -9,7 +9,8 @@ export interface Menu {
 
 export enum MealType {
   Breakfast = 'Breakfast',
-  Lunch = 'Lunch',
-  Snack = 'Snack',
   Dinner = 'Dinner',
+  Lunch = 'Lunch',
+  Appetizer = 'Appetizer',
+  Dessert = 'Dessert',
 }
