@@ -12,7 +12,14 @@ public static class MenuPdfMapper
         SubTitle: $"Tydzień od {menu.WeekStart:dd.MM.yyyy}",
         Sections: menu.Days.Select(day => new PdfSection(
             Header: day.Date.ToString("dddd, dd.MM.yyyy", new CultureInfo("pl-PL")),
-            Rows: day.Meals.Select(meal => new PdfRow(meal.Name, meal.Recipe.Name)).ToList()
+            Rows: day.Meals.Select(meal => new PdfRow(
+                meal.Name,
+                meal.Recipe.Name,
+                meal.Recipe.CaloriesPerServing,
+                meal.Recipe.Duration,
+                meal.Recipe.Steps?.FirstOrDefault()?.Content,
+                meal.Recipe.RecipeProducts?.Select(rp => $"{rp.Quantity} {rp.Unit}").ToList()
+            )).ToList()
         )).ToList()
     );
 
@@ -21,7 +28,14 @@ public static class MenuPdfMapper
         SubTitle: $"Tydzień od {menu.WeekStart:dd.MM.yyyy}",
         Sections: menu.Days.Select(day => new PdfSection(
             Header: day.Date.ToString("dddd, dd.MM.yyyy", new CultureInfo("pl-PL")),
-            Rows: day.Meals.Select(meal => new PdfRow(meal.Name, meal.Recipe.Name)).ToList()
+            Rows: day.Meals.Select(meal => new PdfRow(
+                meal.Name,
+                meal.Recipe.Name,
+                meal.Recipe.CaloriesPerServing,
+                meal.Recipe.Duration,
+                meal.Recipe.Description,
+                meal.Recipe.Ingredients
+            )).ToList()
         )).ToList()
     );
 }

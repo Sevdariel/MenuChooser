@@ -35,12 +35,24 @@ public static class MenuPreviewMapper
 
     private static RecipeDto ToRecipeDto(Recipe recipe)
     {
+        var ingredients = recipe.RecipeProducts?
+            .Select(rp => $"{rp.Quantity} {rp.Unit}")
+            .ToList() ?? new List<string>();
+
+        var description = recipe.Steps?
+            .OrderBy(s => s.Order)
+            .Select(s => s.Content)
+            .FirstOrDefault();
+
         return new RecipeDto(
             Id: recipe.Id ?? string.Empty,
             Name: recipe.Name,
             Duration: recipe.Duration,
             MealType: recipe.MealType,
-            Tags: recipe.Tags?.ToList() ?? new List<RecipeTag>()
+            Tags: recipe.Tags?.ToList() ?? new List<RecipeTag>(),
+            CaloriesPerServing: recipe.CaloriesPerServing,
+            Description: description,
+            Ingredients: ingredients
         );
     }
 }
