@@ -36,4 +36,7 @@ export interface RecipePreviewDto {
   duration: number;
   mealType: MealType | null;
   tags: RecipeTag[];
+  caloriesPerServing: number | null;
+  description: string | null;
+  ingredients: string[];
 }

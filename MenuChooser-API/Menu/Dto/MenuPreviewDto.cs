@@ -25,5 +25,8 @@ public record RecipeDto(
     string Name,
     int Duration,
     MealType? MealType,
-    List<RecipeTag> Tags
+    List<RecipeTag> Tags,
+    int? CaloriesPerServing,
+    string? Description,
+    List<string> Ingredients
 );

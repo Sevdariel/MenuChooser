@@ -65,22 +65,64 @@ public class QuestDocumentCreator(PdfDocument pdfDocument) : IDocument
                     .Text(section.Header)
                     .FontColor("#FFFFFF").Bold().FontSize(11);
 
-                col.Item().PaddingTop(6).Table(table =>
+                col.Item().PaddingTop(6).Column(mealCol =>
                 {
-                    table.ColumnsDefinition(c =>
-                    {
-                        c.ConstantColumn(90);
-                        c.RelativeColumn();
-                    });
-
                     var isOdd = true;
                     foreach (var row in section.Rows)
                     {
                         var bg = isOdd ? "#F0FAF4" : "#FFFFFF";
-                        table.Cell().Background(bg).Padding(4)
-                            .Text(row.Label).Bold().FontColor("#2D6A4F");
-                        table.Cell().Background(bg).Padding(4)
-                            .Text(row.Value).FontColor("#333333");
+                        mealCol.Item().Background(bg).Border(1).BorderColor("#E0E0E0").CornerRadius(4).Padding(8).Column(rowCol =>
+                        {
+                            // Meal type and recipe name
+                            rowCol.Item().Row(recipeRow =>
+                            {
+                                recipeRow.ConstantColumn(90).Element(c =>
+                                    c.Text(row.Label).Bold().FontColor("#2D6A4F").FontSize(10));
+                                recipeRow.RelativeColumn().Element(c =>
+                                    c.Text(row.Value).FontColor("#333333").FontSize(10));
+                            });
+
+                            // Recipe details row
+                            rowCol.Item().PaddingTop(4).Row(detailsRow =>
+                            {
+                                detailsRow.RelativeColumn().Element(c =>
+                                {
+                                    c.Column(detailCol =>
+                                    {
+                                        // Duration
+                                        if (row.Duration.HasValue)
+                                        {
+                                            detailCol.Item().Text($"⏱ {row.Duration} min")
+                                                .FontSize(9).FontColor("#666666");
+                                        }
+
+                                        // Calories
+                                        if (row.Calories.HasValue)
+                                        {
+                                            detailCol.Item().Text($"🔥 {row.Calories} kcal")
+                                                .FontSize(9).FontColor("#666666");
+                                        }
+                                    });
+                                });
+                            });
+
+                            // Description
+                            if (!string.IsNullOrEmpty(row.Description))
+                            {
+                                rowCol.Item().PaddingTop(4).Text(row.Description)
+                                    .FontSize(9).FontColor("#555555").Italic();
+                            }
+
+                            // Ingredients
+                            if (row.Ingredients != null && row.Ingredients.Count > 0)
+                            {
+                                rowCol.Item().PaddingTop(4).Text("Składniki:")
+                                    .FontSize(9).FontColor("#2D6A4F").Bold();
+                                rowCol.Item().Text(string.Join(", ", row.Ingredients))
+                                    .FontSize(9).FontColor("#555555");
+                            }
+                        });
+                        mealCol.Item().PaddingBottom(4);
                         isOdd = !isOdd;
                     }
                 });
