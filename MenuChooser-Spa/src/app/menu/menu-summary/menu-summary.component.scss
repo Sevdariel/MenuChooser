@@ -264,7 +264,7 @@
 
 .meals-table-head {
   display: grid;
-  grid-template-columns: 100px 1fr 110px 80px 70px 100px;
+  grid-template-columns: 100px 1fr 110px 80px 90px 140px;
   padding: 9px 20px;
   background: var(--cream-100);
   border-bottom: 1px solid var(--border-light);
@@ -289,7 +289,7 @@
 
 .day-header {
   display: grid;
-  grid-template-columns: 100px 1fr 110px 80px 70px 100px;
+  grid-template-columns: 100px 1fr 110px 80px 90px 140px;
   padding: 8px 20px;
   background: var(--cream-50);
   border-bottom: 1px solid var(--border-light);
@@ -320,7 +320,7 @@
 
 .meal-row {
   display: grid;
-  grid-template-columns: 100px 1fr 110px 80px 70px 100px;
+  grid-template-columns: 100px 1fr 110px 80px 90px 140px;
   padding: 10px 20px;
   border-bottom: 1px solid var(--border-light);
   align-items: center;
@@ -364,6 +364,8 @@
   transition: all .15s;
   line-height: 1;
   white-space: nowrap;
+  min-width: 60px;
+  justify-content: center;
 }
 
 .action-btn:hover {
@@ -412,11 +414,17 @@
 .meal-cell {
   font-size: 13px;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meal-cell.mono {
   font-size: 12.5px;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ── DOWNLOAD FOOTER ── */

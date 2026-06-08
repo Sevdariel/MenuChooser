@@ -231,7 +231,7 @@
 
 .product-table-head {
   display: grid;
-  grid-template-columns: 44px 1fr 120px 80px 70px 70px 70px 72px;
+  grid-template-columns: 44px 1fr 120px 80px 70px 70px 70px 100px;
   padding: 10px 16px;
   background: var(--cream-100);
   border-bottom: 1px solid var(--border-light);
@@ -261,7 +261,7 @@
 
 .product-row {
   display: grid;
-  grid-template-columns: 44px 1fr 120px 80px 70px 70px 70px 72px;
+  grid-template-columns: 44px 1fr 120px 80px 70px 70px 70px 100px;
   padding: 0 16px;
   border-bottom: 1px solid var(--border-light);
   align-items: center;
