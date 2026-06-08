@@ -76,7 +76,7 @@ namespace Recipes.Controllers
         {
             await _recipeService.DeleteRecipeAsync(id);
 
-            return Ok("Recipe delete sucessfully");
+            return NoContent();
         }
 
         [HttpPut()]

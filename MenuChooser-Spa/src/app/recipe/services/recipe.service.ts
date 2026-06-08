@@ -31,4 +31,8 @@ export class RecipeService {
   public getRecipesByProductId(productId: string) {
     return this.httpClient.get<IRecipeListItem[]>(`${this.baseUrl}/by-product/${productId}`);
   }
+
+  public deleteRecipe(id: string) {
+    return this.httpClient.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

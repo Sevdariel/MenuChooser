@@ -107,7 +107,7 @@
               <div class="recipe-cell">{{ recipe.duration }} min</div>
               <div class="row-actions" (click)="$event.stopPropagation()">
                 <button class="action-btn" title="Podgląd" (click)="openRecipePreview(recipe.id)">👁</button>
-                <button class="action-btn danger" title="Usuń" (click)="deleteRecipe(recipe.id)">🗑</button>
+                <button class="action-btn danger" title="Usuń" (click)="deleteRecipe($event, recipe.id)">🗑</button>
               </div>
             </div>
           }
@@ -138,4 +138,6 @@
       </div>
     </div>
   </div>
+
+  <p-confirmpopup />
 </div>
