@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
-import { MenuService } from '../services/menu.service';
-import { MenuGenerateRequest } from '../models/menu-dto.model';
 import { RecipeService } from '../../recipe/services/recipe.service';
-import { IRecipe } from '../../recipe/models/recipe.model';
-import { Store } from '@ngxs/store';
-import { GetRecipe } from '../../recipe/store/recipe-form.actions';
 import { RecipeViewComponent } from '../../recipe/views/recipe-view/recipe-view.component';
-import { RecipeFormState } from '../../recipe/store/recipe-form.state';
+import { MenuGenerateRequest } from '../models/menu-dto.model';
+import { MenuService } from '../services/menu.service';
+import { RecipeMapperService } from '../../recipe/services/recipe-mapper.service';
+import { IRecipe } from '../../recipe/models/recipe.model';
+import { UpdateRecipeLocally } from '../../recipe/store/recipe-form.actions';
+import { Store } from '@ngxs/store';
 
 interface Meal {
   id: string;
@@ -46,6 +46,7 @@ export class MenuSummaryComponent {
   private readonly router = inject(Router);
   private readonly menuService = inject(MenuService);
   private readonly recipeService = inject(RecipeService);
+  private readonly recipeMapperService = inject(RecipeMapperService);
   private readonly store = inject(Store);
 
   public isLoading = signal<boolean>(false);
@@ -56,7 +57,7 @@ export class MenuSummaryComponent {
   public menuDays = signal<MenuDay[]>([]);
 
   public isRecipeDialogVisible = signal<boolean>(false);
-  public recipeLoaded = this.store.selectSignal(RecipeFormState.recipe);
+  public selectedRecipe = signal<IRecipe | null>(null);
 
   constructor() {
     // Retrieve stored data from sessionStorage
@@ -207,30 +208,26 @@ export class MenuSummaryComponent {
   }
 
   public viewRecipe(mealId: string): void {
-    console.log('viewRecipe called with mealId:', mealId);
     // Use the meal ID directly as recipe ID (now using valid MongoDB ObjectId format)
     const recipeId = mealId;
     if (!recipeId) {
-      console.log('No recipeId provided');
       this.errorMessage.set('Brak ID przepisu.');
       setTimeout(() => this.errorMessage.set(''), 3000);
       return;
     }
 
     this.isLoading.set(true);
-    console.log('Dispatching GetRecipe with ID:', recipeId);
-    // Dispatch GetRecipe action to properly load recipe through NGXS state
-    this.store.dispatch(new GetRecipe(recipeId)).subscribe({
-      next: () => {
-        console.log('GetRecipe action completed');
-        // Wait a tick to ensure state is updated before opening dialog
-        setTimeout(() => {
-          this.isRecipeDialogVisible.set(true);
-          this.isLoading.set(false);
-        });
+    // Fetch recipe directly and dispatch to NGXS state
+    this.recipeService.getRecipe(recipeId).subscribe({
+      next: (recipeDto) => {
+        const recipe = this.recipeMapperService.mapToModel(recipeDto);
+        this.selectedRecipe.set(recipe);
+        // Dispatch to NGXS state for RecipeViewComponent
+        this.store.dispatch(new UpdateRecipeLocally(recipe));
+        this.isRecipeDialogVisible.set(true);
+        this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('GetRecipe error:', err);
         this.errorMessage.set('Nie udało się załadować przepisu. Przepis może nie istnieć w bazie danych.');
         this.isLoading.set(false);
         setTimeout(() => this.errorMessage.set(''), 3000);
@@ -240,6 +237,7 @@ export class MenuSummaryComponent {
 
   public closeRecipeDialog(): void {
     this.isRecipeDialogVisible.set(false);
+    this.selectedRecipe.set(null);
   }
 
   public swapRecipe(mealId: string): void {

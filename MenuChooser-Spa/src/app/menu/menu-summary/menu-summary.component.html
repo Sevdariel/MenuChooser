@@ -113,10 +113,6 @@
     (onHide)="closeRecipeDialog()"
     header="Podgląd przepisu"
   >
-    @if (recipeLoaded()) {
-      <mc-recipe-view></mc-recipe-view>
-    } @else {
-      <div class="loading-spinner">Ładowanie przepisu...</div>
-    }
+    <mc-recipe-view [recipeInput]="selectedRecipe()" [previewOnly]="true"></mc-recipe-view>
   </p-dialog>
 </div>
