@@ -108,38 +108,49 @@ export class MenuSummaryComponent {
     const dayNames = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
     const months = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'];
 
-    // Use real recipes if available, otherwise use mock data
-    let mockMeals: Meal[] = [];
-
-    if (availableRecipes.length >= 3) {
-      // Use real recipes from API
-      mockMeals = [
-        { id: availableRecipes[0].id, type: MealType.Breakfast, name: availableRecipes[0].name, ingredients: 'Składniki z przepisu', time: availableRecipes[0].duration, calories: 340 },
-        { id: availableRecipes[1].id, type: MealType.Lunch, name: availableRecipes[1].name, ingredients: 'Składniki z przepisu', time: availableRecipes[1].duration, calories: 520 },
-        { id: availableRecipes[2].id, type: MealType.Dinner, name: availableRecipes[2].name, ingredients: 'Składniki z przepisu', time: availableRecipes[2].duration, calories: 280 },
-      ];
-    } else {
-      // Fallback to mock data with valid MongoDB ObjectId-like strings
-      mockMeals = [
-        { id: '507f1f77bcf86cd799439011', type: MealType.Breakfast, name: 'Owsianka z owocami', ingredients: 'Płatki owsiane, mleko, banan', time: 10, calories: 340 },
-        { id: '507f1f77bcf86cd799439012', type: MealType.Lunch, name: 'Spaghetti Bolognese', ingredients: 'Makaron, wołowina, pomidory', time: 45, calories: 520 },
-        { id: '507f1f77bcf86cd799439013', type: MealType.Dinner, name: 'Sałatka grecka z fetą', ingredients: 'Pomidory, ogórek, feta, oliwki', time: 15, calories: 280 },
-      ];
-    }
-
     let currentDate = new Date(startDate);
     let dayIndex = startDate.getDay();
+
+    // Fallback mock recipes if none available
+    const fallbackRecipes = [
+      { id: '507f1f77bcf86cd799439011', name: 'Owsianka z owocami', duration: 10 },
+      { id: '507f1f77bcf86cd799439012', name: 'Spaghetti Bolognese', duration: 45 },
+      { id: '507f1f77bcf86cd799439013', name: 'Sałatka grecka z fetą', duration: 15 },
+      { id: '507f1f77bcf86cd799439014', name: 'Jajecznica z boczkiem', duration: 15 },
+      { id: '507f1f77bcf86cd799439015', name: 'Kurczak curry', duration: 35 },
+      { id: '507f1f77bcf86cd799439016', name: 'Zupa pomidorowa', duration: 25 },
+    ];
+
+    const recipes = availableRecipes.length > 0 ? availableRecipes : fallbackRecipes;
+    const mealTypes = [MealType.Breakfast, MealType.Lunch, MealType.Dinner];
 
     while (currentDate <= endDate) {
       const dayName = dayNames[dayIndex];
       const dateFormatted = `${currentDate.getDate()} ${months[currentDate.getMonth()]}`;
 
+      // Pick distinct random recipes for this day (same algorithm as backend)
+      const dayMeals: Meal[] = [];
+      const shuffledRecipes = this.shuffleArray([...recipes]);
+      const selectedRecipes = shuffledRecipes.slice(0, mealTypes.length);
+
+      mealTypes.forEach((mealType, index) => {
+        const recipe = selectedRecipes[index] || shuffledRecipes[index % shuffledRecipes.length];
+        dayMeals.push({
+          id: recipe.id,
+          type: mealType,
+          name: recipe.name,
+          ingredients: 'Składniki z przepisu',
+          time: recipe.duration,
+          calories: mealType === MealType.Breakfast ? 340 : mealType === MealType.Lunch ? 520 : 280,
+        });
+      });
+
       const day: MenuDay = {
         date: currentDate.toISOString().split('T')[0],
         dayName,
         dateFormatted,
-        totalCalories: mockMeals.reduce((sum, meal) => sum + meal.calories, 0),
-        meals: mockMeals.map(meal => ({ ...meal, id: meal.id })),
+        totalCalories: dayMeals.reduce((sum, meal) => sum + meal.calories, 0),
+        meals: dayMeals.map(meal => ({ ...meal, id: `${meal.id}-${currentDate.toISOString().split('T')[0]}-${meal.type}` })),
       };
 
       days.push(day);
@@ -148,6 +159,15 @@ export class MenuSummaryComponent {
     }
 
     this.menuDays.set(days);
+  }
+
+  private shuffleArray<T>(array: T[]): T[] {
+    // Fisher-Yates shuffle algorithm (same as backend's OrderBy(_ => Random.Shared.Next()))
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
 
   public dateRange(): string {
