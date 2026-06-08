@@ -1,14 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
+import { PopoverModule } from 'primeng/popover';
+import { SelectModule } from 'primeng/select';
+import { forkJoin } from 'rxjs';
 import { RecipeService } from '../../recipe/services/recipe.service';
 import { RecipeViewComponent } from '../../recipe/views/recipe-view/recipe-view.component';
 import { MenuGenerateRequest } from '../models/menu-dto.model';
 import { MenuService } from '../services/menu.service';
 import { RecipeMapperService } from '../../recipe/services/recipe-mapper.service';
 import { IRecipe } from '../../recipe/models/recipe.model';
+import { IRecipeListItem } from '../../recipe/models/recipe-dto.model';
+import { MealType, RecipeTag } from '../../recipe/models/recipe.model';
 import { UpdateRecipeLocally } from '../../recipe/store/recipe-form.actions';
 import { Store } from '@ngxs/store';
 
@@ -29,15 +36,9 @@ interface MenuDay {
   meals: Meal[];
 }
 
-enum MealType {
-  Breakfast = 0,
-  Lunch = 1,
-  Dinner = 2,
-}
-
 @Component({
   selector: 'mc-menu-summary',
-  imports: [ButtonModule, CardModule, DialogModule, RecipeViewComponent],
+  imports: [ButtonModule, CardModule, DialogModule, RecipeViewComponent, AutoCompleteModule, PopoverModule, FormsModule, SelectModule],
   templateUrl: './menu-summary.component.html',
   styleUrl: './menu-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,6 +59,16 @@ export class MenuSummaryComponent {
 
   public isRecipeDialogVisible = signal<boolean>(false);
   public selectedRecipe = signal<IRecipe | null>(null);
+
+  // Recipe swap functionality
+  public swapPopoverVisible = signal<boolean>(false);
+  public swapPopoverPosition = signal<{ x: number; y: number }>({ x: 0, y: 0 });
+  public swapMealId = signal<string>('');
+  public availableRecipes = signal<IRecipe[]>([]);
+  public selectedSwapRecipe: IRecipe | null = null;
+  public recipeSearchQuery = signal<string>('');
+  public selectedMealTypeFilter = signal<MealType | null>(null);
+  public selectedTagFilter = signal<RecipeTag | null>(null);
 
   constructor() {
     // Retrieve stored data from sessionStorage
@@ -240,9 +251,131 @@ export class MenuSummaryComponent {
     this.selectedRecipe.set(null);
   }
 
-  public swapRecipe(mealId: string): void {
-    // TODO: Open recipe picker
-    console.log('Swap recipe:', mealId);
+  public swapRecipe(event: MouseEvent, mealId: string): void {
+    const button = event.target as HTMLElement;
+    const rect = button.getBoundingClientRect();
+    const popoverWidth = 400;
+    const popoverHeight = 350;
+    const padding = 10;
+
+    let x = rect.left;
+    let y = rect.bottom + 5;
+
+    // Adjust horizontal position if popover would go off right edge
+    if (x + popoverWidth > window.innerWidth - padding) {
+      x = window.innerWidth - popoverWidth - padding;
+    }
+
+    // Adjust horizontal position if popover would go off left edge
+    if (x < padding) {
+      x = padding;
+    }
+
+    // Adjust vertical position if popover would go off bottom edge
+    if (y + popoverHeight > window.innerHeight - padding) {
+      y = rect.top - popoverHeight - 5;
+    }
+
+    // Adjust vertical position if popover would go off top edge
+    if (y < padding) {
+      y = padding;
+    }
+
+    this.swapPopoverPosition.set({ x, y });
+    this.swapMealId.set(mealId);
+    this.selectedSwapRecipe = null;
+    this.recipeSearchQuery.set('');
+    this.selectedMealTypeFilter.set(null);
+    this.selectedTagFilter.set(null);
+    this.swapPopoverVisible.set(true);
+    // Load available recipes for swapping with full details
+    this.recipeService.getRecipes().subscribe({
+      next: (recipeListItems) => {
+        // Fetch full recipe details for each recipe to get tags
+        const recipeDetails$ = recipeListItems.map(item =>
+          this.recipeService.getRecipe(item.id)
+        );
+        // Use forkJoin to wait for all recipe details to load
+        forkJoin(recipeDetails$).subscribe({
+          next: (recipeDtos) => {
+            const recipes = recipeDtos.map(dto => this.recipeMapperService.mapToModel(dto));
+            this.availableRecipes.set(recipes);
+          },
+          error: (err) => {
+            console.error('Error loading recipe details for swap:', err);
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error loading recipes for swap:', err);
+      },
+    });
+  }
+
+  public searchRecipes(event: any): void {
+    const query = event.query.toLowerCase();
+    this.recipeSearchQuery.set(query);
+  }
+
+  public filteredRecipes = computed(() => {
+    const query = this.recipeSearchQuery().toLowerCase();
+    const mealTypeFilter = this.selectedMealTypeFilter();
+    const tagFilter = this.selectedTagFilter();
+    const recipes = this.availableRecipes();
+
+    return recipes.filter(recipe => {
+      // Name search filter
+      const matchesName = !query || recipe.name.toLowerCase().includes(query);
+      // Meal type filter
+      const matchesMealType = !mealTypeFilter || recipe.mealType === mealTypeFilter;
+      // Tag filter
+      const matchesTag = !tagFilter || (recipe.tags && recipe.tags.includes(tagFilter));
+      return matchesName && matchesMealType && matchesTag;
+    });
+  });
+
+  public mealTypeOptions = [
+    { label: 'Śniadanie', value: MealType.Breakfast },
+    { label: 'Obiad', value: MealType.Lunch },
+    { label: 'Kolacja', value: MealType.Dinner },
+    { label: 'Przekąska', value: MealType.Appetizer },
+    { label: 'Deser', value: MealType.Dessert },
+  ];
+
+  public tagOptions = [
+    { label: 'Wegetariańskie', value: RecipeTag.Vegetarian },
+    { label: 'Wegańskie', value: RecipeTag.Vegan },
+    { label: 'Bez glutenu', value: RecipeTag.GlutenFree },
+    { label: 'Włoskie', value: RecipeTag.Italian },
+    { label: 'Pikantne', value: RecipeTag.Spicy },
+    { label: 'Szybkie', value: RecipeTag.Quick },
+    { label: 'Zdrowe', value: RecipeTag.Healthy },
+  ];
+
+  public confirmSwap(): void {
+    const newRecipe = this.selectedSwapRecipe;
+    const mealId = this.swapMealId();
+    if (newRecipe && mealId) {
+      // Find the meal and update it
+      const currentMenuDays = this.menuDays();
+      const updatedMenuDays = currentMenuDays.map(day => ({
+        ...day,
+        meals: day.meals.map(meal =>
+          meal.id === mealId
+            ? { ...meal, id: newRecipe.id, name: newRecipe.name, ingredients: 'Składniki z przepisu', time: newRecipe.duration, calories: 0 }
+            : meal
+        ),
+      }));
+      this.menuDays.set(updatedMenuDays);
+      this.swapPopoverVisible.set(false);
+      this.selectedSwapRecipe = null;
+    }
+  }
+
+  public cancelSwap(): void {
+    this.swapPopoverVisible.set(false);
+    this.selectedSwapRecipe = null;
+    this.recipeSearchQuery.set('');
   }
 
   public fileName(): string {
