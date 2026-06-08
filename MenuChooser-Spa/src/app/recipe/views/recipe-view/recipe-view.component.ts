@@ -5,6 +5,7 @@ import {
   DestroyRef,
   EventEmitter,
   HostBinding,
+  Input,
   OnInit,
   Output,
   computed,
@@ -122,8 +123,17 @@ export class RecipeViewComponent implements OnInit {
   @Output() public cancelRequested = new EventEmitter<void>();
   @Output() public saveCompleted = new EventEmitter<void>();
 
-  // Use NGXS state instead of local signal
-  public recipe = this.store.selectSignal(RecipeFormState.recipe);
+  @Input() public set recipeInput(recipe: IRecipe | null) {
+    if (recipe) {
+      this._recipe.set(recipe);
+    }
+  }
+
+  @Input() public previewOnly = false;
+
+  // Use NGXS state by default, but can be overridden by recipeInput
+  private _recipe = signal<IRecipe | null>(null);
+  public recipe = computed(() => this._recipe() || this.store.selectSignal(RecipeFormState.recipe)());
   public isLoading = this.store.selectSignal(RecipeFormState.isLoading);
   public error = this.store.selectSignal(RecipeFormState.error);
   public hasError = this.store.selectSignal(RecipeFormState.hasError);

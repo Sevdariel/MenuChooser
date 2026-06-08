@@ -40,22 +40,22 @@ export class RecipeFormState {
 
   @Selector()
   public static recipe(state: RecipeFormStateModel): IRecipe | null {
-    return state.recipe;
+    return state?.recipe ?? null;
   }
 
   @Selector()
   public static isLoading(state: RecipeFormStateModel): boolean {
-    return state.isLoading;
+    return state?.isLoading ?? false;
   }
 
   @Selector()
   public static error(state: RecipeFormStateModel): string | null {
-    return state.error;
+    return state?.error ?? null;
   }
 
   @Selector()
   public static hasError(state: RecipeFormStateModel): boolean {
-    return !!state.error;
+    return !!(state?.error);
   }
 
   @Action(GetRecipe)
@@ -189,9 +189,11 @@ export class RecipeFormState {
 
   @Action(UpdateRecipeLocally)
   public updateRecipeLocally(ctx: StateContext<RecipeFormStateModel>, action: UpdateRecipeLocally) {
+    console.log('UpdateRecipeLocally action received in state:', action.recipe);
     ctx.patchState({
       recipe: action.recipe,
     });
+    console.log('State after patch:', ctx.getState());
   }
 
 }

@@ -18,7 +18,7 @@ export const MenuDefault: Menu[] = [
     enabled: true,
   },
   {
-    type: MealType.Snack,
+    type: MealType.Appetizer,
     name: 'Podwieczorek',
     time: '15:00 – 17:00',
     icon: '🍎',

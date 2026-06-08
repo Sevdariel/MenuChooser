@@ -1,3 +1,4 @@
+using Menu.Dto;
 using Menu.Entities;
 using Menu.Mapper;
 using PdfCreator.Services;
@@ -25,5 +26,18 @@ public class MenuGenerationService(
 
         var pdfDocument = MenuPdfMapper.ToPdfDocument(menu);
         return pdfCreatorService.Generate(pdfDocument);
+    }
+
+    public async Task<MenuPreviewDto> PreviewAsync(MenuGenerateRequest menuGenerateRequest,
+        CancellationToken cancellationToken)
+    {
+        var recipes = await recipeService.GetRecipesAsync(cancellationToken);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var weekStart = DateOnly.FromDateTime(DateTime.Today);
+        var menu = WeeklyMenu.Generate(weekStart, recipes, mealSlotRandomizer, menuGenerateRequest.Meals);
+
+        return MenuPreviewMapper.ToPreviewDto(menu);
     }
 }

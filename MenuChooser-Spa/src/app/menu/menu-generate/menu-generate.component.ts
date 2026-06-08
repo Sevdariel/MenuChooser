@@ -129,21 +129,13 @@ export class MenuGenerateComponent {
 
     const request = MenuGenerateMapper.toDto(this.menu(), dateFrom!, dateTo!);
 
-    this.menuService.generateMenu(request).subscribe({
-      next: (response: Blob) => {
-        // Handle PDF download
-        const url = URL.createObjectURL(response);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `menu-${dateFrom}-${dateTo}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-        this.isLoading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set('Nie udało się wygenerować menu. Spróbuj ponownie.');
-        this.isLoading.set(false);
-      },
-    });
+    // Store the request for later use in summary view
+    sessionStorage.setItem('menuRequest', JSON.stringify(request));
+    sessionStorage.setItem('dateFrom', dateFrom!);
+    sessionStorage.setItem('dateTo', dateTo!);
+
+    // Navigate to summary view instead of downloading PDF directly
+    this.isLoading.set(false);
+    this.router.navigate(['/menu/summary']);
   }
 }

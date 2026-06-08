@@ -27,8 +27,10 @@
         <button class="btn btn-primary btn-sm" (click)="saveRecipe()">Zapisz</button>
       } @else {
         <!-- Preview actions -->
-        <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">✏️ Edytuj</button>
-        <button class="btn btn-danger-ghost btn-sm" (click)="deleteRecipe()">🗑 Usuń</button>
+        @if (!previewOnly) {
+          <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">✏️ Edytuj</button>
+          <button class="btn btn-danger-ghost btn-sm" (click)="deleteRecipe()">🗑 Usuń</button>
+        }
       }
     </div>
   </div>
