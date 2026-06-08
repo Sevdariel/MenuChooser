@@ -97,13 +97,16 @@
                 {{ recipe.name }}
               </div>
               <div class="recipe-cell">
-                @let cat = categoryLabels[recipe.mealType];
-                <span class="cat-tag {{ cat.cls }}">{{ cat.emoji }} {{ cat.label }}</span>
+                @let cat = getCategoryLabel(recipe.mealType);
+                @if (cat) {
+                  <span class="cat-tag {{ cat.cls }}">{{ cat.emoji }} {{ cat.label }}</span>
+                } @else {
+                  <span class="cat-tag cat-default">-</span>
+                }
               </div>
               <div class="recipe-cell">{{ recipe.duration }} min</div>
               <div class="row-actions" (click)="$event.stopPropagation()">
                 <button class="action-btn" title="Podgląd" (click)="openRecipePreview(recipe.id)">👁</button>
-                <button class="action-btn" title="Edytuj" (click)="editRecipe(recipe.id)">✏️</button>
                 <button class="action-btn danger" title="Usuń" (click)="deleteRecipe(recipe.id)">🗑</button>
               </div>
             </div>
