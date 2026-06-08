@@ -208,8 +208,9 @@ export class MenuSummaryComponent {
   }
 
   public viewRecipe(mealId: string): void {
-    // Use the meal ID directly as recipe ID (now using valid MongoDB ObjectId format)
-    const recipeId = mealId;
+    // Extract the actual recipe ID from the composite meal ID
+    // The meal ID format is: {recipeId}-{date}-{mealType}
+    const recipeId = mealId.split('-')[0];
     if (!recipeId) {
       this.errorMessage.set('Brak ID przepisu.');
       setTimeout(() => this.errorMessage.set(''), 3000);

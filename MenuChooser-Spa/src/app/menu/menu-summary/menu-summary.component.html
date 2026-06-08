@@ -9,6 +9,14 @@
           <h1>Podsumowanie menu</h1>
           <small>{{ dateRange() }}</small>
         </div>
+        <button class="btn btn-terracotta btn-md" [disabled]="isLoading()" (click)="downloadPdf()">
+          @if (!isLoading()) {
+            <span>📄</span>
+          } @else {
+            <span class="spinner"></span>
+          }
+          <span>{{ isLoading() ? "Pobieranie…" : "Pobierz PDF" }}</span>
+        </button>
       </div>
 
       <!-- CONTENT -->
