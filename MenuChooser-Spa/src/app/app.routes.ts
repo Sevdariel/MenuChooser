@@ -7,6 +7,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: '',
+        redirectTo: 'recipes',
+        pathMatch: 'full',
+      },
+      {
         path: 'products',
         loadChildren: () =>
           import('./product/products.routes').then((m) => m.routes),
