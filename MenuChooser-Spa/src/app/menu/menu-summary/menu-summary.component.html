@@ -121,50 +121,78 @@
   </p-dialog>
 
   <!-- Recipe Swap Popover -->
-  @if (swapPopoverVisible()) {
-    <div class="recipe-swap-popover-container" [style.left.px]="swapPopoverPosition().x" [style.top.px]="swapPopoverPosition().y">
-      <div class="recipe-swap-popover">
-        <h3>Wybierz nowy przepis</h3>
-        <div class="filter-row">
+  <p-popover #swapPopover>
+    <div class="swap-popover-inner">
+
+      <!-- Header -->
+      <div class="swap-popover-header">
+        <div class="swap-popover-title">Zamień przepis</div>
+
+        <!-- Search -->
+        <div class="swap-search">
+          <span class="swap-search-icon">🔍</span>
+          <input
+            class="swap-search-input"
+            type="text"
+            placeholder="Szukaj przepisów…"
+            [ngModel]="recipeSearchQuery()"
+            (ngModelChange)="recipeSearchQuery.set($event)"
+          >
+        </div>
+
+        <!-- Filters -->
+        <div class="swap-filters">
           <p-select
             [options]="mealTypeOptions"
-            [(ngModel)]="selectedMealTypeFilter"
+            [ngModel]="selectedMealTypeFilter()"
+            (ngModelChange)="selectedMealTypeFilter.set($event)"
             optionLabel="label"
             optionValue="value"
             placeholder="Typ posiłku"
             [showClear]="true"
-            style="flex: 1;"
-          ></p-select>
+            styleClass="swap-filter-select"
+          />
           <p-select
             [options]="tagOptions"
-            [(ngModel)]="selectedTagFilter"
+            [ngModel]="selectedTagFilter()"
+            (ngModelChange)="selectedTagFilter.set($event)"
             optionLabel="label"
             optionValue="value"
             placeholder="Tag"
             [showClear]="true"
-            style="flex: 1;"
-          ></p-select>
-        </div>
-        <p-autoComplete
-          [suggestions]="filteredRecipes()"
-          (completeMethod)="searchRecipes($event)"
-          [(ngModel)]="selectedSwapRecipe"
-          optionLabel="name"
-          placeholder="Szukaj przepisu..."
-          [minLength]="1"
-          style="width: 100%;"
-        >
-          <ng-template let-recipe pTemplate="item">
-            <div class="recipe-option">
-              <span class="recipe-name">{{ recipe.name }}</span>
-              <span class="recipe-meta">{{ recipe.duration }} min</span>
-            </div>
-          </ng-template>
-        </p-autoComplete>
-        <div class="swap-actions">
-          <button class="btn btn-ghost btn-sm" (click)="cancelSwap()">Anuluj</button>
-          <button class="btn btn-primary btn-sm" (click)="confirmSwap()" [disabled]="!selectedSwapRecipe">Zamień</button>
+            styleClass="swap-filter-select"
+          />
         </div>
       </div>
+
+      <!-- Recipe List -->
+      <div class="swap-recipe-list">
+
+        @if (filteredRecipes().length === 0) {
+          <div class="swap-empty">
+            <span class="swap-empty-icon">🔍</span>
+            <span class="swap-empty-text">Brak wyników</span>
+          </div>
+        }
+
+        @for (recipe of filteredRecipes(); track recipe.id) {
+          <button
+            class="swap-recipe-item"
+            (click)="selectSwapRecipe(recipe)"
+          >
+            <div class="swap-recipe-emoji">🍽</div>
+            <div class="swap-recipe-info">
+              <div class="swap-recipe-name">{{ recipe.name }}</div>
+              <div class="swap-recipe-meta">
+                <span>⏱ {{ recipe.duration }} min</span>
+              </div>
+            </div>
+            @if (recipe.id === swapMealId()) {
+              <span class="swap-recipe-current">Aktualny</span>
+            }
+          </button>
+        }
+      </div>
+
     </div>
-  }
+  </p-popover>
