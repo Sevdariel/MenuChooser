@@ -204,6 +204,17 @@ export class MenuSummaryComponent {
     }
   }
 
+  public getRecipeMealTypeName(type: RecipeMealType): string {
+    switch (type) {
+      case RecipeMealType.Breakfast: return 'Śniadanie';
+      case RecipeMealType.Lunch: return 'Obiad';
+      case RecipeMealType.Dinner: return 'Kolacja';
+      case RecipeMealType.Appetizer: return 'Przekąska';
+      case RecipeMealType.Dessert: return 'Deser';
+      default: return '';
+    }
+  }
+
   public viewRecipe(mealId: string): void {
     // Extract the actual recipe ID from the composite meal ID
     // The meal ID format is: {recipeId}-{date}-{mealType}

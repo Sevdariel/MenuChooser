@@ -112,12 +112,36 @@
     [visible]="isRecipeDialogVisible()"
     (visibleChange)="isRecipeDialogVisible.set($event)"
     [modal]="true"
-    [style]="{ width: '90vw', maxWidth: '1200px' }"
     [closable]="true"
     (onHide)="closeRecipeDialog()"
     header="Podgląd przepisu"
+    styleClass="recipe-preview-dialog"
   >
-    <mc-recipe-view [recipeInput]="selectedRecipe()" [previewOnly]="true"></mc-recipe-view>
+    <div class="recipe-preview-content">
+      @if (selectedRecipe()) {
+        <div class="recipe-preview-header-info">
+          <span class="recipe-preview-emoji">🍽</span>
+          <div>
+            <div class="recipe-preview-name">{{ selectedRecipe()!.name }}</div>
+            <div class="recipe-preview-meta">
+              @if (selectedRecipe()!.mealType !== undefined) {
+                {{ getRecipeMealTypeName(selectedRecipe()!.mealType!) }} ·
+              }
+              {{ selectedRecipe()!.duration }} min
+              @if (selectedRecipe()!.servings) {
+                · {{ selectedRecipe()!.servings }} porcje
+              }
+            </div>
+          </div>
+        </div>
+      }
+      <mc-recipe-view [recipeInput]="selectedRecipe()" [previewOnly]="true"></mc-recipe-view>
+    </div>
+    <ng-template #footer>
+      <button class="recipe-preview-close-btn" (click)="closeRecipeDialog()">
+        Zamknij podgląd
+      </button>
+    </ng-template>
   </p-dialog>
 
   <!-- Recipe Swap Popover -->
