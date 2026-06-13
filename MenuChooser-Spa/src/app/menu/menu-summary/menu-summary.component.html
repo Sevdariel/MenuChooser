@@ -114,7 +114,7 @@
     [modal]="true"
     [closable]="true"
     (onHide)="closeRecipeDialog()"
-    header="Podgląd przepisu"
+    [header]="selectedRecipe()?.name ?? 'Podgląd przepisu'"
     styleClass="recipe-preview-dialog"
   >
     <div class="recipe-preview-content">
