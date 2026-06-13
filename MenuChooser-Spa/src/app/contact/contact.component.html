@@ -1,0 +1,204 @@
+<!-- HERO -->
+<section class="contact-hero">
+  <div class="hero-decoration"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✉️ Kontakt</div>
+    <h1 class="hero-title">Napisz do nas</h1>
+    <p class="hero-subtitle">
+      Masz pytanie, problem lub pomysł na nową funkcję?
+      Odpiszemy w ciągu jednego dnia roboczego.
+    </p>
+  </div>
+</section>
+
+<!-- MAIN -->
+<section class="contact-main">
+  <div class="contact-grid">
+
+    <!-- FORM -->
+    <div class="contact-form-wrapper">
+
+      <!-- SUCCESS STATE -->
+      @if (status() === 'success') {
+        <div class="success-state">
+          <div class="success-icon">✅</div>
+          <h2 class="success-title">Wiadomość wysłana</h2>
+          <p class="success-text">
+            Odpiszemy na adres <strong>{{ email() }}</strong>
+            w ciągu jednego dnia roboczego.
+          </p>
+          <button class="success-btn" (click)="reset()">
+            Wyślij kolejną wiadomość
+          </button>
+        </div>
+      }
+
+      <!-- FORM STATE -->
+      @if (status() !== 'success') {
+        <div class="form-fields">
+
+          <div class="form-row-2">
+            <!-- Imię -->
+            <div class="form-field">
+              <label class="form-label">
+                Imię <span class="required">*</span>
+              </label>
+              <input
+                pInputText
+                type="text"
+                placeholder="Jan"
+                [ngModel]="name()"
+                (ngModelChange)="name.set($event)"
+                class="contact-input"
+                [class.contact-input-error]="showErrors() && !name().trim()"
+              >
+              @if (showErrors() && !name().trim()) {
+                <span class="field-error">Podaj imię</span>
+              }
+            </div>
+
+            <!-- Email -->
+            <div class="form-field">
+              <label class="form-label">
+                Adres e-mail <span class="required">*</span>
+              </label>
+              <input
+                pInputText
+                type="email"
+                placeholder="jan&#64;kowalski.pl"
+                [ngModel]="email()"
+                (ngModelChange)="email.set($event)"
+                class="contact-input"
+                [class.contact-input-error]="showErrors() && !isEmailValid()"
+              >
+              @if (showErrors() && !isEmailValid()) {
+                <span class="field-error">Podaj poprawny adres e-mail</span>
+              }
+            </div>
+          </div>
+
+          <!-- Temat -->
+          <div class="form-field">
+            <label class="form-label">
+              Temat <span class="required">*</span>
+            </label>
+            <p-select
+              [options]="topics"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Wybierz temat…"
+              [ngModel]="topic()"
+              (ngModelChange)="topic.set($event)"
+              styleClass="contact-select"
+              [class.contact-input-error]="showErrors() && !topic()"
+            />
+            @if (showErrors() && !topic()) {
+              <span class="field-error">Wybierz temat</span>
+            }
+          </div>
+
+          <!-- Wiadomość -->
+          <div class="form-field">
+            <label class="form-label">
+              Wiadomość <span class="required">*</span>
+            </label>
+            <textarea
+              pTextarea
+              rows="5"
+              placeholder="Opisz swoje pytanie lub problem…"
+              [ngModel]="message()"
+              (ngModelChange)="message.set($event)"
+              class="contact-input textarea"
+              [class.contact-input-error]="showErrors() && !message().trim()"
+            ></textarea>
+            <div class="field-footer">
+              @if (showErrors() && !message().trim()) {
+                <span class="field-error">Wpisz wiadomość</span>
+              } @else {
+                <span></span>
+              }
+              <span class="char-count">{{ message().length }} / 1000</span>
+            </div>
+          </div>
+
+          <!-- Error -->
+          @if (status() === 'error') {
+            <div class="form-error-banner">
+              ⚠️ Coś poszło nie tak. Spróbuj ponownie lub napisz bezpośrednio na
+              <a href="mailto:hello&#64;mealplanner.pl">hello&#64;mealplanner.pl</a>
+            </div>
+          }
+
+          <!-- Submit -->
+          <div class="form-submit-row">
+            <span class="form-hint">
+              Pola oznaczone <span class="required">*</span> są wymagane
+            </span>
+            <button
+              class="submit-btn"
+              [disabled]="status() === 'loading'"
+              (click)="submit()"
+            >
+              @if (status() === 'loading') {
+                <span class="spinner"></span>
+                Wysyłanie…
+              } @else {
+                ✉️ Wyślij wiadomość
+              }
+            </button>
+          </div>
+
+        </div>
+      }
+
+    </div>
+
+    <!-- SIDEBAR INFO -->
+    <div class="contact-sidebar">
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Inne sposoby kontaktu</div>
+        <div class="sidebar-contacts">
+          <div class="sidebar-contact-item">
+            <div class="contact-icon email-icon">📧</div>
+            <div>
+              <div class="contact-item-label">E-mail</div>
+              <a href="mailto:hello&#64;mealplanner.pl" class="contact-item-value">
+                hello&#64;mealplanner.pl
+              </a>
+            </div>
+          </div>
+          <div class="sidebar-contact-item">
+            <div class="contact-icon time-icon">⏱</div>
+            <div>
+              <div class="contact-item-label">Czas odpowiedzi</div>
+              <div class="contact-item-meta">do 1 dnia roboczego</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <div class="sidebar-card-title">Szukasz odpowiedzi?</div>
+        <p class="sidebar-card-text">
+          Możliwe że odpowiedź na Twoje pytanie jest już w naszym FAQ.
+        </p>
+        <a routerLink="/about" fragment="faq" class="sidebar-faq-link">
+          Przejdź do FAQ →
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="contact-footer">
+  <div class="footer-brand">🌿 Meal<span>Planner</span></div>
+  <div class="footer-links">
+    <a routerLink="/about">O aplikacji</a>
+    <a routerLink="/contact">Kontakt</a>
+  </div>
+  <div class="footer-copy">© 2025 MealPlanner</div>
+</footer>
