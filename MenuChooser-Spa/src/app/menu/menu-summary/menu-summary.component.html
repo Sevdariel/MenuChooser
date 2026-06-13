@@ -139,6 +139,30 @@
             (ngModelChange)="recipeSearchQuery.set($event)"
           >
         </div>
+
+        <!-- Filters -->
+        <div class="swap-filters">
+          <p-select
+            [options]="mealTypeOptions"
+            [ngModel]="selectedMealTypeFilter()"
+            (ngModelChange)="selectedMealTypeFilter.set($event)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Typ posiłku"
+            [showClear]="true"
+            styleClass="swap-filter-select"
+          />
+          <p-select
+            [options]="tagOptions"
+            [ngModel]="selectedTagFilter()"
+            (ngModelChange)="selectedTagFilter.set($event)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Tag"
+            [showClear]="true"
+            styleClass="swap-filter-select"
+          />
+        </div>
       </div>
 
       <!-- Recipe List -->
