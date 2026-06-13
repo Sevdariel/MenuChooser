@@ -112,12 +112,14 @@
     [visible]="isRecipeDialogVisible()"
     (visibleChange)="isRecipeDialogVisible.set($event)"
     [modal]="true"
-    [style]="{ width: '90vw', maxWidth: '1200px' }"
     [closable]="true"
     (onHide)="closeRecipeDialog()"
-    header="Podgląd przepisu"
+    [header]="selectedRecipe()?.name ?? 'Podgląd przepisu'"
+    styleClass="recipe-preview-dialog"
   >
-    <mc-recipe-view [recipeInput]="selectedRecipe()" [previewOnly]="true"></mc-recipe-view>
+    <div class="recipe-preview-content">
+      <mc-recipe-view [recipeInput]="selectedRecipe()" [previewOnly]="true"></mc-recipe-view>
+    </div>
   </p-dialog>
 
   <!-- Recipe Swap Popover -->

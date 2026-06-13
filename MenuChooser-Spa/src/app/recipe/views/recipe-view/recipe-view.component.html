@@ -1,5 +1,6 @@
 <form [formGroup]="formGroup">
   <!-- TOP BAR -->
+  @if (!previewOnly) {
   <div class="topbar">
     <button class="topbar-back" (click)="cancelEdit()">← Przepisy</button>
 
@@ -34,6 +35,7 @@
       }
     </div>
   </div>
+  }
 
   <!-- CONTENT -->
   <div class="content">

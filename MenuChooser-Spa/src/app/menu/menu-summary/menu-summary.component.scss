@@ -458,6 +458,21 @@
   align-items: center;
 }
 
+/* ── RECIPE PREVIEW DIALOG ── */
+:host ::ng-deep .recipe-preview-dialog {
+  &.p-dialog {
+    width: 90vw;
+    max-width: 1200px;
+  }
+}
+
+.recipe-preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 16px;
+}
+
 /* ── RECIPE SWAP POPOVER ── */
 .swap-popover-inner {
   display: flex;

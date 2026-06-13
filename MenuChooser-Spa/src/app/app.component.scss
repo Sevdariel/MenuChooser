@@ -9,4 +9,8 @@
   border: 1px solid var(--border-light);
   overflow: hidden;
   min-height: calc(100vh - 84px);
+
+  router-outlet {
+    display: none;
+  }
 }
