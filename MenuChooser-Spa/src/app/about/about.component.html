@@ -1,0 +1,122 @@
+<!-- ABOUT HERO -->
+<section class="about-hero">
+  <div class="hero-decoration"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🌿 O aplikacji</div>
+    <h1 class="hero-title">
+      Planowanie posiłków<br>
+      <em>bez komplikacji</em>
+    </h1>
+    <p class="hero-subtitle">
+      MealPlanner powstał z jednego prostego powodu — codzienne pytanie
+      "co dziś na obiad?" nie powinno zajmować więcej niż kilka sekund.
+    </p>
+  </div>
+</section>
+
+<!-- HISTORIA -->
+<section class="about-history">
+  <div class="history-container">
+    <div class="history-grid">
+      <div class="history-text">
+        <div class="section-tag">Skąd się wzięliśmy</div>
+        <h2 class="section-title">
+          Zaczęło się od<br>
+          <em>kartki na lodówce</em>
+        </h2>
+        <p>
+          Przez lata tygodniowe menu lądowało na kartce przyklejonej do lodówki.
+          Wtorek — makaron, środa — zupa, czwartek — cokolwiek zostało.
+          Znajomo brzmi?
+        </p>
+        <p>
+          MealPlanner to cyfrowa wersja tej kartki — tylko że tygodniowe menu
+          generuje się samo, na podstawie Twoich własnych przepisów,
+          i ląduje jako PDF gotowy do wydruku.
+        </p>
+      </div>
+
+      <!-- Visual card -->
+      <div class="history-visual">
+        <div class="visual-decoration">🌿</div>
+        <div class="visual-content">
+          <div class="visual-card">
+            <div class="visual-card-day">Poniedziałek</div>
+            <div class="visual-card-meals">
+              <div class="visual-meal breakfast">🌅 Owsianka z owocami</div>
+              <div class="visual-meal lunch">☀️ Spaghetti Bolognese</div>
+              <div class="visual-meal dinner">🌙 Sałatka grecka</div>
+            </div>
+          </div>
+          <div class="visual-meta">
+            <span class="meta-dot"></span>
+            Wygenerowane w 2 sekundy
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WARTOŚCI -->
+<section class="about-values">
+  <div class="values-container">
+    <div class="section-tag center">Na czym nam zależy</div>
+    <h2 class="section-title center">Trzy zasady, które nas prowadzą</h2>
+
+    <div class="values-grid">
+      @for (item of values; track item.title) {
+        <div class="value-card">
+          <div class="value-icon">{{ item.icon }}</div>
+          <div class="value-title">{{ item.title }}</div>
+          <div class="value-desc">{{ item.desc }}</div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="about-faq" id="faq">
+  <div class="faq-container">
+    <div class="section-tag center">FAQ</div>
+    <h2 class="section-title center">Najczęstsze pytania</h2>
+
+    <p-accordion [multiple]="true" styleClass="faq-accordion">
+      @for (item of faqItems; track item.question; let i = $index) {
+        <p-accordion-panel [value]="i.toString()">
+          <p-accordion-header>
+            <span class="faq-question">{{ item.question }}</span>
+          </p-accordion-header>
+          <p-accordion-content>
+            <p class="faq-answer">{{ item.answer }}</p>
+          </p-accordion-content>
+        </p-accordion-panel>
+      }
+    </p-accordion>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="about-cta">
+  <div class="cta-container">
+    <h2 class="cta-title">Gotowy żeby spróbować?</h2>
+    <p class="cta-subtitle">
+      Wygeneruj pierwsze menu bez zakładania konta.
+      Zajmuje to mniej niż minutę.
+    </p>
+    <div class="cta-actions">
+      <a routerLink="/menu/generate" class="cta-btn primary">⚡ Generuj menu</a>
+      <a routerLink="/about" fragment="faq" class="cta-btn secondary">Najczęstsze pytania</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="about-footer">
+  <div class="footer-brand">🌿 Meal<span>Planner</span></div>
+  <div class="footer-links">
+    <a routerLink="/about">O aplikacji</a>
+  </div>
+  <div class="footer-copy">© 2025 MealPlanner</div>
+</footer>
