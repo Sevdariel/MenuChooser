@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, viewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
-import { PopoverModule } from 'primeng/popover';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { SelectModule } from 'primeng/select';
 import { forkJoin } from 'rxjs';
 import { RecipeService } from '../../recipe/services/recipe.service';
@@ -14,7 +13,6 @@ import { MenuGenerateRequest, MenuPreviewDto } from '../models/menu-dto.model';
 import { MenuService } from '../services/menu.service';
 import { RecipeMapperService } from '../../recipe/services/recipe-mapper.service';
 import { IRecipe } from '../../recipe/models/recipe.model';
-import { IRecipeListItem } from '../../recipe/models/recipe-dto.model';
 import { MealType as MenuMealType } from '../models/menu.model';
 import { MealType as RecipeMealType, RecipeTag } from '../../recipe/models/recipe.model';
 import { UpdateRecipeLocally } from '../../recipe/store/recipe-form.actions';
@@ -39,7 +37,7 @@ interface MenuDay {
 
 @Component({
   selector: 'mc-menu-summary',
-  imports: [ButtonModule, CardModule, DialogModule, RecipeViewComponent, AutoCompleteModule, PopoverModule, FormsModule, SelectModule],
+  imports: [ButtonModule, CardModule, DialogModule, RecipeViewComponent, PopoverModule, FormsModule, SelectModule],
   templateUrl: './menu-summary.component.html',
   styleUrl: './menu-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,8 +60,7 @@ export class MenuSummaryComponent {
   public selectedRecipe = signal<IRecipe | null>(null);
 
   // Recipe swap functionality
-  public swapPopoverVisible = signal<boolean>(false);
-  public swapPopoverPosition = signal<{ x: number; y: number }>({ x: 0, y: 0 });
+  public swapPopover = viewChild<Popover>('swapPopover');
   public swapMealId = signal<string>('');
   public availableRecipes = signal<IRecipe[]>([]);
   public selectedSwapRecipe: IRecipe | null = null;
@@ -242,50 +239,21 @@ export class MenuSummaryComponent {
   }
 
   public swapRecipe(event: MouseEvent, mealId: string): void {
-    const button = event.target as HTMLElement;
-    const rect = button.getBoundingClientRect();
-    const popoverWidth = 400;
-    const popoverHeight = 350;
-    const padding = 10;
-
-    let x = rect.left;
-    let y = rect.bottom + 5;
-
-    // Adjust horizontal position if popover would go off right edge
-    if (x + popoverWidth > window.innerWidth - padding) {
-      x = window.innerWidth - popoverWidth - padding;
-    }
-
-    // Adjust horizontal position if popover would go off left edge
-    if (x < padding) {
-      x = padding;
-    }
-
-    // Adjust vertical position if popover would go off bottom edge
-    if (y + popoverHeight > window.innerHeight - padding) {
-      y = rect.top - popoverHeight - 5;
-    }
-
-    // Adjust vertical position if popover would go off top edge
-    if (y < padding) {
-      y = padding;
-    }
-
-    this.swapPopoverPosition.set({ x, y });
     this.swapMealId.set(mealId);
     this.selectedSwapRecipe = null;
     this.recipeSearchQuery.set('');
     this.selectedMealTypeFilter.set(null);
     this.selectedTagFilter.set(null);
-    this.swapPopoverVisible.set(true);
+
+    // Toggle popover
+    this.swapPopover()?.toggle(event);
+
     // Load available recipes for swapping with full details
     this.recipeService.getRecipes().subscribe({
       next: (recipeListItems) => {
-        // Fetch full recipe details for each recipe to get tags
         const recipeDetails$ = recipeListItems.map(item =>
           this.recipeService.getRecipe(item.id)
         );
-        // Use forkJoin to wait for all recipe details to load
         forkJoin(recipeDetails$).subscribe({
           next: (recipeDtos) => {
             const recipes = recipeDtos.map(dto => this.recipeMapperService.mapToModel(dto));
@@ -342,30 +310,22 @@ export class MenuSummaryComponent {
     { label: 'Zdrowe', value: RecipeTag.Healthy },
   ];
 
-  public confirmSwap(): void {
-    const newRecipe = this.selectedSwapRecipe;
+  public selectSwapRecipe(recipe: IRecipe): void {
     const mealId = this.swapMealId();
-    if (newRecipe && mealId) {
-      // Find the meal and update it
+    if (recipe && mealId) {
       const currentMenuDays = this.menuDays();
       const updatedMenuDays = currentMenuDays.map(day => ({
         ...day,
         meals: day.meals.map(meal =>
           meal.id === mealId
-            ? { ...meal, id: newRecipe.id, name: newRecipe.name, ingredients: 'Składniki z przepisu', time: newRecipe.duration, calories: 0 }
+            ? { ...meal, id: recipe.id, name: recipe.name, ingredients: 'Składniki z przepisu', time: recipe.duration, calories: 0 }
             : meal
         ),
       }));
       this.menuDays.set(updatedMenuDays);
-      this.swapPopoverVisible.set(false);
-      this.selectedSwapRecipe = null;
+      this.swapPopover()?.hide();
+      this.recipeSearchQuery.set('');
     }
-  }
-
-  public cancelSwap(): void {
-    this.swapPopoverVisible.set(false);
-    this.selectedSwapRecipe = null;
-    this.recipeSearchQuery.set('');
   }
 
   public fileName(): string {

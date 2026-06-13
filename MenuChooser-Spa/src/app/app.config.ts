@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { PT } from './primeng-pt.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,6 +30,7 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: false,
         },
       },
+      pt: PT,
     }),
     importProvidersFrom(ToastModule),
     MessageService,
