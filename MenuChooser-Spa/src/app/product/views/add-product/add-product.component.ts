@@ -7,15 +7,12 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { FloatLabel } from 'primeng/floatlabel';
-import { InputTextModule } from 'primeng/inputtext';
 import { tap } from 'rxjs';
 import { AuthService } from '../../../core/authorization/auth.service';
 import { IAddProductDto } from '../../models/product-dto.model';
@@ -25,8 +22,6 @@ import { ProductCategory } from '../../models/product.model';
 @Component({
   selector: 'mc-add-product',
   imports: [
-    InputTextModule,
-    FloatLabel,
     ButtonModule,
     RouterModule,
     ReactiveFormsModule,
