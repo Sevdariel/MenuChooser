@@ -7,11 +7,13 @@ import {
   IUpdateRecipeDto,
 } from '../models/recipe-dto.model';
 import {
+  defaultUnit,
   IRecipe,
   IRecipeForm,
   IRecipeProduct,
   IStep,
   MealType,
+  parseUnitFromApi,
   RecipeStepsFormType,
 } from '../models/recipe.model';
 import { AuthService } from '../../core/authorization/auth.service';
@@ -29,7 +31,10 @@ export class RecipeMapperService {
       duration: recipeDto.duration,
       id: recipeDto.id,
       name: recipeDto.name,
-      products: recipeDto.products,
+      products: recipeDto.products.map((p) => ({
+        ...p,
+        unit: parseUnitFromApi(p.unit as unknown as string),
+      })),
       steps: recipeDto.steps.map(
         (stepDto: IStepDto) =>
           ({
@@ -37,12 +42,16 @@ export class RecipeMapperService {
             duration: stepDto.duration,
             order: stepDto.order,
             products: (stepDto.productIds || [])
-              .map((productId) => ({
-                product: recipeDto.products.find(
+              .map((productId) => {
+                const recipeProduct = recipeDto.products.find(
                   (p) => p.product.id === productId,
-                )?.product,
-                quantity: 1,
-              }))
+                );
+                return {
+                  product: recipeProduct?.product,
+                  quantity: recipeProduct?.quantity ?? 1,
+                  unit: parseUnitFromApi((recipeProduct?.unit as unknown as string) ?? ''),
+                };
+              })
               .filter((p): p is IRecipeProduct => !!p.product),
           }) as IStep,
       ),
@@ -68,7 +77,8 @@ export class RecipeMapperService {
               (product) =>
                 <IRecipeProduct>{
                   product: product.product,
-                  quantity: 1,
+                  quantity: product.quantity,
+                  unit: product.unit ?? defaultUnit,
                 },
             ),
           ),

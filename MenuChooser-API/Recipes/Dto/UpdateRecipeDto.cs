@@ -12,5 +12,7 @@ namespace Recipes.Dto
         public MealType? MealType { get; set; }
         public List<RecipeTag>? Tags { get; set; }
         public string UpdatedBy { get; set; } = null!;
+        public int? Servings { get; set; }
+        public int? CaloriesPerServing { get; set; }
     }
 }

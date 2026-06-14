@@ -40,31 +40,43 @@ export interface IRecipeForm {
 }
 
 export enum Unit {
-  GRAM = 'g',
-  KILOGRAM = 'kg',
-  MILLILITER = 'ml',
-  LITER = 'l',
-  PIECE = 'szt',
+  GRAM = 'Gram',
+  KILOGRAM = 'Kilogram',
+  MILLILITER = 'Milliliter',
+  LITER = 'Liter',
+  PIECE = 'Piece',
 }
 
 export const defaultUnit = Unit.GRAM;
 
+/** Map from API response value (EnumMember) to frontend Unit enum */
+export function parseUnitFromApi(value: string): Unit {
+  switch (value) {
+    case 'g': case 'Gram': return Unit.GRAM;
+    case 'kg': case 'Kilogram': return Unit.KILOGRAM;
+    case 'ml': case 'Milliliter': return Unit.MILLILITER;
+    case 'l': case 'Liter': return Unit.LITER;
+    case 'szt': case 'Piece': return Unit.PIECE;
+    default: return Unit.GRAM;
+  }
+}
+
 export enum MealType {
-  Breakfast = 0,
-  Dinner,
-  Lunch,
-  Appetizer,
-  Dessert,
+  Breakfast = 'breakfast',
+  Dinner = 'dinner',
+  Lunch = 'lunch',
+  Appetizer = 'appetizer',
+  Dessert = 'dessert',
 }
 
 export enum RecipeTag {
-  Vegetarian = 0,
-  Vegan,
-  GlutenFree,
-  Italian,
-  Spicy,
-  Quick,
-  Healthy,
+  Vegetarian = 'vegetarian',
+  Vegan = 'vegan',
+  GlutenFree = 'glutenFree',
+  Italian = 'italian',
+  Spicy = 'spicy',
+  Quick = 'quick',
+  Healthy = 'healthy',
 }
 
 export type RecipeFormType = {

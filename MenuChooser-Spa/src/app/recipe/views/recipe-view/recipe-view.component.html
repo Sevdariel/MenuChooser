@@ -47,7 +47,7 @@
       @if (isEditMode()) {
         <select class="field-input meta-input" style="font-size:14px;" formControlName="mealType">
           @for (option of getMealTypeOptions(); track option.value) {
-            <option [value]="option.value">{{ option.label }}</option>
+            <option [ngValue]="option.value">{{ option.label }}</option>
           }
         </select>
       } @else {

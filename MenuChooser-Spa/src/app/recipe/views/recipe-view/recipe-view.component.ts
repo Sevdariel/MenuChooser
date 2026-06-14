@@ -46,6 +46,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { filter, take, tap } from 'rxjs';
+import { AuthService } from '../../../core/authorization/auth.service';
 import { DrawerContent } from '../../../shared/drawer/drawer.model';
 import { DrawerService } from '../../../shared/drawer/drawer.service';
 import { flattenObject } from '../../../shared/helpers/flatten-object';
@@ -115,6 +116,7 @@ export class RecipeViewComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   public readonly drawerService = inject(DrawerService);
   private readonly recipeMapperService = inject(RecipeMapperService);
+  private readonly authService = inject(AuthService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -199,12 +201,12 @@ export class RecipeViewComponent implements OnInit {
           const hasId = !!currentRecipe.id;
           this.viewMode.set(hasId ? RecipeViewMode.PREVIEW : RecipeViewMode.EDIT);
         } else {
+          // Only sync products and steps from the store (updated via inline edits).
+          // Metadata fields (name, mealType, duration, servings, etc.) are managed
+          // directly by form controls and should not be overwritten.
           this.formGroup.patchValue({
             products: currentRecipe.products,
             steps: currentRecipe.steps,
-            tags: currentRecipe.tags || [],
-            servings: currentRecipe.servings,
-            caloriesPerServing: currentRecipe.caloriesPerServing,
           });
         }
       }
@@ -284,11 +286,11 @@ export class RecipeViewComponent implements OnInit {
 
   public getUnitName(unit: string): string {
     switch (unit) {
-      case 'g': return 'g';
-      case 'kg': return 'kg';
-      case 'ml': return 'ml';
-      case 'l': return 'l';
-      case 'szt': return 'szt.';
+      case Unit.GRAM: case 'g': return 'g';
+      case Unit.KILOGRAM: case 'kg': return 'kg';
+      case Unit.MILLILITER: case 'ml': return 'ml';
+      case Unit.LITER: case 'l': return 'l';
+      case Unit.PIECE: case 'szt': return 'szt.';
       default: return unit;
     }
   }
@@ -374,15 +376,17 @@ export class RecipeViewComponent implements OnInit {
 
   public updateProductField(index: number, field: string, event: Event): void {
     const currentRecipe = this.recipe() || defaultRecipe;
-    const products = [...currentRecipe.products];
-    
-    if (field === 'name') {
-      products[index].product.name = (event.target as HTMLInputElement).value;
-    } else if (field === 'quantity') {
-      products[index].quantity = Number((event.target as HTMLInputElement).value);
-    } else if (field === 'unit') {
-      products[index].unit = (event.target as HTMLSelectElement).value as Unit;
-    }
+    const products = currentRecipe.products.map((p, i) => {
+      if (i !== index) return p;
+      if (field === 'name') {
+        return { ...p, product: { ...p.product, name: (event.target as HTMLInputElement).value } };
+      } else if (field === 'quantity') {
+        return { ...p, quantity: Number((event.target as HTMLInputElement).value) };
+      } else if (field === 'unit') {
+        return { ...p, unit: (event.target as HTMLSelectElement).value as Unit };
+      }
+      return p;
+    });
 
     const updatedRecipe = {
       ...currentRecipe,
@@ -654,10 +658,20 @@ export class RecipeViewComponent implements OnInit {
         .pipe(
           tap(() => {
             // After successful API call, update local state with form data
-            const updatedRecipe = {
-              ...formGroupRawValue,
+            const currentRecipe = this.recipe();
+            const updatedRecipe: IRecipe = {
               id: recipeId,
-            } as IRecipe;
+              name: formGroupRawValue.name || '',
+              duration: formGroupRawValue.duration || 0,
+              products: formGroupRawValue.products || [],
+              steps: formGroupRawValue.steps || [],
+              mealType: formGroupRawValue.mealType ?? MealType.Dinner,
+              servings: formGroupRawValue.servings ?? undefined,
+              caloriesPerServing: formGroupRawValue.caloriesPerServing ?? undefined,
+              tags: formGroupRawValue.tags ?? [],
+              createdBy: currentRecipe?.createdBy || '',
+              updatedBy: this.authService.loggedUser()?.username || '',
+            };
             this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
             // Switch to preview mode after save
             this.switchToPreviewMode();

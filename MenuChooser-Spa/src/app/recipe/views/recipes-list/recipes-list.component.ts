@@ -18,6 +18,7 @@ import { ConfirmPopup } from 'primeng/confirmpopup';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RecipesListComponent {
+  protected readonly MealType = MealType;
   private readonly router = inject(Router);
   private readonly store = inject(Store);
   private readonly recipeService = inject(RecipeService);
