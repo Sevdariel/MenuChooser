@@ -1,11 +1,15 @@
 <!-- TOP BAR -->
-<div class="topbar">
+<div class="topbar" [formGroup]="formGroup">
   <button class="topbar-back" (click)="cancelEdit()">← Produkty</button>
 
   <div class="topbar-title">
     @if (isEditMode()) {
-      <input class="meta-input" style="font-family:var(--font-display);font-size:20px;max-width:340px;" type="text" [value]="product().name" placeholder="Nowy produkt">
-      <small>Tryb edycji</small>
+      <input class="meta-input topbar-name-input" type="text" formControlName="name" placeholder="Nowy produkt">
+      @if (product().id) {
+        <small>Tryb edycji</small>
+      } @else {
+        <small>Nowy produkt</small>
+      }
     } @else {
       <span class="field-static">{{ product().name }}</span>
       <small>Tryb podglądu</small>
@@ -15,7 +19,7 @@
   <div class="flex-gap">
     @if (isEditMode()) {
       <button class="btn btn-ghost btn-sm" (click)="cancelEdit()">Anuluj</button>
-      <button class="btn btn-primary btn-sm" (click)="updateProduct(product())">Zapisz</button>
+      <button class="btn btn-primary btn-sm" (click)="save()">Zapisz</button>
     } @else {
       <button class="btn btn-ghost btn-sm" (click)="switchToEditMode()">✏️ Edytuj</button>
       <button class="btn btn-danger-ghost btn-sm" (click)="deleteProduct()">🗑 Usuń</button>
@@ -24,11 +28,11 @@
 </div>
 
 <!-- CONTENT -->
-<div class="content">
+<div class="content" [formGroup]="formGroup">
   <div class="two-col">
 
     <!-- LEFT COL -->
-    <div style="display:flex;flex-direction:column;gap:20px;">
+    <div class="left-col">
 
       <!-- PODSTAWOWE INFO -->
       <div class="section-card">
@@ -38,9 +42,27 @@
         <div class="section-body">
 
           <div class="field">
+            <div class="field-label">Nazwa</div>
+            @if (isEditMode()) {
+              <input class="field-input" type="text" formControlName="name" placeholder="Nazwa produktu">
+            } @else {
+              <div class="field-value">{{ product().name }}</div>
+            }
+          </div>
+
+          <div class="field">
+            <div class="field-label">Producent</div>
+            @if (isEditMode()) {
+              <input class="field-input" type="text" formControlName="producent" placeholder="Producent">
+            } @else {
+              <div class="field-value">{{ product().producent || '-' }}</div>
+            }
+          </div>
+
+          <div class="field">
             <div class="field-label">Kategoria</div>
             @if (isEditMode()) {
-              <select class="field-input" [value]="product().category">
+              <select class="field-input" formControlName="category">
                 @for (cat of [ProductCategory.VEGETABLES, ProductCategory.MEAT, ProductCategory.DAIRY, ProductCategory.GRAINS, ProductCategory.OTHER]; track cat) {
                   <option [value]="cat">{{ getCategoryName(cat) }}</option>
                 }
@@ -56,12 +78,12 @@
             <div class="field">
               <div class="field-label">Jednostka miary</div>
               @if (isEditMode()) {
-                <select class="field-input" [value]="product().unit">
-                  <option [value]="'g'">gram (g)</option>
-                  <option [value]="'kg'">kilogram (kg)</option>
-                  <option [value]="'ml'">mililitr (ml)</option>
-                  <option [value]="'l'">litr (l)</option>
-                  <option [value]="'szt'">sztuka (szt.)</option>
+                <select class="field-input" formControlName="unit">
+                  <option value="g">gram (g)</option>
+                  <option value="kg">kilogram (kg)</option>
+                  <option value="ml">mililitr (ml)</option>
+                  <option value="l">litr (l)</option>
+                  <option value="szt">sztuka (szt.)</option>
                 </select>
               } @else {
                 <div class="field-value">{{ product().unit }}</div>
@@ -70,7 +92,7 @@
             <div class="field">
               <div class="field-label">Opis</div>
               @if (isEditMode()) {
-                <input class="field-input" type="text" [value]="product().sub" placeholder="np. świeży, mrożony...">
+                <input class="field-input" type="text" formControlName="sub" placeholder="np. świeży, mrożony...">
               } @else {
                 <div class="field-value" style="color:var(--text-secondary);font-size:13.5px;">{{ product().sub || '-' }}</div>
               }
@@ -78,11 +100,11 @@
           </div>
 
           <div class="field">
-            <div class="field-label">Notatki</div>
+            <div class="field-label">Emoji</div>
             @if (isEditMode()) {
-              <textarea class="field-input" rows="3" style="resize:vertical;" placeholder="Dodaj notatki..."></textarea>
+              <input class="field-input emoji-input" type="text" formControlName="emoji" placeholder="🥦">
             } @else {
-              <div class="field-value" style="font-size:13.5px;color:var(--text-secondary);">Brak notatek</div>
+              <div class="field-value">{{ product().emoji || '-' }}</div>
             }
           </div>
 
@@ -92,16 +114,16 @@
       <!-- WARTOŚCI ODŻYWCZE -->
       <div class="section-card">
         <div class="section-head">
-          <div class="section-head-title">🥗 Wartości odżywcze <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px;">na 100 g</span></div>
+          <div class="section-head-title">🥗 Wartości odżywcze <span class="section-head-sub">na 100 g</span></div>
         </div>
-        <div class="section-body" style="padding:16px;">
+        <div class="section-body macro-body">
           <div class="macro-grid">
 
             <div class="macro-cell">
               <div class="macro-label">Kalorie</div>
               @if (isEditMode()) {
                 <div class="macro-input-wrap">
-                  <input class="macro-input" type="number" [value]="product().kcal">
+                  <input class="macro-input" type="number" formControlName="kcal">
                   <span class="macro-unit">kcal</span>
                 </div>
               } @else {
@@ -113,7 +135,7 @@
               <div class="macro-label">Białko</div>
               @if (isEditMode()) {
                 <div class="macro-input-wrap">
-                  <input class="macro-input" type="number" [value]="product().protein" step="0.1">
+                  <input class="macro-input" type="number" formControlName="protein" step="0.1">
                   <span class="macro-unit">g</span>
                 </div>
               } @else {
@@ -125,7 +147,7 @@
               <div class="macro-label">Węglowodany</div>
               @if (isEditMode()) {
                 <div class="macro-input-wrap">
-                  <input class="macro-input" type="number" [value]="product().carbs" step="0.1">
+                  <input class="macro-input" type="number" formControlName="carbs" step="0.1">
                   <span class="macro-unit">g</span>
                 </div>
               } @else {
@@ -137,7 +159,7 @@
               <div class="macro-label">Tłuszcze</div>
               @if (isEditMode()) {
                 <div class="macro-input-wrap">
-                  <input class="macro-input" type="number" [value]="product().fat" step="0.1">
+                  <input class="macro-input" type="number" formControlName="fat" step="0.1">
                   <span class="macro-unit">g</span>
                 </div>
               } @else {
@@ -152,44 +174,30 @@
     </div>
 
     <!-- RIGHT COL - PRZEPISY -->
-    <div class="section-card" style="align-self:start;">
-      <div class="section-head">
-        <div class="section-head-title">🍽️ Używany w przepisach <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;margin-left:4px;">{{ recipes().length }} przepisów</span></div>
+    @if (product().id) {
+      <div class="section-card right-col">
+        <div class="section-head">
+          <div class="section-head-title">🍽️ Używany w przepisach <span class="section-head-sub">{{ recipes().length }} przepisów</span></div>
+        </div>
+        <div class="section-body">
+          @if (recipes().length === 0) {
+            <div class="empty-state">
+              <div class="empty-state-icon">🍽️</div>
+              <div class="empty-state-text">Brak przepisów używających tego produktu</div>
+            </div>
+          } @else {
+            <div class="recipe-list">
+              @for (recipe of recipes(); track recipe.id) {
+                <a [routerLink]="['/recipes', recipe.id]" class="recipe-item">
+                  <div class="recipe-item-name">{{ recipe.name }}</div>
+                  <div class="recipe-item-meta">{{ recipe.duration }} min</div>
+                </a>
+              }
+            </div>
+          }
+        </div>
       </div>
-      <div class="section-body">
-        @if (recipes().length === 0) {
-          <div class="empty-state" style="text-align:center;padding:32px 16px;">
-            <div style="font-size:48px;margin-bottom:12px;">🍽️</div>
-            <div style="color:var(--text-muted);font-size:14px;">Brak przepisów używających tego produktu</div>
-          </div>
-        } @else {
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            @for (recipe of recipes(); track recipe.id) {
-              <a [routerLink]="['/recipes', recipe.id]" class="recipe-item">
-                <div class="recipe-item-name">{{ recipe.name }}</div>
-                <div class="recipe-item-meta">{{ recipe.duration }} min</div>
-              </a>
-            }
-          </div>
-        }
-      </div>
-    </div>
+    }
 
   </div>
 </div>
-
-<!-- Drawer for Editing -->
-@if (isEditMode()) {
-  <p-drawer
-    header="Edytuj produkt"
-    [(visible)]="togglePanel"
-    position="right"
-    dismissible="true"
-    styleClass="md:!w-80 lg:!w-[30rem]"
-  >
-    <mc-product-edit
-      [(product)]="productSignal"
-      (saved)="updateProduct($event)"
-    ></mc-product-edit>
-  </p-drawer>
-}

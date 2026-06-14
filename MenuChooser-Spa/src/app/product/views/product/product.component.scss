@@ -58,6 +58,12 @@
   font-weight: 400;
 }
 
+.topbar-name-input {
+  font-family: var(--font-display);
+  font-size: 20px;
+  max-width: 340px;
+}
+
 /* Action buttons */
 .btn {
   display: inline-flex;
@@ -159,6 +165,18 @@
   padding: 20px 24px;
 }
 
+.section-head-sub {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.macro-body {
+  padding: 16px;
+}
+
 /* ── FIELD ── */
 .field {
   display: flex;
@@ -169,6 +187,10 @@
 
 .field:last-child {
   margin-bottom: 0;
+}
+
+.emoji-input {
+  width: 80px;
 }
 
 .field-label {
@@ -311,6 +333,17 @@
   font-weight: 500;
 }
 
+/* ── LAYOUT ── */
+.left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.right-col {
+  align-self: start;
+}
+
 /* ── EMPTY STATE ── */
 .empty-state {
   display: flex;
@@ -319,6 +352,22 @@
   justify-content: center;
   padding: 48px 24px;
   text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state-text {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /* ── RECIPE ITEM ── */

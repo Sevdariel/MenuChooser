@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { productResolver } from './resolvers/product.resolver';
 import { productsResolver } from './resolvers/products.resolver';
-import { AddProductComponent } from './views/add-product/add-product.component';
 import { ProductComponent } from './views/product/product.component';
 import { ProductsListComponent } from './views/products-list/products-list.component';
 
@@ -13,7 +12,7 @@ export const routes: Routes = [
   },
   {
     path: 'new',
-    component: AddProductComponent,
+    component: ProductComponent,
   },
   {
     path: ':id',
