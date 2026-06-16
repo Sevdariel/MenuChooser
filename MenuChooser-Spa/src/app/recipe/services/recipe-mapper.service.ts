@@ -92,11 +92,13 @@ export class RecipeMapperService {
       name: recipe.name || '',
       duration: recipe.duration || 0,
       recipeProducts:
-        recipe.products?.map((product: IRecipeProduct) => ({
-          productId: product.product.id,
-          quantity: product.quantity,
-          unit: product.unit,
-        })) || [],
+        recipe.products
+          ?.filter((product: IRecipeProduct) => !!product.product.name?.trim())
+          .map((product: IRecipeProduct) => ({
+            productId: product.product.id,
+            quantity: product.quantity,
+            unit: product.unit,
+          })) || [],
       steps:
         recipe.steps?.map((step: IStep) => ({
           order: step.order,
@@ -120,11 +122,13 @@ export class RecipeMapperService {
       name: recipe.name || '',
       duration: recipe.duration || 0,
       recipeProducts:
-        recipe.products?.map((product: IRecipeProduct) => ({
-          productId: product.product.id,
-          quantity: product.quantity,
-          unit: product.unit,
-        })) || [],
+        recipe.products
+          ?.filter((product: IRecipeProduct) => !!product.product.name?.trim())
+          .map((product: IRecipeProduct) => ({
+            productId: product.product.id,
+            quantity: product.quantity,
+            unit: product.unit,
+          })) || [],
       steps:
         recipe.steps?.map((step: IStep) => ({
           order: step.order,

@@ -133,7 +133,7 @@
 
         <!-- Ingredient rows -->
         @for (product of recipe()?.products || []; track product.product.id; let i = $index) {
-          <div class="ing-row">
+          <div class="ing-row" [class.editable]="isEditMode()" [class.new-row]="lastAddedProductIndex() === i">
             <div class="ing-cell">
               @if (isEditMode()) {
                 <input class="field-input ing-input" type="text" [value]="recipe()!.products[i]!.product.name" (input)="updateProductField(i, 'name', $event)">

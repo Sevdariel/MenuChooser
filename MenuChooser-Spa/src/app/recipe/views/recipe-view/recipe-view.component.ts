@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import {
+  afterNextRender,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
@@ -148,6 +149,7 @@ export class RecipeViewComponent implements OnInit {
   public stepProductSearch = signal<string>('');
   public selectedStepProduct = signal<IRecipeProduct | null>(null);
   public newStepProducts = signal<IRecipeProduct[]>([]);
+  public lastAddedProductIndex = signal<number | null>(null);
 
   public availableProductsForStep = computed(() => {
     const currentRecipe = this.recipe();
@@ -369,9 +371,22 @@ export class RecipeViewComponent implements OnInit {
     };
 
     this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
-    
+
     // Update form control directly
     this.formGroup.controls.products?.setValue(updatedRecipe.products);
+
+    // Track the new product index and focus its name input after render
+    const newIndex = updatedRecipe.products.length - 1;
+    this.lastAddedProductIndex.set(newIndex);
+    afterNextRender(() => {
+      const rows = document.querySelectorAll('.ing-row');
+      const lastRow = rows[rows.length - 1] as HTMLElement;
+      if (lastRow) {
+        const input = lastRow.querySelector('input[type="text"]') as HTMLInputElement;
+        input?.focus();
+      }
+      this.lastAddedProductIndex.set(null);
+    });
   }
 
   public updateProductField(index: number, field: string, event: Event): void {
@@ -430,6 +445,12 @@ export class RecipeViewComponent implements OnInit {
 
     this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
     this.formGroup.controls.steps?.setValue(steps);
+    this.recalculateDuration(steps);
+  }
+
+  private recalculateDuration(steps: IStep[]): void {
+    const total = steps.reduce((sum, step) => sum + (step.duration || 0), 0);
+    this.formGroup.controls.duration?.setValue(total);
   }
 
   public deleteStep(order: number): void {
@@ -443,6 +464,7 @@ export class RecipeViewComponent implements OnInit {
 
     this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
     this.formGroup.controls.steps?.setValue(steps);
+    this.recalculateDuration(steps);
   }
 
   public deleteProduct(index: number): void {
@@ -478,6 +500,7 @@ export class RecipeViewComponent implements OnInit {
 
     this.store.dispatch(new UpdateRecipeLocally(updatedRecipe));
     this.formGroup.controls.steps?.setValue(updatedRecipe.steps);
+    this.recalculateDuration(updatedRecipe.steps);
     this.newStepContent.set('');
     this.newStepDuration.set(0);
     this.newStepProducts.set([]);
@@ -663,7 +686,7 @@ export class RecipeViewComponent implements OnInit {
               id: recipeId,
               name: formGroupRawValue.name || '',
               duration: formGroupRawValue.duration || 0,
-              products: formGroupRawValue.products || [],
+              products: (formGroupRawValue.products || []).filter((p: IRecipeProduct) => !!p.product.name?.trim()),
               steps: formGroupRawValue.steps || [],
               mealType: formGroupRawValue.mealType ?? MealType.Dinner,
               servings: formGroupRawValue.servings ?? undefined,
