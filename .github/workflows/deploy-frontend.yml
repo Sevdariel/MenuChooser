@@ -2,12 +2,12 @@ name: Deploy Frontend to Azure Static Web Apps
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - 'MenuChooser-Spa/**'
       - '.github/workflows/deploy-frontend.yml'
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - 'MenuChooser-Spa/**'
   workflow_dispatch:
