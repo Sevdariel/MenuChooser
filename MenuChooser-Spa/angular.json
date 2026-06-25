@@ -27,7 +27,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "staticwebapp.config.json",
+                "input": "src",
+                "output": "/"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -44,8 +49,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "12kb",
+                  "maximumError": "16kb"
                 }
               ],
               "outputHashing": "all"

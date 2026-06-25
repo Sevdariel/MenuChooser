@@ -1,0 +1,62 @@
+name: Deploy Backend to Azure Container Apps
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'MenuChooser-API/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ACR_NAME: acrmealplanner30278
+  IMAGE_NAME: mealplanner-api
+  RESOURCE_GROUP: rg-mealplanner
+  CONTAINER_APP: ca-mealplanner-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: MenuChooser-API
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore & build
+        run: dotnet build MenuChooser/MenuChooser.sln --configuration Release
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: ACR login
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      - name: Build & push image (Docker)
+        run: |
+          docker build \
+            -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest \
+            .
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy to Container App
+        run: |
+          az containerapp update \
+            -n ${{ env.CONTAINER_APP }} \
+            -g ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
