@@ -189,11 +189,9 @@ export class RecipeFormState {
 
   @Action(UpdateRecipeLocally)
   public updateRecipeLocally(ctx: StateContext<RecipeFormStateModel>, action: UpdateRecipeLocally) {
-    console.log('UpdateRecipeLocally action received in state:', action.recipe);
     ctx.patchState({
       recipe: action.recipe,
     });
-    console.log('State after patch:', ctx.getState());
   }
 
 }

@@ -57,22 +57,22 @@
         >Wszystkie <strong>{{ categoryCounts().all }}</strong></span>
         <span
           class="chip"
-          [class.chip-active-breakfast]="activeCategory() === 0"
-          [class.chip-default]="activeCategory() !== 0"
-          (click)="setCategory(0)"
-        >🌅 Śniadanie <strong>{{ categoryCounts()[0] }}</strong></span>
+          [class.chip-active-breakfast]="activeCategory() === MealType.Breakfast"
+          [class.chip-default]="activeCategory() !== MealType.Breakfast"
+          (click)="setCategory(MealType.Breakfast)"
+        >🌅 Śniadanie <strong>{{ categoryCounts()[MealType.Breakfast] }}</strong></span>
         <span
           class="chip"
-          [class.chip-active-lunch]="activeCategory() === 2"
-          [class.chip-default]="activeCategory() !== 2"
-          (click)="setCategory(2)"
-        >☀️ Obiad <strong>{{ categoryCounts()[2] }}</strong></span>
+          [class.chip-active-lunch]="activeCategory() === MealType.Lunch"
+          [class.chip-default]="activeCategory() !== MealType.Lunch"
+          (click)="setCategory(MealType.Lunch)"
+        >☀️ Obiad <strong>{{ categoryCounts()[MealType.Lunch] }}</strong></span>
         <span
           class="chip"
-          [class.chip-active-dinner]="activeCategory() === 1"
-          [class.chip-default]="activeCategory() !== 1"
-          (click)="setCategory(1)"
-        >🌙 Kolacja <strong>{{ categoryCounts()[1] }}</strong></span>
+          [class.chip-active-dinner]="activeCategory() === MealType.Dinner"
+          [class.chip-default]="activeCategory() !== MealType.Dinner"
+          (click)="setCategory(MealType.Dinner)"
+        >🌙 Kolacja <strong>{{ categoryCounts()[MealType.Dinner] }}</strong></span>
       </div>
 
       <!-- TABLE -->

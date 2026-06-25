@@ -202,6 +202,27 @@
   cursor: default;
 }
 
+/* Select matching autocomplete input styling */
+select.meta-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6b6b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 28px 4px 8px;
+  border: 1px solid var(--border-light);
+  background-color: var(--cream-50);
+}
+
+select.meta-input:focus {
+  outline: none;
+  border-color: var(--color-terracotta);
+  background-color: white;
+  box-shadow: none;
+}
+
 /* ── TWO COLUMNS ── */
 .two-col {
   display: grid;
@@ -289,7 +310,7 @@
 /* ── INGREDIENT ROW ── */
 .ing-row {
   display: grid;
-  grid-template-columns: 1fr 60px 80px;
+  grid-template-columns: 1fr 90px 110px;
   gap: 0;
   border-bottom: 1px solid var(--border-light);
   align-items: center;
@@ -308,6 +329,7 @@
 
 .ing-cell:last-child {
   border-right: none;
+  padding: 9px 10px;
 }
 
 .ing-cell.muted {
@@ -325,6 +347,57 @@
   width: 100%;
   padding: 0;
   transition: background .15s;
+}
+
+/* Editable rows: make inputs look like actual input fields */
+.ing-row.editable {
+  transition: background .15s, box-shadow .15s;
+}
+
+.ing-row.editable:hover {
+  background: var(--cream-100);
+}
+
+.ing-row.editable:focus-within {
+  background: rgba(106,145,99,0.06);
+  box-shadow: inset 3px 0 0 0 var(--sage-400);
+}
+
+.ing-row.editable .ing-input {
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.ing-row.editable .ing-input:focus {
+  border-color: var(--sage-400);
+  box-shadow: 0 0 0 3px rgba(106,145,99,0.1);
+}
+
+/* Hide number spinners and center value in amount column */
+.ing-row.editable input[type="number"].ing-input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  text-align: center;
+  padding: 4px 2px;
+}
+
+.ing-row.editable input[type="number"].ing-input::-webkit-outer-spin-button,
+.ing-row.editable input[type="number"].ing-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Highlight newly added row */
+.ing-row.editable.new-row {
+  animation: highlight-new 1.2s ease-out;
+}
+
+@keyframes highlight-new {
+  0%   { background: rgba(106,145,99,0.18); }
+  100% { background: transparent; }
 }
 
 .ing-row:focus-within {

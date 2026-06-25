@@ -3,7 +3,6 @@ using Database.Data;
 using MongoDB.Driver;
 using Recipes.Dto;
 using Recipes.Entities;
-using System.Reflection;
 
 namespace Recipes.Service
 {
@@ -36,22 +35,20 @@ namespace Recipes.Service
 
         public async Task<bool> UpdateRecipeAsync(UpdateRecipeDto updateRecipeDto, Recipe existingRecipe)
         {
-            var filter = Builders<Recipe>.Filter.Eq(product => product.Id, updateRecipeDto.Id);
+            var filter = Builders<Recipe>.Filter.Eq(recipe => recipe.Id, updateRecipeDto.Id);
 
-            var updatedRecipe= _mapper.Map(updateRecipeDto, existingRecipe);
+            var updatedRecipe = _mapper.Map(updateRecipeDto, existingRecipe);
 
-            var updateDefinitions = new List<UpdateDefinition<Recipe>>();
-
-            foreach (PropertyInfo prop in typeof(UpdateRecipeDto).GetProperties())
-            {
-                var newValue = prop.GetValue(updateRecipeDto);
-                if (newValue != null)
-                    updateDefinitions.Add(Builders<Recipe>.Update.Set(prop.Name, newValue));
-            }
-
-            if (updateDefinitions.Count == 0) return false;
-
-            var update = Builders<Recipe>.Update.Combine(updateDefinitions);
+            var update = Builders<Recipe>.Update
+                .Set(r => r.Name, updatedRecipe.Name)
+                .Set(r => r.Duration, updatedRecipe.Duration)
+                .Set(r => r.RecipeProducts, updatedRecipe.RecipeProducts)
+                .Set(r => r.Steps, updatedRecipe.Steps)
+                .Set(r => r.MealType, updatedRecipe.MealType)
+                .Set(r => r.Tags, updatedRecipe.Tags)
+                .Set(r => r.UpdatedBy, updatedRecipe.UpdatedBy)
+                .Set(r => r.Servings, updatedRecipe.Servings)
+                .Set(r => r.CaloriesPerServing, updatedRecipe.CaloriesPerServing);
 
             var result = await _recipeCollection.UpdateOneAsync(filter, update);
 
