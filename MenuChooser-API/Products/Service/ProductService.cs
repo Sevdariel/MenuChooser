@@ -1,5 +1,6 @@
 using AutoMapper;
 using Database.Data;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Products.Dto;
 using Products.Entities;
@@ -11,28 +12,43 @@ namespace Products.Service
     {
         private readonly IMongoCollection<Product> _productCollection;
         private readonly IMapper _mapper;
+        private readonly ILogger<ProductService> _logger;
 
-        public ProductService(MongoDBContext databaseContext, IMapper mapper)
+        public ProductService(MongoDBContext databaseContext, IMapper mapper, ILogger<ProductService> logger)
         {
             _productCollection = databaseContext.GetMongoDatabase().GetCollection<Product>(MongoDBExtensions.CollectionName(GetType().Name));
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<Product> GetProductByIdAsync(string id) => await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+        public async Task<Product> GetProductByIdAsync(string id)
+        {
+            _logger.LogDebug("Fetching product by ID: {ProductId}", id);
+            return await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+        }
 
-        public async Task<List<Product>> GetProductsAsync() => await _productCollection.Find(_ => true).ToListAsync();
+        public async Task<List<Product>> GetProductsAsync()
+        {
+            _logger.LogDebug("Fetching all products");
+            var products = await _productCollection.Find(_ => true).ToListAsync();
+            _logger.LogDebug("Retrieved {ProductCount} products", products.Count);
+            return products;
+        }
 
         public async Task<Product> CreateProductAsync(CreateProductDto createProductDto)
         {
+            _logger.LogInformation("Creating product: {ProductName}", createProductDto.Name);
             var createProduct = _mapper.Map<Product>(createProductDto);
 
             await _productCollection.InsertOneAsync(createProduct);
+            _logger.LogInformation("Product created successfully: {ProductId}", createProduct.Id);
 
             return createProduct;
         }
 
         public async Task<bool> UpdateProductAsync(UpdateProductDto updatedProductDto)
         {
+            _logger.LogInformation("Updating product: {ProductId}", updatedProductDto.Id);
             var filter = Builders<Product>.Filter.Eq(product => product.Id, updatedProductDto.Id);
 
             var updatedProduct = _mapper.Map<Product>(updatedProductDto);
@@ -51,31 +67,47 @@ namespace Products.Service
             var update = Builders<Product>.Update.Combine(updateDefinitions);
 
             var result = await _productCollection.UpdateOneAsync(filter, update);
+            _logger.LogInformation("Product update result: {ModifiedCount} documents modified", result.ModifiedCount);
 
             return result.ModifiedCount > 0;
         }
 
-        public async Task DeleteProductAsync(string id) => await _productCollection.DeleteOneAsync(product => product.Id == id);
+        public async Task DeleteProductAsync(string id)
+        {
+            _logger.LogInformation("Deleting product: {ProductId}", id);
+            await _productCollection.DeleteOneAsync(product => product.Id == id);
+            _logger.LogInformation("Product deleted successfully: {ProductId}", id);
+        }
 
         public async Task<List<Product>> GetProductsByIdsAsync(List<string> ids)
         {
+            _logger.LogDebug("Fetching {Count} products by IDs", ids.Count);
             var filter = Builders<Product>.Filter.In(product => product.Id, ids);
-
-            return await _productCollection.Find(filter).ToListAsync();
+            var products = await _productCollection.Find(filter).ToListAsync();
+            _logger.LogDebug("Retrieved {ProductCount} products", products.Count);
+            return products;
         }
 
         public async Task<List<Product>> SearchProductsByPattern(string pattern)
         {
+            _logger.LogDebug("Searching products with pattern: {Pattern}", pattern);
+            List<Product> products;
             if (string.IsNullOrWhiteSpace(pattern))
-                return await _productCollection.Find(_ => true).Limit(10).ToListAsync();
-            
-            var filter = Builders<Product>.Filter.Regex("name", new MongoDB.Bson.BsonRegularExpression(pattern, "i"));
-
-            return await _productCollection.Find(filter).ToListAsync();
+            {
+                products = await _productCollection.Find(_ => true).Limit(10).ToListAsync();
+            }
+            else
+            {
+                var filter = Builders<Product>.Filter.Regex("name", new MongoDB.Bson.BsonRegularExpression(pattern, "i"));
+                products = await _productCollection.Find(filter).ToListAsync();
+            }
+            _logger.LogDebug("Found {ProductCount} products matching pattern", products.Count);
+            return products;
         }
 
         public async Task<int> MigrateProductFieldsAsync()
         {
+            _logger.LogInformation("Starting product fields migration");
             var filter = Builders<Product>.Filter.Or(
                 Builders<Product>.Filter.Exists("sub", false),
                 Builders<Product>.Filter.Exists("emoji", false),
@@ -96,6 +128,7 @@ namespace Products.Service
                 .Set("carbs", 0.0)
                 .Set("fat", 0.0);
             var result = await _productCollection.UpdateManyAsync(filter, update);
+            _logger.LogInformation("Product fields migration completed: {Count} products migrated", result.ModifiedCount);
             return (int)result.ModifiedCount;
         }
     }

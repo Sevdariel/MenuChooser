@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Users.Entities;
 
@@ -10,14 +11,18 @@ namespace Account.Services
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
+        private readonly ILogger<TokenService> _logger;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IConfiguration configuration, ILogger<TokenService> logger)
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]!));
+            _logger = logger;
         }
 
         public string CreateToken(User user)
         {
+            _logger.LogInformation("Creating JWT token for user: {Username}", user.Username);
+            
             var claims = new List<Claim> {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.PreferredUsername, user.Username),
@@ -35,12 +40,16 @@ namespace Account.Services
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
+            var tokenString = tokenHandler.WriteToken(token);
+            
+            _logger.LogInformation("JWT token created successfully for user: {Username}", user.Username);
+            return tokenString;
         }
 
         public string CreatePasswordResetTokenAsync(User user)
         {
+            _logger.LogInformation("Creating password reset token for user: {Username}", user.Username);
+            
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Username),
@@ -62,12 +71,16 @@ namespace Account.Services
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
+            var tokenString = tokenHandler.WriteToken(token);
+            
+            _logger.LogInformation("Password reset token created successfully for user: {Username}", user.Username);
+            return tokenString;
         }
 
         public bool ValidatePasswordResetToken(string token)
         {
+            _logger.LogDebug("Validating password reset token");
+            
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
@@ -82,11 +95,12 @@ namespace Account.Services
                 };
 
                 tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
-
+                _logger.LogInformation("Password reset token validated successfully");
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Password reset token validation failed");
                 return false;
             }
         }

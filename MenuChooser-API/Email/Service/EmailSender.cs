@@ -1,6 +1,7 @@
 ﻿using Email.Entities;
 using Email.Interface;
 using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using Users.Service;
@@ -11,15 +12,20 @@ namespace Email.Service
     {
         private readonly IOptions<EmailConfiguration> _configuration;
         private readonly IUserService _userService;
+        private readonly ILogger<EmailSender> _logger;
+        
         public EmailSender(IOptions<EmailConfiguration> configuration,
-            IUserService userService)
+            IUserService userService,
+            ILogger<EmailSender> logger)
         {
             _configuration = configuration;
             _userService = userService;
+            _logger = logger;
         }
 
         public async Task SendEmailAsync(Message message)
         {
+            _logger.LogInformation("Preparing to send email to {RecipientCount} recipients", message.To.Count);
             var emailMessage = CreateEmailMessage(message.To, message.Content, message.Subject);
 
             await SendAsync(emailMessage);
@@ -50,6 +56,8 @@ namespace Email.Service
 
         private async Task SendAsync(MimeMessage mailMessage)
         { 
+            _logger.LogInformation("Connecting to SMTP server: {SmtpServer}:{Port}", _configuration.Value.SmtpServer, _configuration.Value.Port);
+            
             using (var client = new SmtpClient())
             {
                 try
@@ -57,13 +65,20 @@ namespace Email.Service
                     client.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
 
                     await client.ConnectAsync(_configuration.Value.SmtpServer, _configuration.Value.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                    _logger.LogInformation("Connected to SMTP server successfully");
+                    
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     await client.AuthenticateAsync(_configuration.Value.Username, _configuration.Value.Password);
+                    _logger.LogInformation("Authenticated to SMTP server successfully");
 
                     await client.SendAsync(mailMessage);
+                    _logger.LogInformation("Email sent successfully to {RecipientCount} recipients", mailMessage.To.Count);
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Failed to send email. Server: {SmtpServer}, Port: {Port}, Username: {Username}", 
+                        _configuration.Value.SmtpServer, _configuration.Value.Port, _configuration.Value.Username);
+                    
                     var errorMessage = $"Failed to send email. Error details:\n" +
                              $"Server: {_configuration.Value.SmtpServer}\n" +
                              $"Port: {_configuration.Value.Port}\n" +
@@ -77,6 +92,7 @@ namespace Email.Service
                 {
                     await client.DisconnectAsync(true);
                     client.Dispose();
+                    _logger.LogDebug("SMTP client disconnected");
                 }
             }
         }
