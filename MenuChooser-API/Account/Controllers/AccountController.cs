@@ -33,96 +33,120 @@ namespace Account.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<TokenDto>> Register(UserRegisterDto registerDto)
         {
-            _logger.LogInformation("Register attempt for email: {Email}", registerDto.Email);
-            
-            if (AccountExists(registerDto.Email))
+            try
             {
-                _logger.LogWarning("Registration failed: Account with email {Email} already exists", registerDto.Email);
-                return BadRequest("Account with provided email exists");
+                _logger.LogInformation("Register attempt for email: {Email}", registerDto.Email);
+                
+                if (AccountExists(registerDto.Email))
+                {
+                    _logger.LogWarning("Registration failed: Account with email {Email} already exists", registerDto.Email);
+                    return BadRequest("Account with provided email exists");
+                }
+
+                if (UsernameTaken(registerDto.Username))
+                {
+                    _logger.LogWarning("Registration failed: Username {Username} already taken", registerDto.Username);
+                    return BadRequest("Username already taken");
+                }
+
+                using var hmac = new HMACSHA512();
+
+                var user = new User
+                {
+                    Email = registerDto.Email,
+                    Username = registerDto.Username,
+                    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
+                    PasswordSalt = hmac.Key,
+                };
+
+                await _accountService.RegisterUser(user);
+                _logger.LogInformation("User registered successfully: {Username}", user.Username);
+
+                return new TokenDto
+                {
+                    Token = _tokenService.CreateToken(user)
+                };
             }
-
-            if (UsernameTaken(registerDto.Username))
+            catch (Exception ex)
             {
-                _logger.LogWarning("Registration failed: Username {Username} already taken", registerDto.Username);
-                return BadRequest("Username already taken");
+                _logger.LogError(ex, "Error during user registration for email: {Email}", registerDto.Email);
+                return StatusCode(500, "An error occurred during registration");
             }
-
-            using var hmac = new HMACSHA512();
-
-            var user = new User
-            {
-                Email = registerDto.Email,
-                Username = registerDto.Username,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key,
-            };
-
-            await _accountService.RegisterUser(user);
-            _logger.LogInformation("User registered successfully: {Username}", user.Username);
-
-            return new TokenDto
-            {
-                Token = _tokenService.CreateToken(user)
-            };
         }
 
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<ActionResult<TokenDto>> Login(UserLoginDto loginDto)
         {
-            _logger.LogInformation("Login attempt for email: {Email}", loginDto.Email);
-            
-            var user = await _userService.GetUserByEmailAsync(loginDto.Email);
-
-            if (user == null)
+            try
             {
-                _logger.LogWarning("Login failed: User not found for email {Email}", loginDto.Email);
-                return Unauthorized("Invalid login data");
+                _logger.LogInformation("Login attempt for email: {Email}", loginDto.Email);
+                
+                var user = await _userService.GetUserByEmailAsync(loginDto.Email);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("Login failed: User not found for email {Email}", loginDto.Email);
+                    return Unauthorized("Invalid login data");
+                }
+
+                using var hmac = new HMACSHA512(user.PasswordSalt);
+
+                var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
+
+                if (!computedHash.SequenceEqual(user.PasswordHash))
+                {
+                    _logger.LogWarning("Login failed: Invalid password for email {Email}", loginDto.Email);
+                    return Unauthorized("Invalid login data");
+                }
+
+                _logger.LogInformation("Login successful for user: {Username}", user.Username);
+                return new TokenDto
+                {
+                    Token = _tokenService.CreateToken(user),
+                };
             }
-
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-
-            if (!computedHash.SequenceEqual(user.PasswordHash))
+            catch (Exception ex)
             {
-                _logger.LogWarning("Login failed: Invalid password for email {Email}", loginDto.Email);
-                return Unauthorized("Invalid login data");
+                _logger.LogError(ex, "Error during login for email: {Email}", loginDto.Email);
+                return StatusCode(500, "An error occurred during login");
             }
-
-            _logger.LogInformation("Login successful for user: {Username}", user.Username);
-            return new TokenDto
-            {
-                Token = _tokenService.CreateToken(user),
-            };
         }
 
         [HttpPost("forgot-password")]
         [AllowAnonymous]
         public async Task<ActionResult<ResetPasswordSendDto>> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
         {
-            _logger.LogInformation("Password reset request for email: {Email}", forgotPasswordDto.Email);
-            
-            var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
-
-            if (user == null)
+            try
             {
-                _logger.LogWarning("Password reset failed: User not found for email {Email}", forgotPasswordDto.Email);
-                return BadRequest("User with provided email doesn't exists");
+                _logger.LogInformation("Password reset request for email: {Email}", forgotPasswordDto.Email);
+                
+                var user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
+
+                if (user == null)
+                {
+                    _logger.LogWarning("Password reset failed: User not found for email {Email}", forgotPasswordDto.Email);
+                    return BadRequest("User with provided email doesn't exists");
+                }
+
+                var token = _tokenService.CreatePasswordResetTokenAsync(user);
+                var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}";
+
+                var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
+
+                await _emailSender.SendEmailAsync(message);
+                _logger.LogInformation("Password reset email sent to: {Email}", user.Email);
+
+                return new ResetPasswordSendDto
+                {
+                    IsReset = true,
+                };
             }
-
-            var token = _tokenService.CreatePasswordResetTokenAsync(user);
-            var resetLink = $"{forgotPasswordDto.ClientURI}/account/reset-password?token={token}";
-
-            var message = new Message([user.Email], "Reset password token", $"<a href=\"{resetLink}\">To reset your password, click here!</a>");
-
-            await _emailSender.SendEmailAsync(message);
-            _logger.LogInformation("Password reset email sent to: {Email}", user.Email);
-
-            return new ResetPasswordSendDto
+            catch (Exception ex)
             {
-                IsReset = true,
-            };
+                _logger.LogError(ex, "Error during password reset request for email: {Email}", forgotPasswordDto.Email);
+                return StatusCode(500, "An error occurred during password reset request");
+            }
         }
 
         [HttpPost("reset-password")]

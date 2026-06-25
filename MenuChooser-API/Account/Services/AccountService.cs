@@ -18,23 +18,47 @@ namespace Account.Services
 
         public bool AccountExist(string email)
         {
-            var exists = _userCollection.Find(user => user.Email == email).Any();
-            _logger.LogDebug("Account existence check for email {Email}: {Exists}", email, exists);
-            return exists;
+            try
+            {
+                var exists = _userCollection.Find(user => user.Email == email).Any();
+                _logger.LogDebug("Account existence check for email {Email}: {Exists}", email, exists);
+                return exists;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking account existence for email: {Email}", email);
+                throw;
+            }
         }
         
         public async Task RegisterUser(User user)
         {
-            _logger.LogInformation("Registering user: {Username}", user.Username);
-            await _userCollection.InsertOneAsync(user);
-            _logger.LogInformation("User registered successfully: {Username}", user.Username);
+            try
+            {
+                _logger.LogInformation("Registering user: {Username}", user.Username);
+                await _userCollection.InsertOneAsync(user);
+                _logger.LogInformation("User registered successfully: {Username}", user.Username);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error registering user: {Username}", user.Username);
+                throw;
+            }
         }
         
         public bool UsernameTaken(string username)
         {
-            var taken = _userCollection.Find(user => user.Username == username).Any();
-            _logger.LogDebug("Username availability check for {Username}: {Taken}", username, taken);
-            return taken;
+            try
+            {
+                var taken = _userCollection.Find(user => user.Username == username).Any();
+                _logger.LogDebug("Username availability check for {Username}: {Taken}", username, taken);
+                return taken;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking username availability for: {Username}", username);
+                throw;
+            }
         }
         
         public bool IsPasswordUnchanged(byte[] oldHash, byte[] newHash) => oldHash.SequenceEqual(newHash);

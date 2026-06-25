@@ -25,33 +25,57 @@ namespace Email.Service
 
         public async Task SendEmailAsync(Message message)
         {
-            _logger.LogInformation("Preparing to send email to {RecipientCount} recipients", message.To.Count);
-            var emailMessage = CreateEmailMessage(message.To, message.Content, message.Subject);
+            try
+            {
+                _logger.LogInformation("Preparing to send email to {RecipientCount} recipients", message.To.Count);
+                var emailMessage = CreateEmailMessage(message.To, message.Content, message.Subject);
 
-            await SendAsync(emailMessage);
+                await SendAsync(emailMessage);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending email to {RecipientCount} recipients", message.To.Count);
+                throw;
+            }
         }
 
         private MimeMessage CreateEmailMessage(List<MailboxAddress> users, string messageContent, string subject)
         {
-            var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress(_configuration.Value.Username, _configuration.Value.From));
-            emailMessage = AddReceiverInfo(emailMessage, users);
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            try
             {
-                Text = messageContent,
-            };
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress(_configuration.Value.Username, _configuration.Value.From));
+                emailMessage = AddReceiverInfo(emailMessage, users);
+                emailMessage.Subject = subject;
+                emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+                {
+                    Text = messageContent,
+                };
 
-            return emailMessage;
+                return emailMessage;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating email message");
+                throw;
+            }
         }
 
         private MimeMessage AddReceiverInfo(MimeMessage message, List<MailboxAddress> users)
         {
-            foreach (var user in users) {
-                message.To.Add(user);
-            }
+            try
+            {
+                foreach (var user in users) {
+                    message.To.Add(user);
+                }
 
-            return message;
+                return message;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding receiver info to email message");
+                throw;
+            }
         }
 
         private async Task SendAsync(MimeMessage mailMessage)

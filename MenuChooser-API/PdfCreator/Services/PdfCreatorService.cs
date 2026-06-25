@@ -16,10 +16,18 @@ public class PdfCreatorService : IPdfCreatorService
 
     public byte[] Generate(PdfDocument document)
     {
-        _logger.LogInformation("Starting PDF generation");
-        QuestPDF.Settings.License = LicenseType.Community;
-        var pdf = new QuestDocumentCreator.QuestDocumentCreator(document).GeneratePdf();
-        _logger.LogInformation("PDF generated successfully, size: {Size} bytes", pdf.Length);
-        return pdf;
+        try
+        {
+            _logger.LogInformation("Starting PDF generation");
+            QuestPDF.Settings.License = LicenseType.Community;
+            var pdf = new QuestDocumentCreator.QuestDocumentCreator(document).GeneratePdf();
+            _logger.LogInformation("PDF generated successfully, size: {Size} bytes", pdf.Length);
+            return pdf;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during PDF generation");
+            throw;
+        }
     }
 }

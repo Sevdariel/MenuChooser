@@ -23,113 +23,177 @@ namespace Products.Service
 
         public async Task<Product> GetProductByIdAsync(string id)
         {
-            _logger.LogDebug("Fetching product by ID: {ProductId}", id);
-            return await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+            try
+            {
+                _logger.LogDebug("Fetching product by ID: {ProductId}", id);
+                return await _productCollection.Find(product => product.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching product by ID: {ProductId}", id);
+                throw;
+            }
         }
 
         public async Task<List<Product>> GetProductsAsync()
         {
-            _logger.LogDebug("Fetching all products");
-            var products = await _productCollection.Find(_ => true).ToListAsync();
-            _logger.LogDebug("Retrieved {ProductCount} products", products.Count);
-            return products;
+            try
+            {
+                _logger.LogDebug("Fetching all products");
+                var products = await _productCollection.Find(_ => true).ToListAsync();
+                _logger.LogDebug("Retrieved {ProductCount} products", products.Count);
+                return products;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching all products");
+                throw;
+            }
         }
 
         public async Task<Product> CreateProductAsync(CreateProductDto createProductDto)
         {
-            _logger.LogInformation("Creating product: {ProductName}", createProductDto.Name);
-            var createProduct = _mapper.Map<Product>(createProductDto);
+            try
+            {
+                _logger.LogInformation("Creating product: {ProductName}", createProductDto.Name);
+                var createProduct = _mapper.Map<Product>(createProductDto);
 
-            await _productCollection.InsertOneAsync(createProduct);
-            _logger.LogInformation("Product created successfully: {ProductId}", createProduct.Id);
+                await _productCollection.InsertOneAsync(createProduct);
+                _logger.LogInformation("Product created successfully: {ProductId}", createProduct.Id);
 
-            return createProduct;
+                return createProduct;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating product: {ProductName}", createProductDto.Name);
+                throw;
+            }
         }
 
         public async Task<bool> UpdateProductAsync(UpdateProductDto updatedProductDto)
         {
-            _logger.LogInformation("Updating product: {ProductId}", updatedProductDto.Id);
-            var filter = Builders<Product>.Filter.Eq(product => product.Id, updatedProductDto.Id);
-
-            var updatedProduct = _mapper.Map<Product>(updatedProductDto);
-
-            var updateDefinitions = new List<UpdateDefinition<Product>>();
-
-            foreach (PropertyInfo prop in typeof(UpdateProductDto).GetProperties())
+            try
             {
-                var newValue = prop.GetValue(updatedProductDto);
-                if (newValue != null)
-                    updateDefinitions.Add(Builders<Product>.Update.Set(prop.Name, newValue));
+                _logger.LogInformation("Updating product: {ProductId}", updatedProductDto.Id);
+                var filter = Builders<Product>.Filter.Eq(product => product.Id, updatedProductDto.Id);
+
+                var updatedProduct = _mapper.Map<Product>(updatedProductDto);
+
+                var updateDefinitions = new List<UpdateDefinition<Product>>();
+
+                foreach (PropertyInfo prop in typeof(UpdateProductDto).GetProperties())
+                {
+                    var newValue = prop.GetValue(updatedProductDto);
+                    if (newValue != null)
+                        updateDefinitions.Add(Builders<Product>.Update.Set(prop.Name, newValue));
+                }
+
+                if (!updateDefinitions.Any()) return false;
+
+                var update = Builders<Product>.Update.Combine(updateDefinitions);
+
+                var result = await _productCollection.UpdateOneAsync(filter, update);
+                _logger.LogInformation("Product update result: {ModifiedCount} documents modified", result.ModifiedCount);
+
+                return result.ModifiedCount > 0;
             }
-
-            if (!updateDefinitions.Any()) return false;
-
-            var update = Builders<Product>.Update.Combine(updateDefinitions);
-
-            var result = await _productCollection.UpdateOneAsync(filter, update);
-            _logger.LogInformation("Product update result: {ModifiedCount} documents modified", result.ModifiedCount);
-
-            return result.ModifiedCount > 0;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product: {ProductId}", updatedProductDto.Id);
+                throw;
+            }
         }
 
         public async Task DeleteProductAsync(string id)
         {
-            _logger.LogInformation("Deleting product: {ProductId}", id);
-            await _productCollection.DeleteOneAsync(product => product.Id == id);
-            _logger.LogInformation("Product deleted successfully: {ProductId}", id);
+            try
+            {
+                _logger.LogInformation("Deleting product: {ProductId}", id);
+                await _productCollection.DeleteOneAsync(product => product.Id == id);
+                _logger.LogInformation("Product deleted successfully: {ProductId}", id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product: {ProductId}", id);
+                throw;
+            }
         }
 
         public async Task<List<Product>> GetProductsByIdsAsync(List<string> ids)
         {
-            _logger.LogDebug("Fetching {Count} products by IDs", ids.Count);
-            var filter = Builders<Product>.Filter.In(product => product.Id, ids);
-            var products = await _productCollection.Find(filter).ToListAsync();
-            _logger.LogDebug("Retrieved {ProductCount} products", products.Count);
-            return products;
+            try
+            {
+                _logger.LogDebug("Fetching {Count} products by IDs", ids.Count);
+                var filter = Builders<Product>.Filter.In(product => product.Id, ids);
+                var products = await _productCollection.Find(filter).ToListAsync();
+                _logger.LogDebug("Retrieved {ProductCount} products", products.Count);
+                return products;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching products by IDs");
+                throw;
+            }
         }
 
         public async Task<List<Product>> SearchProductsByPattern(string pattern)
         {
-            _logger.LogDebug("Searching products with pattern: {Pattern}", pattern);
-            List<Product> products;
-            if (string.IsNullOrWhiteSpace(pattern))
+            try
             {
-                products = await _productCollection.Find(_ => true).Limit(10).ToListAsync();
+                _logger.LogDebug("Searching products with pattern: {Pattern}", pattern);
+                List<Product> products;
+                if (string.IsNullOrWhiteSpace(pattern))
+                {
+                    products = await _productCollection.Find(_ => true).Limit(10).ToListAsync();
+                }
+                else
+                {
+                    var filter = Builders<Product>.Filter.Regex("name", new MongoDB.Bson.BsonRegularExpression(pattern, "i"));
+                    products = await _productCollection.Find(filter).ToListAsync();
+                }
+                _logger.LogDebug("Found {ProductCount} products matching pattern", products.Count);
+                return products;
             }
-            else
+            catch (Exception ex)
             {
-                var filter = Builders<Product>.Filter.Regex("name", new MongoDB.Bson.BsonRegularExpression(pattern, "i"));
-                products = await _productCollection.Find(filter).ToListAsync();
+                _logger.LogError(ex, "Error searching products with pattern: {Pattern}", pattern);
+                throw;
             }
-            _logger.LogDebug("Found {ProductCount} products matching pattern", products.Count);
-            return products;
         }
 
         public async Task<int> MigrateProductFieldsAsync()
         {
-            _logger.LogInformation("Starting product fields migration");
-            var filter = Builders<Product>.Filter.Or(
-                Builders<Product>.Filter.Exists("sub", false),
-                Builders<Product>.Filter.Exists("emoji", false),
-                Builders<Product>.Filter.Exists("category", false),
-                Builders<Product>.Filter.Exists("unit", false),
-                Builders<Product>.Filter.Exists("kcal", false),
-                Builders<Product>.Filter.Exists("protein", false),
-                Builders<Product>.Filter.Exists("carbs", false),
-                Builders<Product>.Filter.Exists("fat", false)
-            );
-            var update = Builders<Product>.Update
-                .Set("sub", "")
-                .Set("emoji", "🥗")
-                .Set("category", ProductCategory.Other)
-                .Set("unit", "g")
-                .Set("kcal", 100)
-                .Set("protein", 0.0)
-                .Set("carbs", 0.0)
-                .Set("fat", 0.0);
-            var result = await _productCollection.UpdateManyAsync(filter, update);
-            _logger.LogInformation("Product fields migration completed: {Count} products migrated", result.ModifiedCount);
-            return (int)result.ModifiedCount;
+            try
+            {
+                _logger.LogInformation("Starting product fields migration");
+                var filter = Builders<Product>.Filter.Or(
+                    Builders<Product>.Filter.Exists("sub", false),
+                    Builders<Product>.Filter.Exists("emoji", false),
+                    Builders<Product>.Filter.Exists("category", false),
+                    Builders<Product>.Filter.Exists("unit", false),
+                    Builders<Product>.Filter.Exists("kcal", false),
+                    Builders<Product>.Filter.Exists("protein", false),
+                    Builders<Product>.Filter.Exists("carbs", false),
+                    Builders<Product>.Filter.Exists("fat", false)
+                );
+                var update = Builders<Product>.Update
+                    .Set("sub", "")
+                    .Set("emoji", "🥗")
+                    .Set("category", ProductCategory.Other)
+                    .Set("unit", "g")
+                    .Set("kcal", 100)
+                    .Set("protein", 0.0)
+                    .Set("carbs", 0.0)
+                    .Set("fat", 0.0);
+                var result = await _productCollection.UpdateManyAsync(filter, update);
+                _logger.LogInformation("Product fields migration completed: {Count} products migrated", result.ModifiedCount);
+                return (int)result.ModifiedCount;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during product fields migration");
+                throw;
+            }
         }
     }
 }

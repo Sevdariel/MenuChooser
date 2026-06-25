@@ -19,73 +19,113 @@ namespace Users.Controllers
         }
 
         [HttpGet]
-        public async Task<List<User>> Get()
+        public async Task<ActionResult<List<User>>> Get()
         {
-            _logger.LogInformation("Fetching all users");
-            var users = await _userService.GetUsersAsync();
-            _logger.LogInformation("Retrieved {UserCount} users", users.Count);
-            return users;
+            try
+            {
+                _logger.LogInformation("Fetching all users");
+                var users = await _userService.GetUsersAsync();
+                _logger.LogInformation("Retrieved {UserCount} users", users.Count);
+                return users;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching all users");
+                return StatusCode(500, "An error occurred while fetching users");
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(string email)
         {
-            _logger.LogDebug("Fetching user by email: {Email}", email);
-            var user = await _userService.GetUserByEmailAsync(email);
-
-            if (user is null)
+            try
             {
-                _logger.LogWarning("User not found with email: {Email}", email);
-                return NotFound();
-            }
+                _logger.LogDebug("Fetching user by email: {Email}", email);
+                var user = await _userService.GetUserByEmailAsync(email);
 
-            return user;
+                if (user is null)
+                {
+                    _logger.LogWarning("User not found with email: {Email}", email);
+                    return NotFound();
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching user by email: {Email}", email);
+                return StatusCode(500, "An error occurred while fetching the user");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(User newUser)
         {
-            _logger.LogInformation("Creating user: {Username}", newUser.Username);
-            await _userService.CreateUserAsync(newUser);
-            _logger.LogInformation("User created successfully: {Email}", newUser.Email);
+            try
+            {
+                _logger.LogInformation("Creating user: {Username}", newUser.Username);
+                await _userService.CreateUserAsync(newUser);
+                _logger.LogInformation("User created successfully: {Email}", newUser.Email);
 
-            return CreatedAtAction(nameof(Get), new { id = newUser.Email }, newUser);
+                return CreatedAtAction(nameof(Get), new { id = newUser.Email }, newUser);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating user: {Username}", newUser.Username);
+                return StatusCode(500, "An error occurred during user creation");
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(User updatedUser)
         {
-            _logger.LogInformation("Updating user: {Email}", updatedUser.Email);
-            var user = await _userService.GetUserByEmailAsync(updatedUser.Email);
-
-            if (user is null)
+            try
             {
-                _logger.LogWarning("User not found for update: {Email}", updatedUser.Email);
-                return NotFound();
+                _logger.LogInformation("Updating user: {Email}", updatedUser.Email);
+                var user = await _userService.GetUserByEmailAsync(updatedUser.Email);
+
+                if (user is null)
+                {
+                    _logger.LogWarning("User not found for update: {Email}", updatedUser.Email);
+                    return NotFound();
+                }
+
+                await _userService.UpdateUserAsync(updatedUser);
+                _logger.LogInformation("User updated successfully: {Email}", updatedUser.Email);
+
+                return NoContent();
             }
-
-            await _userService.UpdateUserAsync(updatedUser);
-            _logger.LogInformation("User updated successfully: {Email}", updatedUser.Email);
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating user: {Email}", updatedUser.Email);
+                return StatusCode(500, "An error occurred during user update");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string email)
         {
-            _logger.LogInformation("Deleting user: {Email}", email);
-            var user = await _userService.GetUserByEmailAsync(email);
-
-            if (user is null)
+            try
             {
-                _logger.LogWarning("User not found for deletion: {Email}", email);
-                return NotFound();
+                _logger.LogInformation("Deleting user: {Email}", email);
+                var user = await _userService.GetUserByEmailAsync(email);
+
+                if (user is null)
+                {
+                    _logger.LogWarning("User not found for deletion: {Email}", email);
+                    return NotFound();
+                }
+
+                await _userService.RemoveUserAsync(email);
+                _logger.LogInformation("User deleted successfully: {Email}", email);
+
+                return NoContent();
             }
-
-            await _userService.RemoveUserAsync(email);
-            _logger.LogInformation("User deleted successfully: {Email}", email);
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting user: {Email}", email);
+                return StatusCode(500, "An error occurred during user deletion");
+            }
         }
     }
 }
