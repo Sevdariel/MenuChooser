@@ -6,10 +6,6 @@ on:
     paths:
       - 'MenuChooser-Spa/**'
       - '.github/workflows/deploy-frontend.yml'
-  pull_request:
-    branches: [master]
-    paths:
-      - 'MenuChooser-Spa/**'
   workflow_dispatch:
 
 jobs:
